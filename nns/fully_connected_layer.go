@@ -68,13 +68,14 @@ func NewFullConnectedLayer(width, height, depth int, outputSize int) *FullConnec
 
 // PrintWeights - print fully connected layer's weights
 func (fc *FullConnectedLayer) PrintWeights() {
-	fmt.Println("Printing Fully Connected Layer kernels...")
+	fmt.Println("Printing Fully Connected Layer weights...")
 	(*fc).Weights.Print()
 }
 
 // PrintOutput - print fully connected layer's output
 func (fc *FullConnectedLayer) PrintOutput() {
-
+	fmt.Println("Printing Fully Connected Layer output...")
+	(*fc).Out.Print()
 }
 
 // GetOutput - get fully connected layer's output
@@ -105,5 +106,20 @@ func (fc *FullConnectedLayer) UpdateWeights() {
 
 // DoActivation - fully connected layer's output activation
 func (fc *FullConnectedLayer) DoActivation() {
-
+	fmt.Println("full active")
+	for out := 0; out < (*fc).Out.X; out++ {
+		sum := 0.0
+		for k := 0; k < (*fc).In.Z; k++ {
+			for j := 0; j < (*fc).In.Y; j++ {
+				for i := 0; i < (*fc).In.X; i++ {
+					inputVal := (*fc).In.GetValue(i, j, k)
+					mappedIndex := (*fc).In.GetIndex(i, j, k)
+					weightVal := (*fc).Weights.GetValue(mappedIndex, out, 0)
+					//fmt.Printf("%v * %v\n", inputVal, weightVal)
+					sum += inputVal * weightVal
+				}
+			}
+		}
+		(*fc).Out.SetValue(out, 0, 0, (*fc).ActivationFunc(sum))
+	}
 }

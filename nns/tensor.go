@@ -55,6 +55,11 @@ func (t1 *Tensor) GetValue(i, j, k int) (val float64) {
 	return (*t1).Data[i+(j+k*(*t1).Z)*(*t1).X]
 }
 
+// GetIndex - returns one-dim index for [i][j][k]-th element
+func (t1 *Tensor) GetIndex(i, j, k int) (val int) {
+	return (i + (j+k*(*t1).Z)*(*t1).X)
+}
+
 // Print - print "Tensor" as set (depth) of matrices (width x height)
 func (t1 *Tensor) Print() {
 	x := (*t1).X
