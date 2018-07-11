@@ -104,7 +104,7 @@ func (fc *FullConnectedLayer) GetGradients() *Tensor {
 }
 
 // CalculateGradients - calculate fully connected layer's gradients
-func (fc *FullConnectedLayer) CalculateGradients(nextLayerGrad *Tensor) {
+func (fc *FullConnectedLayer) CalculateGradients(difference *Tensor) {
 	for k := 0; k < (*fc).GradientsWeights.Z; k++ {
 		for j := 0; j < (*fc).GradientsWeights.Y; j++ {
 			for i := 0; i < (*fc).GradientsWeights.X; i++ {
@@ -112,27 +112,52 @@ func (fc *FullConnectedLayer) CalculateGradients(nextLayerGrad *Tensor) {
 			}
 		}
 	}
+
 	for out := 0; out < (*fc).Out.X; out++ {
-		(*fc).NewGradients.SetValue(out, 0, 0, (*fc).ActivationDerivative((*fc).Out.GetValue(out, 0, 0))*nextLayerGrad.GetValue(out, 0, 0)) // δ
-		// fmt.Printf("neuron #%v\n", out)
-		// fmt.Printf("%v * %v", (*fc).ActivationDerivative((*fc).Out.GetValue(out, 0, 0)), nextLayerGrad.GetValue(out, 0, 0))
+		// (*fc).NewGradients.SetValue(out, 0, 0, (*fc).ActivationDerivative((*fc).Out.GetValue(out, 0, 0))*difference.GetValue(out, 0, 0)) // δ
+		// deltaPrevious := (*fc).NewGradients.GetValue(out, 0, 0)
+		// fmt.Printf("neuron #%v %v\n", out, deltaPrevious)
+		// fmt.Printf("%v * %v\n", (*fc).ActivationDerivative((*fc).Out.GetValue(out, 0, 0)), nextLayerGrad.GetValue(out, 0, 0))
 		for k := 0; k < (*fc).In.Z; k++ {
 			for j := 0; j < (*fc).In.Y; j++ {
 				for i := 0; i < (*fc).In.X; i++ {
-					mappedIndex := (*fc).In.GetIndex(i, j, k)
-					weightVal := (*fc).Weights.GetValue(mappedIndex, out, 0)
-					// fmt.Printf("%v * %v\n", (*fc).NewGradients.GetValue(out, 0, 0), weightVal)
-					(*fc).GradientsWeights.AddValue(i, j, k, (*fc).NewGradients.GetValue(out, 0, 0)*weightVal)
+					// mappedIndex := (*fc).In.GetIndex(i, j, k)
+					// weightVal := (*fc).Weights.GetValue(mappedIndex, out, 0)
+					// // fmt.Printf("%v * %v\n", deltaPrevious, weightVal)
+					// (*fc).GradientsWeights.AddValue(i, j, k, deltaPrevious*weightVal)
 				}
 			}
 		}
-
 	}
 }
 
+const (
+	// LearningRate ...
+	LearningRate = 0.3
+	// Momentum ...
+	Momentum = 0.6
+)
+
 // UpdateWeights - update fully connected layer's weights
 func (fc *FullConnectedLayer) UpdateWeights() {
-
+	for out := 0; out < (*fc).Out.X; out++ {
+		// newGrad := (*fc).NewGradients.GetValue(out, 0, 0)
+		// grad := (*fc).Gradients.GetValue(out, 0, 0)
+		// m := (newGrad + grad*Momentum)
+		for k := 0; k < (*fc).In.Z; k++ {
+			for j := 0; j < (*fc).In.Y; j++ {
+				for i := 0; i < (*fc).In.X; i++ {
+					// mappedIndex := (*fc).In.GetIndex(i, j, k)
+					// layerVal := (*fc).In.GetValue(i, j, k)
+					// weightVal := (*fc).Weights.GetValue(mappedIndex, out, 0)
+					// // fmt.Printf("%v * %v * %v = %v\n", LearningRate, newGrad, layerVal, LearningRate*newGrad*layerVal)
+					// deltaWeight := weightVal - LearningRate*newGrad*layerVal
+					// (*fc).Weights.SetValue(mappedIndex, out, 0, deltaWeight)
+				}
+			}
+		}
+		// (*fc).Gradients.SetValue(out, 0, 0, m)
+	}
 }
 
 // DoActivation - fully connected layer's output activation

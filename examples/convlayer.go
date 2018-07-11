@@ -77,4 +77,8 @@ func CheckConvLayer() {
 
 	net.Layers[3].CalculateGradients(difference)
 	net.Layers[3].PrintGradients()
+
+	// net.Layers[3].PrintWeights()
+	net.Layers[3].UpdateWeights()
+	// net.Layers[3].PrintWeights()
 }
