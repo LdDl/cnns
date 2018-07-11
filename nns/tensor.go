@@ -44,6 +44,11 @@ func (t1 *Tensor) Set(v *[][][]float64) {
 	}
 }
 
+// AddValue - add value to [i][j][k]-th element
+func (t1 *Tensor) AddValue(i, j, k int, val float64) {
+	(*t1).Data[i+(j+k*(*t1).Z)*(*t1).X] += val
+}
+
 // SetValue - sets values for [i][j][k]-th element
 func (t1 *Tensor) SetValue(i, j, k int, val float64) {
 	(*t1).Data[i+(j+k*(*t1).Z)*(*t1).X] = val
@@ -196,4 +201,13 @@ func Pool(t *Tensor, out *Tensor, strideWidth, strideHeight int, poolType string
 		break
 	}
 	// return outMatrix
+}
+
+// Sub - Sub t2's values from t1's values
+func (t1 *Tensor) Sub(t2 *Tensor) *Tensor {
+	newT := NewTensorCopy(t1)
+	for i := range (*t2).Data {
+		newT.Data[i] -= (*t2).Data[i]
+	}
+	return newT
 }

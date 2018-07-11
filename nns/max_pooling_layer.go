@@ -51,7 +51,7 @@ func (maxpool *MaxPoolingLayer) PrintWeights() {
 
 // PrintOutput - print max pooling layer's output
 func (maxpool *MaxPoolingLayer) PrintOutput() {
-	fmt.Println("Printing Max Polling Layer output...")
+	fmt.Println("Printing Max Pooling Layer output...")
 	(*maxpool).Out.Print()
 }
 
@@ -74,6 +74,12 @@ func (maxpool *MaxPoolingLayer) FeedForward(t *Tensor) {
 		}
 	}
 	(*maxpool).DoActivation()
+}
+
+// PrintGradients - print max pooling layer's gradients
+func (maxpool *MaxPoolingLayer) PrintGradients() {
+	fmt.Println("Printing Max Pooling Layer gradients-weights...")
+	(*maxpool).InputGradients.Print()
 }
 
 // GetGradients - get max pooling layer's gradients

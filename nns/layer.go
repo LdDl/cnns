@@ -15,6 +15,8 @@ type Layer interface {
 	GetOutput() *Tensor
 	// FeedForward - feed data to layer
 	FeedForward(t *Tensor)
+	// PrintGradients - print layer's gradients
+	PrintGradients()
 	// GetGradients - get layer's gradients
 	GetGradients() *Tensor
 	// CalculateGradients - calculate layers' gradients

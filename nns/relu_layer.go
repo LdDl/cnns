@@ -46,6 +46,12 @@ func (relu *ReLULayer) FeedForward(t *Tensor) {
 	(*relu).DoActivation()
 }
 
+// PrintGradients - print relu layer's gradients
+func (relu *ReLULayer) PrintGradients() {
+	fmt.Println("Printing ReLU Layer gradients-weights...")
+	(*relu).InputGradients.Print()
+}
+
 // GetGradients - get ReLU layer's gradients
 func (relu *ReLULayer) GetGradients() *Tensor {
 	return (*relu).InputGradients

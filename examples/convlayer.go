@@ -1,6 +1,9 @@
 package examples
 
-import "cnns_vika/nns"
+import (
+	"cnns_vika/nns"
+	"fmt"
+)
 
 // CheckConvLayer - проверка свёрточного слоя
 func CheckConvLayer() {
@@ -47,6 +50,7 @@ func CheckConvLayer() {
 	var image = nns.NewTensorEmpty(8, 9, 1) // w,h,d
 	image.Set(&matrix)
 
+	// FeedForward
 	net.Layers[0].FeedForward(image)
 	net.Layers[0].PrintOutput()
 
@@ -58,4 +62,19 @@ func CheckConvLayer() {
 
 	net.Layers[3].FeedForward(net.Layers[2].GetOutput())
 	net.Layers[3].PrintOutput()
+
+	// Backpropagate
+	var desired = nns.NewTensorEmpty(3, 1, 1) // w,h,d
+	matrix = [][][]float64{
+		[][]float64{
+			[]float64{0.32, 0.45, 0.96},
+		},
+	}
+	desired.Set(&matrix)
+	difference := net.Layers[3].GetOutput().Sub(desired)
+	fmt.Println("Output - Desired:")
+	difference.Print()
+
+	net.Layers[3].CalculateGradients(difference)
+	net.Layers[3].PrintGradients()
 }

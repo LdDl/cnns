@@ -90,6 +90,12 @@ func (con *ConvLayer) FeedForward(t *Tensor) {
 	(*con).DoActivation()
 }
 
+// PrintGradients - print convolutional layer's gradients
+func (con *ConvLayer) PrintGradients() {
+	fmt.Println("Printing Convolutional Layer gradients-weights...")
+	(*con).InputGradients.Print()
+}
+
 // GetGradients - get convolutional layer's gradients
 func (con *ConvLayer) GetGradients() *Tensor {
 	return (*con).InputGradients
