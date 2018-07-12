@@ -89,6 +89,7 @@ func (maxpool *MaxPoolingLayer) GetGradients() *Tensor {
 
 // CalculateGradients - calculate max pooling layer's gradients
 func (maxpool *MaxPoolingLayer) CalculateGradients(nextLayerGrad *Tensor) {
+	
 }
 
 // UpdateWeights - just to point, that max pooling layer does NOT updating weights

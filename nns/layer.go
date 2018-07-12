@@ -20,7 +20,7 @@ type Layer interface {
 	// GetGradients - get layer's gradients
 	GetGradients() *Tensor
 	// CalculateGradients - calculate layers' gradients
-	CalculateGradients(nextLayerGrad *Tensor)
+	CalculateGradients(nextLayerGradients *Tensor)
 	// UpdateWeights - update layer's weights
 	UpdateWeights()
 }

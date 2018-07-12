@@ -10,10 +10,11 @@ import (
 // In - input data
 // Out - output data (need for derivative)
 // Out - output activated data
-// Weights - array of neurons
+// Weights - array of weights of neuron
+// SumDeltaWeights - array of delta weights of neuron
 // NewGradients - new values of gradients
-// Gradients - old values of gradients
-// GradientsWeights - gradients
+// LocalGradients - local gradients for neurons of current layer
+// GradientsWeights - summ of products (delta*weight) for calculating local gradients for [current-1]-th layer
 // ActivationFunc       - activation function. You can set custom func(v float64) float64, see SetActivationFunc
 // ActivationDerivative - derivative of activation function. You can set custom func(v float64) float64, see SetActivationDerivativeFunc
 // IsLastLayer - identify if layers is last (this affects deltas' calculating)
@@ -22,8 +23,9 @@ type FullConnectedLayer struct {
 	Out                  *Tensor
 	OutActivated         *Tensor
 	Weights              *Tensor
+	SumDeltaWeights      *Tensor
 	NewGradients         *Tensor
-	Gradients            *Tensor
+	LocalGradients       *Tensor
 	GradientsWeights     *Tensor
 	ActivationFunc       func(v float64) float64
 	ActivationDerivative func(v float64) float64
@@ -57,7 +59,8 @@ func NewFullConnectedLayer(width, height, depth int, outputSize int, isLast bool
 		Out:                  NewTensorEmpty(outputSize, 1, 1),
 		OutActivated:         NewTensorEmpty(outputSize, 1, 1),
 		Weights:              NewTensorEmpty(width*height*depth, outputSize, 1),
-		Gradients:            NewTensorEmpty(outputSize, 1, 1),
+		SumDeltaWeights:      NewTensorEmpty(width, height, depth),
+		LocalGradients:       NewTensorEmpty(outputSize, 1, 1),
 		NewGradients:         NewTensorEmpty(outputSize, 1, 1),
 		GradientsWeights:     NewTensorEmpty(width, height, depth),
 		ActivationFunc:       ActivationSygmoid,           // Default Activation function is Sygmoid
@@ -81,13 +84,13 @@ func (fc *FullConnectedLayer) PrintWeights() {
 // PrintOutput - print fully connected layer's output
 func (fc *FullConnectedLayer) PrintOutput() {
 	fmt.Println("Printing Fully Connected Layer output...")
-	(*fc).Out.Print()
+	(*fc).OutActivated.Print()
 }
 
 // PrintGradients - print fully connected layer's gradients
 func (fc *FullConnectedLayer) PrintGradients() {
 	fmt.Println("Printing Fully Connected Layer gradients-weights...")
-	(*fc).GradientsWeights.Print()
+	(*fc).LocalGradients.Print()
 }
 
 // GetOutput - get fully connected layer's output
@@ -101,58 +104,52 @@ func (fc *FullConnectedLayer) FeedForward(t *Tensor) {
 	(*fc).DoActivation()
 }
 
-// GetGradients - get fully connected layer's gradients
+// GetGradients - get sum (next layer grad * weights)
 func (fc *FullConnectedLayer) GetGradients() *Tensor {
-	return (*fc).GradientsWeights
+	return (*fc).SumDeltaWeights
 }
 
 // CalculateGradients - calculate fully connected layer's gradients
-func (fc *FullConnectedLayer) CalculateGradients(difference *Tensor) {
-	if (*fc).IsLastLayer {
+func (fc *FullConnectedLayer) CalculateGradients(nextLayerGradients *Tensor) {
+	for out := 0; out < (*fc).Out.X; out++ {
 		/*
 			δ{k} = O{k}*(1-O{k})*(O{k}-t{k}),
 				where
 					O{k}*(1-O{k}) - derevative of sygmoid activation function
 					(O{k}-t{k}) - difference between Output and
+
+			delta_W = norm * δ{k} * Input
 		*/
-		for out := 0; out < (*fc).Out.X; out++ {
-			(*fc).Gradients.SetValue(out, 0, 0, (*fc).ActivationDerivative((*fc).Out.GetValue(out, 0, 0))*difference.GetValue(out, 0, 0))
-			fmt.Printf("Output error: %v\n", (*fc).Gradients.GetValue(out, 0, 0))
+
+		(*fc).LocalGradients.SetValue(out, 0, 0, (*fc).ActivationDerivative((*fc).Out.GetValue(out, 0, 0))*nextLayerGradients.GetValue(out, 0, 0))
+		localGradient := (*fc).LocalGradients.GetValue(out, 0, 0)
+		fmt.Printf("Output error: %v\n", (*fc).LocalGradients.GetValue(out, 0, 0))
+
+		/*
+			δ{j-1} = O{j-1}*(1-O{j-1}) * SUM[δ{j}*w{j-1,j}],
+					where
+						O{j-1}*(1-O{j-1}) - derevative of sygmoid activation function
+						SUM[δ{j}*w{j-1,j}] - product of next layer local gradients and connected weights (can be obtained from nextLayerGradients)
+		*/
+		// Calculate SUM[δ{j}*w{j-1,j}] for calculating local gradients for [current-1]-th layer
+		for k := 0; k < (*fc).In.Z; k++ {
+			for j := 0; j < (*fc).In.Y; j++ {
+				for i := 0; i < (*fc).In.X; i++ {
+					mappedIndex := (*fc).In.GetIndex(i, j, k)
+					weightVal := (*fc).Weights.GetValue(mappedIndex, out, 0)
+					// fmt.Printf("%v * %v = %v\n", localGradient, weightVal, localGradient*weightVal)
+					(*fc).SumDeltaWeights.AddValue(i, j, k, localGradient*weightVal)
+				}
+			}
 		}
-		return
 	}
-
-	/*
-		δ{j-1} = O{j-1}*(1-O{j-1}) * SUM[δ{j}*w{j-1,j}],
-				where
-					O{j-1}*(1-O{j-1}) - derevative of sygmoid activation function
-					SUM[δ{j}*w{j-1,j}] - product of next layer local gradients and connected weights
-	*/
-
-	// for k := 0; k < (*fc).GradientsWeights.Z; k++ {
-	// 	for j := 0; j < (*fc).GradientsWeights.Y; j++ {
-	// 		for i := 0; i < (*fc).GradientsWeights.X; i++ {
-	// 			(*fc).GradientsWeights.SetValue(i, j, k, 0)
-	// 		}
-	// 	}
-	// }
-
-	// for out := 0; out < (*fc).Out.X; out++ {
-	// 	// (*fc).NewGradients.SetValue(out, 0, 0, (*fc).ActivationDerivative((*fc).Out.GetValue(out, 0, 0))*difference.GetValue(out, 0, 0)) // δ
-	// 	// deltaPrevious := (*fc).NewGradients.GetValue(out, 0, 0)
-	// 	// fmt.Printf("neuron #%v %v\n", out, deltaPrevious)
-	// 	// fmt.Printf("%v * %v\n", (*fc).ActivationDerivative((*fc).Out.GetValue(out, 0, 0)), nextLayerGrad.GetValue(out, 0, 0))
-	// 	for k := 0; k < (*fc).In.Z; k++ {
-	// 		for j := 0; j < (*fc).In.Y; j++ {
-	// 			for i := 0; i < (*fc).In.X; i++ {
-	// 				// mappedIndex := (*fc).In.GetIndex(i, j, k)
-	// 				// weightVal := (*fc).Weights.GetValue(mappedIndex, out, 0)
-	// 				// // fmt.Printf("%v * %v\n", deltaPrevious, weightVal)
-	// 				// (*fc).GradientsWeights.AddValue(i, j, k, deltaPrevious*weightVal)
-	// 			}
-	// 		}
-	// 	}
-	// }
+	for k := 0; k < (*fc).In.Z; k++ {
+		for j := 0; j < (*fc).In.Y; j++ {
+			for i := 0; i < (*fc).In.X; i++ {
+				fmt.Printf("SUM[δ{j}*w{j-1,j}]: %v\n", (*fc).SumDeltaWeights.GetValue(i, j, k))
+			}
+		}
+	}
 }
 
 const (
@@ -164,23 +161,29 @@ const (
 
 // UpdateWeights - update fully connected layer's weights
 func (fc *FullConnectedLayer) UpdateWeights() {
+	if (*fc).IsLastLayer {
+		// Do not update weights for last fully connected layer
+		//	return
+	}
+
 	for out := 0; out < (*fc).Out.X; out++ {
-		// newGrad := (*fc).NewGradients.GetValue(out, 0, 0)
-		// grad := (*fc).Gradients.GetValue(out, 0, 0)
-		// m := (newGrad + grad*Momentum)
+		localGradient := (*fc).LocalGradients.GetValue(out, 0, 0)
+		// fmt.Printf("local: %v\n", localGradient)
 		for k := 0; k < (*fc).In.Z; k++ {
 			for j := 0; j < (*fc).In.Y; j++ {
 				for i := 0; i < (*fc).In.X; i++ {
-					// mappedIndex := (*fc).In.GetIndex(i, j, k)
-					// layerVal := (*fc).In.GetValue(i, j, k)
+					mappedIndex := (*fc).In.GetIndex(i, j, k)
+					layerVal := (*fc).In.GetValue(i, j, k)
 					// weightVal := (*fc).Weights.GetValue(mappedIndex, out, 0)
-					// // fmt.Printf("%v * %v * %v = %v\n", LearningRate, newGrad, layerVal, LearningRate*newGrad*layerVal)
-					// deltaWeight := weightVal - LearningRate*newGrad*layerVal
+					deltaWeight := LearningRate * localGradient * layerVal
+					fmt.Printf("%v * %v * %v = %v\n", LearningRate, localGradient, layerVal, deltaWeight)
+					// deltaWeight := LearningRate * newGrad * layerVal
+					(*fc).Weights.AddValue(mappedIndex, out, 0, deltaWeight)
 					// (*fc).Weights.SetValue(mappedIndex, out, 0, deltaWeight)
 				}
 			}
 		}
-		// (*fc).Gradients.SetValue(out, 0, 0, m)
+		// (*fc).LocalGradients.SetValue(out, 0, 0, m)
 	}
 }
 
@@ -194,7 +197,7 @@ func (fc *FullConnectedLayer) DoActivation() {
 					inputVal := (*fc).In.GetValue(i, j, k)
 					mappedIndex := (*fc).In.GetIndex(i, j, k)
 					weightVal := (*fc).Weights.GetValue(mappedIndex, out, 0)
-					//fmt.Printf("%v * %v\n", inputVal, weightVal)
+					// fmt.Printf("%v * %v\n", inputVal, weightVal)
 					sum += inputVal * weightVal
 				}
 			}
