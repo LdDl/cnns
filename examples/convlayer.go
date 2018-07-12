@@ -19,7 +19,7 @@ func CheckConvLayer() {
 	maxpool := &nns.LayerStruct{
 		Layer: mlayer,
 	}
-	flayer := nns.NewFullConnectedLayer(mlayer.Out.X, mlayer.Out.Y, mlayer.Out.Z, 3)
+	flayer := nns.NewFullConnectedLayer(mlayer.Out.X, mlayer.Out.Y, mlayer.Out.Z, 3, true)
 	fullyconnected := &nns.LayerStruct{
 		Layer: flayer,
 	}
@@ -76,9 +76,9 @@ func CheckConvLayer() {
 	difference.Print()
 
 	net.Layers[3].CalculateGradients(difference)
-	net.Layers[3].PrintGradients()
+	// net.Layers[3].PrintGradients()
 
 	// net.Layers[3].PrintWeights()
-	net.Layers[3].UpdateWeights()
+	// net.Layers[3].UpdateWeights()
 	// net.Layers[3].PrintWeights()
 }

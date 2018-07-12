@@ -16,6 +16,7 @@ import (
 // GradientsWeights - gradients
 // ActivationFunc       - activation function. You can set custom func(v float64) float64, see SetActivationFunc
 // ActivationDerivative - derivative of activation function. You can set custom func(v float64) float64, see SetActivationDerivativeFunc
+// IsLastLayer - identify if layers is last (this affects deltas' calculating)
 type FullConnectedLayer struct {
 	In                   *Tensor
 	Out                  *Tensor
@@ -26,6 +27,7 @@ type FullConnectedLayer struct {
 	GradientsWeights     *Tensor
 	ActivationFunc       func(v float64) float64
 	ActivationDerivative func(v float64) float64
+	IsLastLayer          bool
 }
 
 // ActivationSygmoid is default ActivationFunc
@@ -49,7 +51,7 @@ func (fc *FullConnectedLayer) SetActivationDerivativeFunc(f func(v float64) floa
 }
 
 // NewFullConnectedLayer - constructor for new fully connected layer. You need to specify input size and output size
-func NewFullConnectedLayer(width, height, depth int, outputSize int) *FullConnectedLayer {
+func NewFullConnectedLayer(width, height, depth int, outputSize int, isLast bool) *FullConnectedLayer {
 	newLayer := &FullConnectedLayer{
 		In:                   NewTensorEmpty(width, height, depth),
 		Out:                  NewTensorEmpty(outputSize, 1, 1),
@@ -60,6 +62,7 @@ func NewFullConnectedLayer(width, height, depth int, outputSize int) *FullConnec
 		GradientsWeights:     NewTensorEmpty(width, height, depth),
 		ActivationFunc:       ActivationSygmoid,           // Default Activation function is Sygmoid
 		ActivationDerivative: ActivationSygmoidDerivative, // Default derivative of activation function is Sygmoid*(1-Sygmoid)
+		IsLastLayer:          isLast,
 	}
 	for i := 0; i < width*height*depth; i++ {
 		for j := 0; j < outputSize; j++ {
@@ -105,30 +108,51 @@ func (fc *FullConnectedLayer) GetGradients() *Tensor {
 
 // CalculateGradients - calculate fully connected layer's gradients
 func (fc *FullConnectedLayer) CalculateGradients(difference *Tensor) {
-	for k := 0; k < (*fc).GradientsWeights.Z; k++ {
-		for j := 0; j < (*fc).GradientsWeights.Y; j++ {
-			for i := 0; i < (*fc).GradientsWeights.X; i++ {
-				(*fc).GradientsWeights.SetValue(i, j, k, 0)
-			}
+	if (*fc).IsLastLayer {
+		/*
+			δ{k} = O{k}*(1-O{k})*(O{k}-t{k}),
+				where
+					O{k}*(1-O{k}) - derevative of sygmoid activation function
+					(O{k}-t{k}) - difference between Output and
+		*/
+		for out := 0; out < (*fc).Out.X; out++ {
+			(*fc).Gradients.SetValue(out, 0, 0, (*fc).ActivationDerivative((*fc).Out.GetValue(out, 0, 0))*difference.GetValue(out, 0, 0))
+			fmt.Printf("Output error: %v\n", (*fc).Gradients.GetValue(out, 0, 0))
 		}
+		return
 	}
 
-	for out := 0; out < (*fc).Out.X; out++ {
-		// (*fc).NewGradients.SetValue(out, 0, 0, (*fc).ActivationDerivative((*fc).Out.GetValue(out, 0, 0))*difference.GetValue(out, 0, 0)) // δ
-		// deltaPrevious := (*fc).NewGradients.GetValue(out, 0, 0)
-		// fmt.Printf("neuron #%v %v\n", out, deltaPrevious)
-		// fmt.Printf("%v * %v\n", (*fc).ActivationDerivative((*fc).Out.GetValue(out, 0, 0)), nextLayerGrad.GetValue(out, 0, 0))
-		for k := 0; k < (*fc).In.Z; k++ {
-			for j := 0; j < (*fc).In.Y; j++ {
-				for i := 0; i < (*fc).In.X; i++ {
-					// mappedIndex := (*fc).In.GetIndex(i, j, k)
-					// weightVal := (*fc).Weights.GetValue(mappedIndex, out, 0)
-					// // fmt.Printf("%v * %v\n", deltaPrevious, weightVal)
-					// (*fc).GradientsWeights.AddValue(i, j, k, deltaPrevious*weightVal)
-				}
-			}
-		}
-	}
+	/*
+		δ{j-1} = O{j-1}*(1-O{j-1}) * SUM[δ{j}*w{j-1,j}],
+				where
+					O{j-1}*(1-O{j-1}) - derevative of sygmoid activation function
+					SUM[δ{j}*w{j-1,j}] - product of next layer local gradients and connected weights
+	*/
+
+	// for k := 0; k < (*fc).GradientsWeights.Z; k++ {
+	// 	for j := 0; j < (*fc).GradientsWeights.Y; j++ {
+	// 		for i := 0; i < (*fc).GradientsWeights.X; i++ {
+	// 			(*fc).GradientsWeights.SetValue(i, j, k, 0)
+	// 		}
+	// 	}
+	// }
+
+	// for out := 0; out < (*fc).Out.X; out++ {
+	// 	// (*fc).NewGradients.SetValue(out, 0, 0, (*fc).ActivationDerivative((*fc).Out.GetValue(out, 0, 0))*difference.GetValue(out, 0, 0)) // δ
+	// 	// deltaPrevious := (*fc).NewGradients.GetValue(out, 0, 0)
+	// 	// fmt.Printf("neuron #%v %v\n", out, deltaPrevious)
+	// 	// fmt.Printf("%v * %v\n", (*fc).ActivationDerivative((*fc).Out.GetValue(out, 0, 0)), nextLayerGrad.GetValue(out, 0, 0))
+	// 	for k := 0; k < (*fc).In.Z; k++ {
+	// 		for j := 0; j < (*fc).In.Y; j++ {
+	// 			for i := 0; i < (*fc).In.X; i++ {
+	// 				// mappedIndex := (*fc).In.GetIndex(i, j, k)
+	// 				// weightVal := (*fc).Weights.GetValue(mappedIndex, out, 0)
+	// 				// // fmt.Printf("%v * %v\n", deltaPrevious, weightVal)
+	// 				// (*fc).GradientsWeights.AddValue(i, j, k, deltaPrevious*weightVal)
+	// 			}
+	// 		}
+	// 	}
+	// }
 }
 
 const (
