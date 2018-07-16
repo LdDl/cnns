@@ -74,10 +74,20 @@ func CheckFClayer() {
 	net.Layers[1].UpdateWeights()
 	net.Layers[0].UpdateWeights()
 
+	log.Println("<<<<<<<<<<====================>>>>>>>>>>")
 	log.Println("Second step")
+	log.Println("<<<<<<<<<<====================>>>>>>>>>>")
+
 	net.Layers[0].PrintWeights()
 	net.Layers[1].PrintWeights()
 	net.Layers[2].PrintWeights()
+	image = nns.NewTensorEmpty(2, 1, 1) // w,h,d
+	matrix = [][][]float64{
+		[][]float64{
+			[]float64{0.1, 0.8},
+		},
+	}
+	image.Set(&matrix)
 	// FeedForward
 	net.Layers[0].FeedForward(image)
 	net.Layers[0].PrintOutput()
