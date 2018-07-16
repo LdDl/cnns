@@ -27,7 +27,7 @@ func CheckXORfc() {
 	net.Layers = append(net.Layers, fullyconnected1)
 	net.Layers = append(net.Layers, fullyconnected2)
 
-	for i := 0; i < 100; i++ {
+	for i := 0; i < 2000; i++ {
 		firstInt := u.RandomInt(0, 2)
 		secondInt := u.RandomInt(0, 2)
 

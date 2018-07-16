@@ -111,6 +111,15 @@ func (fc *FullConnectedLayer) GetGradients() *Tensor {
 
 // CalculateGradients - calculate fully connected layer's gradients
 func (fc *FullConnectedLayer) CalculateGradients(nextLayerGradients *Tensor) {
+
+	for k := 0; k < (*fc).In.Z; k++ {
+		for j := 0; j < (*fc).In.Y; j++ {
+			for i := 0; i < (*fc).In.X; i++ {
+				(*fc).SumDeltaWeights.SetValue(i, j, k, 0)
+			}
+		}
+	}
+
 	for out := 0; out < (*fc).Out.X; out++ {
 		/*
 			δ{k} = O{k}*(1-O{k})*(O{k}-t{k}),
@@ -154,7 +163,7 @@ func (fc *FullConnectedLayer) CalculateGradients(nextLayerGradients *Tensor) {
 
 const (
 	// LearningRate ...
-	LearningRate = 0.5
+	LearningRate = 0.1
 	// Momentum ...
 	Momentum = 0.6
 )
