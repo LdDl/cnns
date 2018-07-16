@@ -4,9 +4,20 @@ import (
 	"cnns_vika/nns"
 	"cnns_vika/utils/u"
 	"fmt"
+	"math"
 	"math/rand"
 	"time"
 )
+
+// ActivationTanh .
+func ActivationTanh(v float64) float64 {
+	return math.Tanh(v)
+}
+
+// ActivationTanhDerivative .
+func ActivationTanhDerivative(v float64) float64 {
+	return 1 - ActivationTanh(v)*ActivationTanh(v)
+}
 
 // CheckXORfc - проверка полносвязного слоя при решении проблемы XOR
 func CheckXORfc() {
@@ -14,11 +25,15 @@ func CheckXORfc() {
 
 	// Слой с тремя нейронами
 	flayer1 := nns.NewFullConnectedLayer(2, 1, 1, 2, false)
+	// flayer1.SetActivationFunc(ActivationTanh)
+	// flayer1.SetActivationDerivativeFunc(ActivationTanhDerivative)
 	fullyconnected1 := &nns.LayerStruct{
 		Layer: flayer1,
 	}
 	// Слой с одним выходным нейроном
-	flayer2 := nns.NewFullConnectedLayer(2, 1, 1, 1, false)
+	flayer2 := nns.NewFullConnectedLayer(2, 1, 1, 1, true)
+	// flayer2.SetActivationFunc(ActivationTanh)
+	// flayer2.SetActivationDerivativeFunc(ActivationTanhDerivative)
 	fullyconnected2 := &nns.LayerStruct{
 		Layer: flayer2,
 	}
