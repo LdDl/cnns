@@ -27,7 +27,7 @@ func CheckFClayer() {
 
 	var matrix = [][][]float64{
 		[][]float64{
-			[]float64{0.2, 0.5},
+			[]float64{1, 0},
 		},
 	}
 
@@ -52,7 +52,7 @@ func CheckFClayer() {
 	var desired = nns.NewTensorEmpty(1, 1, 1) // w,h,d
 	matrix = [][][]float64{
 		[][]float64{
-			[]float64{0.4},
+			[]float64{0},
 		},
 	}
 	desired.Set(&matrix)
@@ -70,10 +70,10 @@ func CheckFClayer() {
 	// net.Layers[0].PrintGradients()
 
 	net.Layers[0].UpdateWeights()
-	net.Layers[1].UpdateWeights()
-	net.Layers[2].UpdateWeights()
+	// net.Layers[1].UpdateWeights()
+	// net.Layers[2].UpdateWeights()
 
-	// net.Layers[0].PrintWeights()
+	net.Layers[0].PrintWeights()
 	// net.Layers[1].PrintWeights()
 	// net.Layers[2].PrintWeights()
 

@@ -166,7 +166,7 @@ func (fc *FullConnectedLayer) CalculateGradients(nextLayerGradients *Tensor) {
 
 var (
 	// LearningRate ...
-	LearningRate = 0.3
+	LearningRate = -0.1
 	// Momentum ...
 	Momentum = 0.6
 	// alpha
@@ -193,7 +193,7 @@ func (fc *FullConnectedLayer) UpdateWeights() {
 					if (errorVal - y*prevErrorVal) > 0 {
 						//	LearningRate = a * LearningRate
 					} else {
-						//	LearningRate = b * LearningRate
+						//LearningRate = b * LearningRate
 					}
 					_ = previousDelta
 					// fmt.Printf("update weights: %v * %v *%v = %v\n", LearningRate, localGradient, layerVal, LearningRate*localGradient*layerVal)
