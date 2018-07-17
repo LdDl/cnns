@@ -21,6 +21,7 @@ type FullConnectedLayer struct {
 	Out                  *Tensor
 	OutActivated         *Tensor
 	Weights              *Tensor
+	PreviousDeltaWeights *Tensor
 	SumDeltaWeights      *Tensor
 	LocalGradients       *Tensor
 	GradientsWeights     *Tensor
@@ -56,6 +57,7 @@ func NewFullConnectedLayer(width, height, depth int, outputSize int, isLast bool
 		Out:                  NewTensorEmpty(outputSize, 1, 1),
 		OutActivated:         NewTensorEmpty(outputSize, 1, 1),
 		Weights:              NewTensorEmpty(width*height*depth, outputSize, 1),
+		PreviousDeltaWeights: NewTensorEmpty(width, height, depth),
 		SumDeltaWeights:      NewTensorEmpty(width, height, depth),
 		LocalGradients:       NewTensorEmpty(outputSize, 1, 1),
 		ActivationFunc:       ActivationSygmoid,           // Default Activation function is Sygmoid
@@ -144,6 +146,7 @@ func (fc *FullConnectedLayer) CalculateGradients(nextLayerGradients *Tensor) {
 				}
 			}
 		}
+
 	}
 }
 
@@ -165,8 +168,10 @@ func (fc *FullConnectedLayer) UpdateWeights() {
 					mappedIndex := (*fc).In.GetIndex(i, j, k)
 					layerVal := (*fc).In.GetValue(i, j, k)
 					// weightVal := (*fc).Weights.GetValue(mappedIndex, out, 0)
-					deltaWeight := LearningRate * localGradient * layerVal
+					previousDelta := (*fc).PreviousDeltaWeights.GetValue(i, j, k)
+					deltaWeight := LearningRate*localGradient*layerVal + Momentum*previousDelta
 					// fmt.Printf("%v * %v * %v = %v\n", LearningRate, localGradient, layerVal, deltaWeight)
+					(*fc).PreviousDeltaWeights.SetValue(i, j, k, deltaWeight)
 					(*fc).Weights.AddValue(mappedIndex, out, 0, deltaWeight)
 				}
 			}
