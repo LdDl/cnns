@@ -150,11 +150,15 @@ func (fc *FullConnectedLayer) CalculateGradients(nextLayerGradients *Tensor) {
 	}
 }
 
-const (
+var (
 	// LearningRate ...
 	LearningRate = 0.3
 	// Momentum ...
 	Momentum = 0.6
+	// alpha
+	a = 0.99
+	// beta
+	b = 1.01
 )
 
 // UpdateWeights - update fully connected layer's weights
@@ -167,8 +171,14 @@ func (fc *FullConnectedLayer) UpdateWeights() {
 				for i := 0; i < (*fc).In.X; i++ {
 					mappedIndex := (*fc).In.GetIndex(i, j, k)
 					layerVal := (*fc).In.GetValue(i, j, k)
-					//previousDelta := (*fc).PreviousDeltaWeights.GetValue(i, j, k)
-					deltaWeight := LearningRate * localGradient * layerVal //+ Momentum*previousDelta
+					previousDelta := (*fc).PreviousDeltaWeights.GetValue(i, j, k)
+					errorVal := localGradient * layerVal
+					if errorVal > 0 {
+						LearningRate = a * LearningRate
+					} else {
+						LearningRate = b * LearningRate
+					}
+					deltaWeight := LearningRate*errorVal + Momentum*previousDelta
 					// fmt.Printf("%v * %v * %v = %v\n", LearningRate, localGradient, layerVal, deltaWeight)
 					(*fc).PreviousDeltaWeights.SetValue(i, j, k, deltaWeight)
 					(*fc).Weights.AddValue(mappedIndex, out, 0, deltaWeight)
