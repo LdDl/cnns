@@ -3,7 +3,6 @@ package examples
 import (
 	"cnns_vika/nns"
 	"cnns_vika/utils/u"
-	"fmt"
 	"math"
 	"math/rand"
 	"time"
@@ -42,7 +41,7 @@ func CheckXORfc() {
 	net.Layers = append(net.Layers, fullyconnected1)
 	net.Layers = append(net.Layers, fullyconnected2)
 
-	for i := 0; i < 2000; i++ {
+	for i := 0; i < 300; i++ {
 		firstInt := u.RandomInt(0, 2)
 		secondInt := u.RandomInt(0, 2)
 
@@ -70,7 +69,7 @@ func CheckXORfc() {
 
 		//Backward
 		difference := net.Layers[1].GetOutput().Sub(desired)
-		fmt.Printf("desired: %v, out: %v, difference: %v\n", desired.Data[0], net.Layers[0].GetOutput().Data[0], difference.Data[0])
+		// fmt.Printf("desired: %v, out: %v, difference: %v\n", desired.Data[0], net.Layers[0].GetOutput().Data[0], difference.Data[0])
 		net.Layers[1].CalculateGradients(difference)
 		net.Layers[0].CalculateGradients(net.Layers[1].GetGradients())
 		net.Layers[1].UpdateWeights()

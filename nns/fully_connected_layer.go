@@ -17,17 +17,18 @@ import (
 // ActivationDerivative - derivative of activation function. You can set custom func(v float64) float64, see SetActivationDerivativeFunc
 // IsLastLayer - identify if layers is last (this affects deltas' calculating)
 type FullConnectedLayer struct {
-	In                   *Tensor
-	Out                  *Tensor
-	OutActivated         *Tensor
-	Weights              *Tensor
-	PreviousDeltaWeights *Tensor
-	SumDeltaWeights      *Tensor
-	LocalGradients       *Tensor
-	GradientsWeights     *Tensor
-	ActivationFunc       func(v float64) float64
-	ActivationDerivative func(v float64) float64
-	IsLastLayer          bool
+	In                     *Tensor
+	Out                    *Tensor
+	OutActivated           *Tensor
+	Weights                *Tensor
+	PreviousDeltaWeights   *Tensor
+	SumDeltaWeights        *Tensor
+	PreviousLocalGradients *Tensor
+	LocalGradients         *Tensor
+	GradientsWeights       *Tensor
+	ActivationFunc         func(v float64) float64
+	ActivationDerivative   func(v float64) float64
+	IsLastLayer            bool
 }
 
 // ActivationSygmoid is default ActivationFunc
@@ -53,16 +54,17 @@ func (fc *FullConnectedLayer) SetActivationDerivativeFunc(f func(v float64) floa
 // NewFullConnectedLayer - constructor for new fully connected layer. You need to specify input size and output size
 func NewFullConnectedLayer(width, height, depth int, outputSize int, isLast bool) *FullConnectedLayer {
 	newLayer := &FullConnectedLayer{
-		In:                   NewTensorEmpty(width, height, depth),
-		Out:                  NewTensorEmpty(outputSize, 1, 1),
-		OutActivated:         NewTensorEmpty(outputSize, 1, 1),
-		Weights:              NewTensorEmpty(width*height*depth, outputSize, 1),
-		PreviousDeltaWeights: NewTensorEmpty(width, height, depth),
-		SumDeltaWeights:      NewTensorEmpty(width, height, depth),
-		LocalGradients:       NewTensorEmpty(outputSize, 1, 1),
-		ActivationFunc:       ActivationSygmoid,           // Default Activation function is Sygmoid
-		ActivationDerivative: ActivationSygmoidDerivative, // Default derivative of activation function is Sygmoid*(1-Sygmoid)
-		IsLastLayer:          isLast,
+		In:                     NewTensorEmpty(width, height, depth),
+		Out:                    NewTensorEmpty(outputSize, 1, 1),
+		OutActivated:           NewTensorEmpty(outputSize, 1, 1),
+		Weights:                NewTensorEmpty(width*height*depth, outputSize, 1),
+		PreviousDeltaWeights:   NewTensorEmpty(width, height, depth),
+		SumDeltaWeights:        NewTensorEmpty(width, height, depth),
+		PreviousLocalGradients: NewTensorEmpty(outputSize, 1, 1),
+		LocalGradients:         NewTensorEmpty(outputSize, 1, 1),
+		ActivationFunc:         ActivationSygmoid,           // Default Activation function is Sygmoid
+		ActivationDerivative:   ActivationSygmoidDerivative, // Default derivative of activation function is Sygmoid*(1-Sygmoid)
+		IsLastLayer:            isLast,
 	}
 	for i := 0; i < width*height*depth; i++ {
 		for j := 0; j < outputSize; j++ {
@@ -152,7 +154,7 @@ func (fc *FullConnectedLayer) CalculateGradients(nextLayerGradients *Tensor) {
 
 var (
 	// LearningRate ...
-	LearningRate = 0.3
+	LearningRate = 0.01
 	// Momentum ...
 	Momentum = 0.6
 	// alpha
@@ -173,13 +175,12 @@ func (fc *FullConnectedLayer) UpdateWeights() {
 					layerVal := (*fc).In.GetValue(i, j, k)
 					previousDelta := (*fc).PreviousDeltaWeights.GetValue(i, j, k)
 					errorVal := localGradient * layerVal
-					if errorVal > 0 {
-						LearningRate = a * LearningRate
-					} else {
-						LearningRate = b * LearningRate
-					}
+					// if errorVal > 0 {
+					// 	LearningRate = a * LearningRate
+					// } else {
+					// 	LearningRate = b * LearningRate
+					// }
 					deltaWeight := LearningRate*errorVal + Momentum*previousDelta
-					// fmt.Printf("%v * %v * %v = %v\n", LearningRate, localGradient, layerVal, deltaWeight)
 					(*fc).PreviousDeltaWeights.SetValue(i, j, k, deltaWeight)
 					(*fc).Weights.AddValue(mappedIndex, out, 0, deltaWeight)
 				}
