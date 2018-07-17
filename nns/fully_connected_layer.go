@@ -167,9 +167,8 @@ func (fc *FullConnectedLayer) UpdateWeights() {
 				for i := 0; i < (*fc).In.X; i++ {
 					mappedIndex := (*fc).In.GetIndex(i, j, k)
 					layerVal := (*fc).In.GetValue(i, j, k)
-					// weightVal := (*fc).Weights.GetValue(mappedIndex, out, 0)
-					previousDelta := (*fc).PreviousDeltaWeights.GetValue(i, j, k)
-					deltaWeight := LearningRate*localGradient*layerVal + Momentum*previousDelta
+					//previousDelta := (*fc).PreviousDeltaWeights.GetValue(i, j, k)
+					deltaWeight := LearningRate * localGradient * layerVal //+ Momentum*previousDelta
 					// fmt.Printf("%v * %v * %v = %v\n", LearningRate, localGradient, layerVal, deltaWeight)
 					(*fc).PreviousDeltaWeights.SetValue(i, j, k, deltaWeight)
 					(*fc).Weights.AddValue(mappedIndex, out, 0, deltaWeight)
