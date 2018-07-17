@@ -3,36 +3,20 @@ package examples
 import (
 	"cnns_vika/nns"
 	"cnns_vika/utils/u"
-	"math"
 	"math/rand"
 	"time"
 )
 
-// ActivationTanh .
-func ActivationTanh(v float64) float64 {
-	return math.Tanh(v)
-}
-
-// ActivationTanhDerivative .
-func ActivationTanhDerivative(v float64) float64 {
-	return 1 - ActivationTanh(v)*ActivationTanh(v)
-}
-
-// CheckXORfc - проверка полносвязного слоя при решении проблемы XOR
-func CheckXORfc() {
+// CheckAND - проверка полносвязного слоя при решении проблемы AND
+func CheckAND() {
 	rand.Seed(time.Now().UnixNano())
-
 	// Слой с тремя нейронами
 	flayer1 := nns.NewFullConnectedLayer(2, 1, 1, 2, true, false)
-	// flayer1.SetActivationFunc(ActivationTanh)
-	// flayer1.SetActivationDerivativeFunc(ActivationTanhDerivative)
 	fullyconnected1 := &nns.LayerStruct{
 		Layer: flayer1,
 	}
 	// Слой с одним выходным нейроном
 	flayer2 := nns.NewFullConnectedLayer(2, 1, 1, 1, true, true)
-	// flayer2.SetActivationFunc(ActivationTanh)
-	// flayer2.SetActivationDerivativeFunc(ActivationTanhDerivative)
 	fullyconnected2 := &nns.LayerStruct{
 		Layer: flayer2,
 	}
@@ -41,7 +25,7 @@ func CheckXORfc() {
 	net.Layers = append(net.Layers, fullyconnected1)
 	net.Layers = append(net.Layers, fullyconnected2)
 
-	for i := 0; i < 500000; i++ {
+	for i := 0; i < 50000; i++ {
 		firstInt := u.RandomInt(0, 2)
 		secondInt := u.RandomInt(0, 2)
 
@@ -53,7 +37,7 @@ func CheckXORfc() {
 		if secondInt == 1 {
 			secondBool = true
 		}
-		outputBool := (firstBool != secondBool)
+		outputBool := (firstBool && secondBool)
 		outputInt := 0
 		if outputBool == true {
 			outputInt = 1

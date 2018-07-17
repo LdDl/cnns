@@ -14,6 +14,8 @@ func main() {
 	// examples.CheckConvolutional()
 	// examples.CheckConvLayer()
 	// examples.CheckFClayer()
-	examples.CheckXORfc()
+	// examples.CheckXOR()
+	//examples.CheckOR()
+	examples.CheckAND()
 	log.Println("Done in:", time.Since(timeStart))
 }
