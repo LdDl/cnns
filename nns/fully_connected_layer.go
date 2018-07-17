@@ -29,6 +29,7 @@ type FullConnectedLayer struct {
 	ActivationFunc         func(v float64) float64
 	ActivationDerivative   func(v float64) float64
 	IsLastLayer            bool
+	HasBias                bool
 }
 
 // ActivationSygmoid is default ActivationFunc
@@ -52,7 +53,7 @@ func (fc *FullConnectedLayer) SetActivationDerivativeFunc(f func(v float64) floa
 }
 
 // NewFullConnectedLayer - constructor for new fully connected layer. You need to specify input size and output size
-func NewFullConnectedLayer(width, height, depth int, outputSize int, isLast bool) *FullConnectedLayer {
+func NewFullConnectedLayer(width, height, depth int, outputSize int, hasBias bool, isLast bool) *FullConnectedLayer {
 	newLayer := &FullConnectedLayer{
 		In:                     NewTensorEmpty(width, height, depth),
 		Out:                    NewTensorEmpty(outputSize, 1, 1),
@@ -65,8 +66,19 @@ func NewFullConnectedLayer(width, height, depth int, outputSize int, isLast bool
 		ActivationFunc:         ActivationSygmoid,           // Default Activation function is Sygmoid
 		ActivationDerivative:   ActivationSygmoidDerivative, // Default derivative of activation function is Sygmoid*(1-Sygmoid)
 		IsLastLayer:            isLast,
+		HasBias:                hasBias,
 	}
-	for i := 0; i < width*height*depth; i++ {
+	if isLast == true && hasBias == true {
+		// do not add bias anyways
+	}
+	var addBias = 0
+	if hasBias == true {
+		addBias = 1
+		newLayer.Weights = NewTensorEmpty(width*height*depth+1, outputSize, 1) // bias
+		newLayer.In = NewTensorEmpty(width+1, height, depth)                   // bias
+		newLayer.PreviousDeltaWeights = NewTensorEmpty(width+1, height, depth) // bias
+	}
+	for i := 0; i < (width*height*depth)+addBias; i++ { //bias
 		for j := 0; j < outputSize; j++ {
 			newLayer.Weights.SetValue(i, j, 0, rand.Float64())
 		}
@@ -99,7 +111,11 @@ func (fc *FullConnectedLayer) GetOutput() *Tensor {
 
 // FeedForward - feed data to fully connected layer
 func (fc *FullConnectedLayer) FeedForward(t *Tensor) {
-	(*fc).In = t
+	if (*fc).HasBias {
+		(*fc).InputWithBiases(t)
+	} else {
+		(*fc).In = t
+	}
 	(*fc).DoActivation()
 }
 
@@ -110,15 +126,13 @@ func (fc *FullConnectedLayer) GetGradients() *Tensor {
 
 // CalculateGradients - calculate fully connected layer's gradients
 func (fc *FullConnectedLayer) CalculateGradients(nextLayerGradients *Tensor) {
-
-	for k := 0; k < (*fc).In.Z; k++ {
-		for j := 0; j < (*fc).In.Y; j++ {
-			for i := 0; i < (*fc).In.X; i++ {
+	for k := 0; k < (*fc).SumDeltaWeights.Z; k++ {
+		for j := 0; j < (*fc).SumDeltaWeights.Y; j++ {
+			for i := 0; i < (*fc).SumDeltaWeights.X; i++ {
 				(*fc).SumDeltaWeights.SetValue(i, j, k, 0)
 			}
 		}
 	}
-
 	for out := 0; out < (*fc).Out.X; out++ {
 		/*
 			δ{k} = O{k}*(1-O{k})*(O{k}-t{k}),
@@ -138,23 +152,21 @@ func (fc *FullConnectedLayer) CalculateGradients(nextLayerGradients *Tensor) {
 		// fmt.Printf("Output error: %v\n", (*fc).LocalGradients.GetValue(out, 0, 0))
 
 		// Calculate SUM[δ{j}*w{j-1,j}] for calculating local gradients for [current-1]-th layer
-		for k := 0; k < (*fc).In.Z; k++ {
-			for j := 0; j < (*fc).In.Y; j++ {
-				for i := 0; i < (*fc).In.X; i++ {
-					mappedIndex := (*fc).In.GetIndex(i, j, k)
+		for k := 0; k < (*fc).SumDeltaWeights.Z; k++ {
+			for j := 0; j < (*fc).SumDeltaWeights.Y; j++ {
+				for i := 0; i < (*fc).SumDeltaWeights.X; i++ {
+					mappedIndex := (*fc).SumDeltaWeights.GetIndex(i, j, k)
 					weightVal := (*fc).Weights.GetValue(mappedIndex, out, 0)
-					// fmt.Printf("%v * %v = %v\n", localGradient, weightVal, localGradient*weightVal)
 					(*fc).SumDeltaWeights.AddValue(i, j, k, localGradient*weightVal)
 				}
 			}
 		}
-
 	}
 }
 
 var (
 	// LearningRate ...
-	LearningRate = 0.01
+	LearningRate = 0.3
 	// Momentum ...
 	Momentum = 0.6
 	// alpha
@@ -179,17 +191,38 @@ func (fc *FullConnectedLayer) UpdateWeights() {
 					errorVal := localGradient * layerVal
 					prevErrorVal := localGradient - prevLocalGradient
 					if (errorVal - y*prevErrorVal) > 0 {
-						LearningRate = a * LearningRate
+						//	LearningRate = a * LearningRate
 					} else {
-						LearningRate = b * LearningRate
+						//	LearningRate = b * LearningRate
 					}
-					deltaWeight := LearningRate*errorVal + Momentum*previousDelta
+					_ = previousDelta
+					// fmt.Printf("update weights: %v * %v *%v = %v\n", LearningRate, localGradient, layerVal, LearningRate*localGradient*layerVal)
+					deltaWeight := LearningRate * errorVal //+ Momentum*previousDelta
 					(*fc).PreviousDeltaWeights.SetValue(i, j, k, deltaWeight)
 					(*fc).Weights.AddValue(mappedIndex, out, 0, deltaWeight)
 				}
 			}
 		}
 		(*fc).PreviousLocalGradients.SetValue(out, 0, 0, localGradient)
+	}
+}
+
+// InputWithBiases - set up biases
+func (fc *FullConnectedLayer) InputWithBiases(t *Tensor) {
+	x := (*t).X
+	y := (*t).Y
+	z := (*t).Z
+	for k := 0; k < z; k++ {
+		for j := 0; j < y; j++ {
+			for i := 0; i < x; i++ {
+				(*fc).In.SetValue(i, j, k, (*t).GetValue(i, j, k))
+			}
+		}
+	}
+	for k := 0; k < (*fc).In.Z; k++ {
+		for j := 0; j < (*fc).In.Y; j++ {
+			(*fc).In.SetValue((*fc).In.X-1, j, k, 1)
+		}
 	}
 }
 
@@ -204,6 +237,7 @@ func (fc *FullConnectedLayer) DoActivation() {
 					mappedIndex := (*fc).In.GetIndex(i, j, k)
 					weightVal := (*fc).Weights.GetValue(mappedIndex, out, 0)
 					// fmt.Printf("%v * %v\n", inputVal, weightVal)
+					// fmt.Printf("weight index: %v\n", (*fc).Weights.GetIndex(mappedIndex, out, 0))
 					sum += inputVal * weightVal
 				}
 			}

@@ -44,6 +44,20 @@ func (t1 *Tensor) Set(v *[][][]float64) {
 	}
 }
 
+// SetTensor - fill empty "Tensor" with values of another Tensor
+func (t1 *Tensor) SetTensor(t2 *Tensor) {
+	x := (*t2).X
+	y := (*t2).Y
+	z := (*t2).Z
+	for k := 0; k < z; k++ {
+		for j := 0; j < y; j++ {
+			for i := 0; i < x; i++ {
+				(*t1).SetValue(i, j, k, (*t2).GetValue(i, j, k))
+			}
+		}
+	}
+}
+
 // AddValue - add value to [i][j][k]-th element
 func (t1 *Tensor) AddValue(i, j, k int, val float64) {
 	(*t1).Data[i+(j+k*(*t1).Z)*(*t1).X] += val

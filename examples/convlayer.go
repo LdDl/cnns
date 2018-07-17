@@ -19,7 +19,7 @@ func CheckConvLayer() {
 	maxpool := &nns.LayerStruct{
 		Layer: mlayer,
 	}
-	flayer := nns.NewFullConnectedLayer(mlayer.Out.X, mlayer.Out.Y, mlayer.Out.Z, 3, true)
+	flayer := nns.NewFullConnectedLayer(mlayer.Out.X, mlayer.Out.Y, mlayer.Out.Z, 3, false, true)
 	fullyconnected := &nns.LayerStruct{
 		Layer: flayer,
 	}

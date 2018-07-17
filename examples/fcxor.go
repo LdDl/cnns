@@ -3,6 +3,7 @@ package examples
 import (
 	"cnns_vika/nns"
 	"cnns_vika/utils/u"
+	"fmt"
 	"math"
 	"math/rand"
 	"time"
@@ -23,14 +24,14 @@ func CheckXORfc() {
 	rand.Seed(time.Now().UnixNano())
 
 	// Слой с тремя нейронами
-	flayer1 := nns.NewFullConnectedLayer(2, 1, 1, 2, false)
+	flayer1 := nns.NewFullConnectedLayer(2, 1, 1, 2, true, false)
 	// flayer1.SetActivationFunc(ActivationTanh)
 	// flayer1.SetActivationDerivativeFunc(ActivationTanhDerivative)
 	fullyconnected1 := &nns.LayerStruct{
 		Layer: flayer1,
 	}
 	// Слой с одним выходным нейроном
-	flayer2 := nns.NewFullConnectedLayer(2, 1, 1, 1, true)
+	flayer2 := nns.NewFullConnectedLayer(2, 1, 1, 1, false, true)
 	// flayer2.SetActivationFunc(ActivationTanh)
 	// flayer2.SetActivationDerivativeFunc(ActivationTanhDerivative)
 	fullyconnected2 := &nns.LayerStruct{
@@ -44,7 +45,8 @@ func CheckXORfc() {
 	for i := 0; i < 300; i++ {
 		firstInt := u.RandomInt(0, 2)
 		secondInt := u.RandomInt(0, 2)
-
+		firstInt = 1
+		secondInt = 1
 		firstBool := false
 		secondBool := false
 		if firstInt == 1 {
@@ -69,7 +71,7 @@ func CheckXORfc() {
 
 		//Backward
 		difference := net.Layers[1].GetOutput().Sub(desired)
-		// fmt.Printf("desired: %v, out: %v, difference: %v\n", desired.Data[0], net.Layers[0].GetOutput().Data[0], difference.Data[0])
+		fmt.Printf("desired: %v, out: %v, difference: %v\n", desired.Data[0], net.Layers[0].GetOutput().Data[0], difference.Data[0])
 		net.Layers[1].CalculateGradients(difference)
 		net.Layers[0].CalculateGradients(net.Layers[1].GetGradients())
 		net.Layers[1].UpdateWeights()
