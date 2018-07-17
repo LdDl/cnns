@@ -24,15 +24,15 @@ func CheckXORfc() {
 
 	// Слой с тремя нейронами
 	flayer1 := nns.NewFullConnectedLayer(2, 1, 1, 2, true, false)
-	flayer1.SetActivationFunc(ActivationTanh)
-	flayer1.SetActivationDerivativeFunc(ActivationTanhDerivative)
+	// flayer1.SetActivationFunc(ActivationTanh)
+	// flayer1.SetActivationDerivativeFunc(ActivationTanhDerivative)
 	fullyconnected1 := &nns.LayerStruct{
 		Layer: flayer1,
 	}
 	// Слой с одним выходным нейроном
 	flayer2 := nns.NewFullConnectedLayer(2, 1, 1, 1, true, true)
-	flayer2.SetActivationFunc(ActivationTanh)
-	flayer2.SetActivationDerivativeFunc(ActivationTanhDerivative)
+	// flayer2.SetActivationFunc(ActivationTanh)
+	// flayer2.SetActivationDerivativeFunc(ActivationTanhDerivative)
 	fullyconnected2 := &nns.LayerStruct{
 		Layer: flayer2,
 	}
@@ -41,7 +41,7 @@ func CheckXORfc() {
 	net.Layers = append(net.Layers, fullyconnected1)
 	net.Layers = append(net.Layers, fullyconnected2)
 
-	for i := 0; i < 2000; i++ {
+	for i := 0; i < 500000; i++ {
 		firstInt := u.RandomInt(0, 2)
 		secondInt := u.RandomInt(0, 2)
 

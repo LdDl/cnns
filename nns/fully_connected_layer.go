@@ -81,6 +81,7 @@ func NewFullConnectedLayer(width, height, depth int, outputSize int, hasBias boo
 	for i := 0; i < (width*height*depth)+addBias; i++ { //bias
 		for j := 0; j < outputSize; j++ {
 			newLayer.Weights.SetValue(i, j, 0, rand.Float64())
+			// newLayer.Weights.SetValue(i, j, 0, -1+rand.Float64()*2)
 		}
 	}
 	return newLayer
@@ -191,13 +192,13 @@ func (fc *FullConnectedLayer) UpdateWeights() {
 					errorVal := localGradient * layerVal
 					prevErrorVal := localGradient - prevLocalGradient
 					if (errorVal - y*prevErrorVal) > 0 {
-						//	LearningRate = a * LearningRate
+						// LearningRate = b * LearningRate
 					} else {
-						//LearningRate = b * LearningRate
+						// LearningRate = a * LearningRate
 					}
 					_ = previousDelta
 					// fmt.Printf("update weights: %v * %v *%v = %v\n", LearningRate, localGradient, layerVal, LearningRate*localGradient*layerVal)
-					deltaWeight := LearningRate * errorVal //+ Momentum*previousDelta
+					deltaWeight := LearningRate*errorVal + Momentum*previousDelta
 					(*fc).PreviousDeltaWeights.SetValue(i, j, k, deltaWeight)
 					(*fc).Weights.AddValue(mappedIndex, out, 0, deltaWeight)
 				}
