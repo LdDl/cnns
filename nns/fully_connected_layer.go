@@ -161,13 +161,15 @@ var (
 	a = 0.99
 	// beta
 	b = 1.01
+	// gamma
+	y = 1.01
 )
 
 // UpdateWeights - update fully connected layer's weights
 func (fc *FullConnectedLayer) UpdateWeights() {
 	for out := 0; out < (*fc).Out.X; out++ {
 		localGradient := (*fc).LocalGradients.GetValue(out, 0, 0)
-		// fmt.Printf("local: %v\n", localGradient)
+		prevLocalGradient := (*fc).PreviousLocalGradients.GetValue(out, 0, 0)
 		for k := 0; k < (*fc).In.Z; k++ {
 			for j := 0; j < (*fc).In.Y; j++ {
 				for i := 0; i < (*fc).In.X; i++ {
@@ -175,17 +177,19 @@ func (fc *FullConnectedLayer) UpdateWeights() {
 					layerVal := (*fc).In.GetValue(i, j, k)
 					previousDelta := (*fc).PreviousDeltaWeights.GetValue(i, j, k)
 					errorVal := localGradient * layerVal
-					// if errorVal > 0 {
-					// 	LearningRate = a * LearningRate
-					// } else {
-					// 	LearningRate = b * LearningRate
-					// }
+					prevErrorVal := localGradient - prevLocalGradient
+					if (errorVal - y*prevErrorVal) > 0 {
+						LearningRate = a * LearningRate
+					} else {
+						LearningRate = b * LearningRate
+					}
 					deltaWeight := LearningRate*errorVal + Momentum*previousDelta
 					(*fc).PreviousDeltaWeights.SetValue(i, j, k, deltaWeight)
 					(*fc).Weights.AddValue(mappedIndex, out, 0, deltaWeight)
 				}
 			}
 		}
+		(*fc).PreviousLocalGradients.SetValue(out, 0, 0, localGradient)
 	}
 }
 
