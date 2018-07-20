@@ -12,10 +12,10 @@ func main() {
 	log.Println("Start")
 	timeStart := time.Now()
 	// examples.CheckConvolutional()
-	// examples.CheckConvLayer()
+	examples.CheckConvLayer()
 	// examples.CheckFClayer()
 	// examples.CheckXOR()
-	//examples.CheckOR()
-	examples.CheckAND()
+	// examples.CheckOR()
+	// examples.CheckAND()
 	log.Println("Done in:", time.Since(timeStart))
 }

@@ -2,6 +2,7 @@ package nns
 
 import (
 	"fmt"
+	"log"
 	"math"
 	"math/rand"
 )
@@ -75,9 +76,10 @@ func NewFullConnectedLayer(width, height, depth int, outputSize int, hasBias boo
 	if hasBias == true {
 		addBias = 1
 		newLayer.Weights = NewTensorEmpty(width*height*depth+1, outputSize, 1) // bias
-		newLayer.In = NewTensorEmpty(width+1, height, depth)                   // bias
+		newLayer.In = NewTensorEmptyWithBias(width, height, depth)             // bias
 		newLayer.PreviousDeltaWeights = NewTensorEmpty(width+1, height, depth) // bias
 	}
+	log.Println("created", len(newLayer.In.Data), "has to be (+1)", width*height*depth+1)
 	for i := 0; i < (width*height*depth)+addBias; i++ { //bias
 		for j := 0; j < outputSize; j++ {
 			newLayer.Weights.SetValue(i, j, 0, rand.Float64())
@@ -213,22 +215,28 @@ func (fc *FullConnectedLayer) InputWithBiases(t *Tensor) {
 	x := (*t).X
 	y := (*t).Y
 	z := (*t).Z
-	for k := 0; k < z; k++ {
-		for j := 0; j < y; j++ {
-			for i := 0; i < x; i++ {
-				(*fc).In.SetValue(i, j, k, (*t).GetValue(i, j, k))
-			}
-		}
+	// for k := 0; k < z; k++ {
+	// 	for j := 0; j < y; j++ {
+	// 		for i := 0; i < x; i++ {
+	// 			(*fc).In.SetValue(i, j, k, (*t).GetValue(i, j, k))
+	// 		}
+	// 	}
+	// }
+	// for k := 0; k < (*fc).In.Z; k++ {
+	// 	for j := 0; j < (*fc).In.Y; j++ {
+	// 		(*fc).In.SetValue((*fc).In.X-1, j, k, 1)
+	// 	}
+	// }
+	for i := 0; i < (x * y * z); i++ {
+		(*fc).In.SetValue(i, 0, 0, (*t).GetValue(i, 0, 0))
 	}
-	for k := 0; k < (*fc).In.Z; k++ {
-		for j := 0; j < (*fc).In.Y; j++ {
-			(*fc).In.SetValue((*fc).In.X-1, j, k, 1)
-		}
-	}
+	(*fc).In.SetValue(len((*fc).In.Data)-1, 0, 0, 1)
 }
 
 // DoActivation - fully connected layer's output activation
 func (fc *FullConnectedLayer) DoActivation() {
+
+	// log.Println("index checking", (*fc).In.GetValue((*fc).In.X-1, 0, 0))
 	for out := 0; out < (*fc).Out.X; out++ {
 		sum := 0.0
 		for k := 0; k < (*fc).In.Z; k++ {
@@ -237,12 +245,22 @@ func (fc *FullConnectedLayer) DoActivation() {
 					inputVal := (*fc).In.GetValue(i, j, k)
 					mappedIndex := (*fc).In.GetIndex(i, j, k)
 					weightVal := (*fc).Weights.GetValue(mappedIndex, out, 0)
-					// fmt.Printf("%v * %v\n", inputVal, weightVal)
-					// fmt.Printf("weight index: %v\n", (*fc).Weights.GetIndex(mappedIndex, out, 0))
+					// fmt.Printf("h, %v * %v\n", inputVal, weightVal)
+					// fmt.Printf("weight index and val: %v %v\n", (*fc).Weights.GetIndex(mappedIndex, out, 0), (*fc).Weights.GetValue(mappedIndex, out, 0))
+					// fmt.Printf("input index and val: %v %v\n", (*fc).In.GetIndex(i, j, k), (*fc).In.GetValue(i, j, k))
 					sum += inputVal * weightVal
 				}
 			}
+			// log.Println("next activ")
 		}
+		if (*fc).HasBias {
+			inputVal := (*fc).In.GetValue(len((*fc).In.Data)-1, 0, 0)
+			mappedIndex := (*fc).In.GetIndex(len((*fc).In.Data)-1, 0, 0)
+			weightVal := (*fc).Weights.GetValue(mappedIndex, out, 0)
+			// fmt.Printf("h, %v * %v\n", inputVal, weightVal)
+			sum += inputVal * weightVal
+		}
+		// log.Println("some sum", sum)
 		(*fc).Out.SetValue(out, 0, 0, sum)
 		(*fc).OutActivated.SetValue(out, 0, 0, (*fc).ActivationFunc(sum))
 	}

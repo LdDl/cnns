@@ -18,6 +18,11 @@ func NewTensorEmpty(x, y, z int) *Tensor {
 	return &Tensor{Data: make([]float64, x*y*z), X: x, Y: y, Z: z}
 }
 
+// NewTensorEmptyWithBias - constructor for "Tensor" struct, and you could provide x: width, y: height, z: depth. Additionally sets +1 for bias
+func NewTensorEmptyWithBias(x, y, z int) *Tensor {
+	return &Tensor{Data: make([]float64, x*y*z+1), X: x, Y: y, Z: z}
+}
+
 // NewTensorCopy - constructor for "Tensor" struct, and you could provide t: "Tensor"
 func NewTensorCopy(t *Tensor) *Tensor {
 	var copyT = Tensor{Data: make([]float64, len((*t).Data))}

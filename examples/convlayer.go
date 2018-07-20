@@ -2,7 +2,6 @@ package examples
 
 import (
 	"cnns_vika/nns"
-	"fmt"
 )
 
 // CheckConvLayer - проверка свёрточного слоя
@@ -19,13 +18,15 @@ func CheckConvLayer() {
 	maxpool := &nns.LayerStruct{
 		Layer: mlayer,
 	}
-	flayer := nns.NewFullConnectedLayer(mlayer.Out.X, mlayer.Out.Y, mlayer.Out.Z, 3, false, true)
+	flayer := nns.NewFullConnectedLayer(mlayer.Out.X, mlayer.Out.Y, mlayer.Out.Z, 3, true, true)
 	fullyconnected := &nns.LayerStruct{
 		Layer: flayer,
 	}
 
-	clayer.PrintWeights()
-	flayer.PrintWeights()
+	// fmt.Println("<<< === CNN weights === >>>")
+	// clayer.PrintWeights()
+	// fmt.Println("<<< === FC weights === >>>")
+	// flayer.PrintWeights()
 
 	var net nns.WholeNet
 	net.Layers = append(net.Layers, conv)
@@ -52,13 +53,13 @@ func CheckConvLayer() {
 
 	// FeedForward
 	net.Layers[0].FeedForward(image)
-	net.Layers[0].PrintOutput()
+	// net.Layers[0].PrintOutput()
 
 	net.Layers[1].FeedForward(net.Layers[0].GetOutput())
-	net.Layers[1].PrintOutput()
+	// net.Layers[1].PrintOutput()
 
 	net.Layers[2].FeedForward(net.Layers[1].GetOutput())
-	net.Layers[2].PrintOutput()
+	// net.Layers[2].PrintOutput()
 
 	net.Layers[3].FeedForward(net.Layers[2].GetOutput())
 	net.Layers[3].PrintOutput()
@@ -72,8 +73,8 @@ func CheckConvLayer() {
 	}
 	desired.Set(&matrix)
 	difference := net.Layers[3].GetOutput().Sub(desired)
-	fmt.Println("Output - Desired:")
-	difference.Print()
+	// fmt.Println("Output - Desired:")
+	// difference.Print()
 
 	net.Layers[3].CalculateGradients(difference)
 	// net.Layers[3].PrintGradients()

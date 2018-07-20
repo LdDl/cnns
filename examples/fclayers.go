@@ -2,6 +2,7 @@ package examples
 
 import (
 	"cnns_vika/nns"
+	"fmt"
 	"log"
 )
 
@@ -40,13 +41,13 @@ func CheckFClayer() {
 
 	// FeedForward
 	net.Layers[0].FeedForward(image)
-	// net.Layers[0].PrintOutput()
+	net.Layers[0].PrintOutput()
 
 	net.Layers[1].FeedForward(net.Layers[0].GetOutput())
-	// net.Layers[1].PrintOutput()
+	net.Layers[1].PrintOutput()
 
 	net.Layers[2].FeedForward(net.Layers[1].GetOutput())
-	// net.Layers[2].PrintOutput()
+	net.Layers[2].PrintOutput()
 
 	// Backpropagate
 	var desired = nns.NewTensorEmpty(1, 1, 1) // w,h,d
@@ -70,10 +71,10 @@ func CheckFClayer() {
 	// net.Layers[0].PrintGradients()
 
 	net.Layers[0].UpdateWeights()
-	// net.Layers[1].UpdateWeights()
-	// net.Layers[2].UpdateWeights()
+	net.Layers[1].UpdateWeights()
+	net.Layers[2].UpdateWeights()
 
-	net.Layers[0].PrintWeights()
+	// net.Layers[0].PrintWeights()
 	// net.Layers[1].PrintWeights()
 	// net.Layers[2].PrintWeights()
 
@@ -81,49 +82,49 @@ func CheckFClayer() {
 	log.Println("Second step")
 	log.Println("<<<<<<<<<<====================>>>>>>>>>>")
 
-	// image = nns.NewTensorEmpty(2, 1, 1) // w,h,d
-	// matrix = [][][]float64{
-	// 	[][]float64{
-	// 		[]float64{0.1, 0.8},
-	// 	},
-	// }
-	// image.Set(&matrix)
-	// // FeedForward
-	// net.Layers[0].FeedForward(image)
-	// net.Layers[0].PrintOutput()
+	image = nns.NewTensorEmpty(2, 1, 1) // w,h,d
+	matrix = [][][]float64{
+		[][]float64{
+			[]float64{1, 0},
+		},
+	}
+	image.Set(&matrix)
+	// FeedForward
+	net.Layers[0].FeedForward(image)
+	//	net.Layers[0].PrintOutput()
 
-	// net.Layers[1].FeedForward(net.Layers[0].GetOutput())
+	net.Layers[1].FeedForward(net.Layers[0].GetOutput())
 	// net.Layers[1].PrintOutput()
 
-	// net.Layers[2].FeedForward(net.Layers[1].GetOutput())
+	net.Layers[2].FeedForward(net.Layers[1].GetOutput())
 	// net.Layers[2].PrintOutput()
 
-	// // Backpropagate
-	// desired = nns.NewTensorEmpty(1, 1, 1) // w,h,d
-	// matrix = [][][]float64{
-	// 	[][]float64{
-	// 		[]float64{0.4},
-	// 	},
-	// }
-	// desired.Set(&matrix)
-	// difference = net.Layers[2].GetOutput().Sub(desired)
-	// fmt.Println("Output - Desired:")
-	// // difference.Print()
+	// Backpropagate
+	desired = nns.NewTensorEmpty(1, 1, 1) // w,h,d
+	matrix = [][][]float64{
+		[][]float64{
+			[]float64{0},
+		},
+	}
+	desired.Set(&matrix)
+	difference = net.Layers[2].GetOutput().Sub(desired)
+	fmt.Println("Output - Desired:")
+	// difference.Print()
 
-	// net.Layers[2].CalculateGradients(difference)
-	// // net.Layers[2].PrintGradients()
+	net.Layers[2].CalculateGradients(difference)
+	// net.Layers[2].PrintGradients()
 
-	// net.Layers[1].CalculateGradients(net.Layers[2].GetGradients())
-	// // net.Layers[1].PrintGradients()
+	net.Layers[1].CalculateGradients(net.Layers[2].GetGradients())
+	// net.Layers[1].PrintGradients()
 
-	// net.Layers[0].CalculateGradients(net.Layers[1].GetGradients())
-	// // net.Layers[0].PrintGradients()
+	net.Layers[0].CalculateGradients(net.Layers[1].GetGradients())
+	// net.Layers[0].PrintGradients()
 
-	// net.Layers[2].UpdateWeights()
+	net.Layers[2].UpdateWeights()
 	// net.Layers[2].PrintWeights()
-	// net.Layers[1].UpdateWeights()
+	net.Layers[1].UpdateWeights()
 	// net.Layers[1].PrintWeights()
-	// net.Layers[0].UpdateWeights()
+	net.Layers[0].UpdateWeights()
 	// net.Layers[0].PrintWeights()
 
 }
