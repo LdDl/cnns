@@ -75,9 +75,10 @@ func NewFullConnectedLayer(width, height, depth int, outputSize int, hasBias boo
 	var addBias = 0
 	if hasBias == true {
 		addBias = 1
-		newLayer.Weights = NewTensorEmpty(width*height*depth+1, outputSize, 1) // bias
-		newLayer.In = NewTensorEmptyWithBias(width, height, depth)             // bias
-		newLayer.PreviousDeltaWeights = NewTensorEmpty(width+1, height, depth) // bias
+		newLayer.Weights = NewTensorEmpty(width*height*depth+1, outputSize, 1)       // bias
+		newLayer.In = NewTensorEmptyWithBias(width, height, depth)                   // bias
+		newLayer.SumDeltaWeights = NewTensorEmptyWithBias(width, height, depth)      //NewTensorEmpty(width+1, height, depth) // bias
+		newLayer.PreviousDeltaWeights = NewTensorEmptyWithBias(width, height, depth) //NewTensorEmpty(width+1, height, depth) // bias
 	}
 	log.Println("created", len(newLayer.In.Data), "has to be (+1)", width*height*depth+1)
 	for i := 0; i < (width*height*depth)+addBias; i++ { //bias
@@ -160,10 +161,28 @@ func (fc *FullConnectedLayer) CalculateGradients(nextLayerGradients *Tensor) {
 				for i := 0; i < (*fc).SumDeltaWeights.X; i++ {
 					mappedIndex := (*fc).SumDeltaWeights.GetIndex(i, j, k)
 					weightVal := (*fc).Weights.GetValue(mappedIndex, out, 0)
+					// fmt.Printf("%v * %v = %v\n", localGradient, weightVal, localGradient*weightVal)
 					(*fc).SumDeltaWeights.AddValue(i, j, k, localGradient*weightVal)
 				}
 			}
 		}
+
+		if (*fc).HasBias {
+			mappedIndex := (*fc).SumDeltaWeights.GetIndex(len((*fc).SumDeltaWeights.Data)-1, 0, 0)
+			weightVal := (*fc).Weights.GetValue(mappedIndex, out, 0)
+			(*fc).SumDeltaWeights.AddValue(len((*fc).SumDeltaWeights.Data)-1, 0, 0, localGradient*weightVal)
+		}
+
+		// for k := 0; k < (*fc).SumDeltaWeights.Z; k++ {
+		// 	for j := 0; j < (*fc).SumDeltaWeights.Y; j++ {
+		// 		for i := 0; i < (*fc).SumDeltaWeights.X; i++ {
+		// 			log.Println("final sum w", (*fc).SumDeltaWeights.GetValue(i, j, k))
+		// 		}
+		// 	}
+		// }
+		// if (*fc).HasBias {
+		// 	log.Println("final sum w", (*fc).SumDeltaWeights.GetValue(len((*fc).SumDeltaWeights.Data)-1, 0, 0))
+		// }
 	}
 }
 
@@ -200,11 +219,27 @@ func (fc *FullConnectedLayer) UpdateWeights() {
 					}
 					_ = previousDelta
 					// fmt.Printf("update weights: %v * %v *%v = %v\n", LearningRate, localGradient, layerVal, LearningRate*localGradient*layerVal)
-					deltaWeight := LearningRate*errorVal + Momentum*previousDelta
+					deltaWeight := LearningRate * errorVal //+ Momentum*previousDelta
 					(*fc).PreviousDeltaWeights.SetValue(i, j, k, deltaWeight)
 					(*fc).Weights.AddValue(mappedIndex, out, 0, deltaWeight)
 				}
 			}
+		}
+		if (*fc).HasBias {
+			mappedIndex := (*fc).In.GetIndex(len((*fc).In.Data)-1, 0, 0)
+			layerVal := (*fc).In.GetValue(len((*fc).In.Data)-1, 0, 0)
+			previousDelta := (*fc).PreviousDeltaWeights.GetValue((*fc).PreviousDeltaWeights.Size()-1, 0, 0)
+			errorVal := localGradient * layerVal
+			prevErrorVal := localGradient - prevLocalGradient
+			if (errorVal - y*prevErrorVal) > 0 {
+				// LearningRate = b * LearningRate
+			} else {
+				// LearningRate = a * LearningRate
+			}
+			_ = previousDelta
+			deltaWeight := LearningRate * errorVal //+ Momentum*previousDelta
+			(*fc).PreviousDeltaWeights.SetValue((*fc).PreviousDeltaWeights.Size()-1, 0, 0, deltaWeight)
+			(*fc).Weights.AddValue(mappedIndex, out, 0, deltaWeight)
 		}
 		(*fc).PreviousLocalGradients.SetValue(out, 0, 0, localGradient)
 	}

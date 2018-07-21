@@ -121,10 +121,10 @@ func CheckFClayer() {
 	// net.Layers[0].PrintGradients()
 
 	net.Layers[2].UpdateWeights()
-	// net.Layers[2].PrintWeights()
+	net.Layers[2].PrintWeights()
 	net.Layers[1].UpdateWeights()
-	// net.Layers[1].PrintWeights()
+	net.Layers[1].PrintWeights()
 	net.Layers[0].UpdateWeights()
-	// net.Layers[0].PrintWeights()
+	net.Layers[0].PrintWeights()
 
 }

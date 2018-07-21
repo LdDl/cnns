@@ -23,6 +23,11 @@ func NewTensorEmptyWithBias(x, y, z int) *Tensor {
 	return &Tensor{Data: make([]float64, x*y*z+1), X: x, Y: y, Z: z}
 }
 
+// Size - returns size of data array
+func (t *Tensor) Size() int {
+	return len((*t).Data)
+}
+
 // NewTensorCopy - constructor for "Tensor" struct, and you could provide t: "Tensor"
 func NewTensorCopy(t *Tensor) *Tensor {
 	var copyT = Tensor{Data: make([]float64, len((*t).Data))}
