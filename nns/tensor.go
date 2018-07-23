@@ -162,8 +162,9 @@ func Rectify(t *Tensor, out *Tensor) {
 }
 
 // Pool - doing pooling for Tensor. "poolType" can be "max"/"min"/"average"
-func Pool(t *Tensor, out *Tensor, strideWidth, strideHeight int, poolType string) {
+func Pool(t *Tensor, out *Tensor, strideWidth, strideHeight int, poolType string) *Tensor {
 	// outMatrix = NewTensorEmpty((*t).X/strideWidth, (*t).Y/strideHeight, 1)
+	pooledIndecies := NewTensorEmpty(out.X, out.Y, 1)
 	switch poolType {
 	case "max":
 		for y := 0; y < out.Y; y++ {
@@ -173,16 +174,21 @@ func Pool(t *Tensor, out *Tensor, strideWidth, strideHeight int, poolType string
 				mapZ := 0 // Чтоб было
 				_ = mapZ
 				maxValue := -1.0 * math.MaxFloat64
+				maxIndex := 0
 				for j := 0; j < strideHeight; j++ {
 					for i := 0; i < strideWidth; i++ {
 						ii := i + mapY
 						jj := j + mapX
 						tmp := (*t).GetValue(ii, jj, 0)
 						if tmp > maxValue {
+							maxIndex = (*t).GetIndex(ii, jj, 0)
 							maxValue = tmp
 						}
+						(*t).SetValue(ii, jj, 0, 0.0)
 					}
 				}
+				pooledIndecies.SetValue(x, y, 0, float64(maxIndex))
+				(*t).SetValue(maxIndex, 0, 0, maxValue)
 				(*out).SetValue(x, y, 0, maxValue)
 			}
 		}
@@ -224,6 +230,7 @@ func Pool(t *Tensor, out *Tensor, strideWidth, strideHeight int, poolType string
 	default:
 		break
 	}
+	return pooledIndecies
 	// return outMatrix
 }
 
@@ -234,4 +241,14 @@ func (t1 *Tensor) Sub(t2 *Tensor) *Tensor {
 		newT.Data[i] -= (*t2).Data[i]
 	}
 	return newT
+}
+
+func (t Tensor) Len() int {
+	return len(t.Data)
+}
+func (t Tensor) Swap(i, j int) {
+	t.Data[i], t.Data[j] = t.Data[j], t.Data[i]
+}
+func (t Tensor) Less(i, j int) bool {
+	return t.Data[i] < t.Data[j]
 }

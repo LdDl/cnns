@@ -1,20 +1,23 @@
 package nns
 
 import (
+	"cnns_vika/utils/u"
 	"fmt"
 	"math"
+	"sort"
 )
 
 // MaxPoolingLayer is Max Pooling layer structure
 // In - input data
 // Out - output data
+// PooledIndecies - indecies of pooled values
 // Stride - striding step
-// FilterSize - size of neuron (kernel). 3x3, 4x4, 5x5,... and etc.
-// GradsIn - gradients
+// LocalGradients - gradients
 type MaxPoolingLayer struct {
 	In             *Tensor
 	Out            *Tensor
-	InputGradients *Tensor
+	PooledIndecies *Tensor
+	LocalGradients *Tensor
 	StrideWidth    int
 	StrideHeight   int
 }
@@ -34,7 +37,7 @@ func NewMaxPoolingLayer(
 	newLayer := &MaxPoolingLayer{
 		In:             NewTensorEmpty(inputWidth, inputHeight, inputDepth),
 		Out:            NewTensorEmpty(inputWidth/poolWidth, inputHeight/poolHeight, 1),
-		InputGradients: NewTensorEmpty(inputWidth, inputHeight, inputDepth),
+		LocalGradients: NewTensorEmpty(inputWidth, inputHeight, inputDepth),
 		StrideWidth:    poolWidth,
 		StrideHeight:   poolHeight,
 	}
@@ -77,8 +80,8 @@ func (maxpool *MaxPoolingLayer) FeedForward(t *Tensor) {
 
 // PrintGradients - print max pooling layer's gradients
 func (maxpool *MaxPoolingLayer) PrintGradients() {
-	fmt.Println("Printing Max Pooling Layer gradients-weights...")
-	(*maxpool).InputGradients.Print()
+	fmt.Println("Printing Max Pooling Layer local gradients...")
+	(*maxpool).LocalGradients.Print()
 }
 
 // PrintSumGradWeights - print maxpool layer's summ of grad*weight
@@ -88,12 +91,38 @@ func (maxpool *MaxPoolingLayer) PrintSumGradWeights() {
 
 // GetGradients - get max pooling layer's gradients
 func (maxpool *MaxPoolingLayer) GetGradients() *Tensor {
-	return (*maxpool).InputGradients
+	return (*maxpool).LocalGradients
 }
 
 // CalculateGradients - calculate max pooling layer's gradients
 func (maxpool *MaxPoolingLayer) CalculateGradients(nextLayerGrad *Tensor) {
+	sort.Sort((*maxpool).PooledIndecies)
+	for i := 0; i < (*maxpool).PooledIndecies.Size(); i++ {
+		mappedIndex := (*maxpool).PooledIndecies.Data[i]
+		sumweightgrad := nextLayerGrad.GetValue(i, 0, 0)
+		(*maxpool).LocalGradients.SetValue(int(mappedIndex), 0, 0, sumweightgrad)
+	}
+	(*maxpool).LocalGradients.Print()
+}
 
+// SameAsOuput - reshape max pooling layer's output
+func (maxpool *MaxPoolingLayer) SameAsOuput(x, y int) RangeP {
+	a := float64(x)
+	b := float64(y)
+	return RangeP{
+		MinX: u.NormalizeRange((a-float64((*maxpool).StrideWidth)+1.0)/float64((*maxpool).StrideWidth), (*maxpool).Out.X, true),
+		MinY: u.NormalizeRange((b-float64((*maxpool).StrideHeight)+1.0)/float64((*maxpool).StrideHeight), (*maxpool).Out.Y, true),
+		MinZ: 0,
+		MaxX: u.NormalizeRange(a/float64((*maxpool).StrideWidth), (*maxpool).Out.X, false),
+		MaxY: u.NormalizeRange(b/float64((*maxpool).StrideHeight), (*maxpool).Out.Y, false),
+		MaxZ: (*maxpool).Out.Z - 1,
+	}
+}
+
+// RangeP is struct for reshaping arrays
+type RangeP struct {
+	MinX, MinY, MinZ int
+	MaxX, MaxY, MaxZ int
 }
 
 // UpdateWeights - just to point, that max pooling layer does NOT updating weights
@@ -106,5 +135,5 @@ func (maxpool *MaxPoolingLayer) UpdateWeights() {
 
 // DoActivation - max pooling layer's output activation
 func (maxpool *MaxPoolingLayer) DoActivation() {
-	Pool((*maxpool).In, (*maxpool).Out, (*maxpool).StrideWidth, (*maxpool).StrideHeight, "max")
+	(*maxpool).PooledIndecies = Pool((*maxpool).In, (*maxpool).Out, (*maxpool).StrideWidth, (*maxpool).StrideHeight, "max")
 }
