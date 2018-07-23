@@ -95,7 +95,7 @@ func (maxpool *MaxPoolingLayer) GetGradients() *Tensor {
 
 // CalculateGradients - calculate max pooling layer's gradients
 func (maxpool *MaxPoolingLayer) CalculateGradients(nextLayerGrad *Tensor) {
-	sort.Sort((*maxpool).PooledIndecies)
+	sort.Sort((*maxpool).PooledIndecies) // indecies have to be sorted (@todo: this needs to be optimized)
 	for i := 0; i < (*maxpool).PooledIndecies.Size(); i++ {
 		mappedIndex := (*maxpool).PooledIndecies.Data[i]
 		sumweightgrad := nextLayerGrad.GetValue(i, 0, 0)
