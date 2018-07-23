@@ -108,6 +108,12 @@ func (fc *FullConnectedLayer) PrintGradients() {
 	(*fc).LocalGradients.Print()
 }
 
+// PrintSumGradWeights - print fully connected layer's summ of grad*weight
+func (fc *FullConnectedLayer) PrintSumGradWeights() {
+	fmt.Println("Printing Fully Connected Layer summ of grad*weight...")
+	(*fc).SumDeltaWeights.Print()
+}
+
 // GetOutput - get fully connected layer's output
 func (fc *FullConnectedLayer) GetOutput() *Tensor {
 	return (*fc).OutActivated // Here we outputing ACTIVATED values

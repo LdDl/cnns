@@ -52,6 +52,11 @@ func (relu *ReLULayer) PrintGradients() {
 	(*relu).InputGradients.Print()
 }
 
+// PrintSumGradWeights - print relu layer's summ of grad*weight
+func (relu *ReLULayer) PrintSumGradWeights() {
+
+}
+
 // GetGradients - get ReLU layer's gradients
 func (relu *ReLULayer) GetGradients() *Tensor {
 	return (*relu).InputGradients

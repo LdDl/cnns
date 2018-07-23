@@ -17,6 +17,8 @@ type Layer interface {
 	FeedForward(t *Tensor)
 	// PrintGradients - print layer's gradients
 	PrintGradients()
+	// PrintGradients - print layer's summ of grad*weight
+	PrintSumGradWeights()
 	// GetGradients - get layer's gradients
 	GetGradients() *Tensor
 	// CalculateGradients - calculate layers' gradients

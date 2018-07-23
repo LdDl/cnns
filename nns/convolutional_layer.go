@@ -96,6 +96,10 @@ func (con *ConvLayer) PrintGradients() {
 	(*con).InputGradients.Print()
 }
 
+// PrintSumGradWeights - print convolutional layer's summ of grad*weight
+func (con *ConvLayer) PrintSumGradWeights() {
+}
+
 // GetGradients - get convolutional layer's gradients
 func (con *ConvLayer) GetGradients() *Tensor {
 	return (*con).InputGradients

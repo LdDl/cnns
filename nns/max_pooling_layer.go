@@ -81,6 +81,11 @@ func (maxpool *MaxPoolingLayer) PrintGradients() {
 	(*maxpool).InputGradients.Print()
 }
 
+// PrintSumGradWeights - print maxpool layer's summ of grad*weight
+func (maxpool *MaxPoolingLayer) PrintSumGradWeights() {
+
+}
+
 // GetGradients - get max pooling layer's gradients
 func (maxpool *MaxPoolingLayer) GetGradients() *Tensor {
 	return (*maxpool).InputGradients
