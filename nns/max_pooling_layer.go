@@ -1,7 +1,6 @@
 package nns
 
 import (
-	"cnns_vika/utils/u"
 	"fmt"
 	"math"
 	"sort"
@@ -103,26 +102,6 @@ func (maxpool *MaxPoolingLayer) CalculateGradients(nextLayerGrad *Tensor) {
 		(*maxpool).LocalGradients.SetValue(int(mappedIndex), 0, 0, sumweightgrad)
 	}
 	(*maxpool).LocalGradients.Print()
-}
-
-// SameAsOuput - reshape max pooling layer's output
-func (maxpool *MaxPoolingLayer) SameAsOuput(x, y int) RangeP {
-	a := float64(x)
-	b := float64(y)
-	return RangeP{
-		MinX: u.NormalizeRange((a-float64((*maxpool).StrideWidth)+1.0)/float64((*maxpool).StrideWidth), (*maxpool).Out.X, true),
-		MinY: u.NormalizeRange((b-float64((*maxpool).StrideHeight)+1.0)/float64((*maxpool).StrideHeight), (*maxpool).Out.Y, true),
-		MinZ: 0,
-		MaxX: u.NormalizeRange(a/float64((*maxpool).StrideWidth), (*maxpool).Out.X, false),
-		MaxY: u.NormalizeRange(b/float64((*maxpool).StrideHeight), (*maxpool).Out.Y, false),
-		MaxZ: (*maxpool).Out.Z - 1,
-	}
-}
-
-// RangeP is struct for reshaping arrays
-type RangeP struct {
-	MinX, MinY, MinZ int
-	MaxX, MaxY, MaxZ int
 }
 
 // UpdateWeights - just to point, that max pooling layer does NOT updating weights
