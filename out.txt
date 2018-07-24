@@ -1,0 +1,1158 @@
+Printing Fully Connected Layer output...
+  Depth level: 0
+0.7405502068775088 0.7029505376656959 0.7281921416986687 
+F-index (i,j): (0, 0)
+	In val * Grad val: -0.1 * 0.014196535068864737 = -0.0014196535068864737
+	Current summation: -0.0014196535068864737
+F-index (i,j): (0, 1)
+	In val * Grad val: -0.9 * 0.014196535068864737 = -0.012776881561978263
+	Current summation: -0.012776881561978263
+F-index (i,j): (0, 0)
+	In val * Grad val: -0.9 * 0 = -0
+	Current summation: -0.0014196535068864737
+F-index (i,j): (0, 2)
+	In val * Grad val: -0.17 * 0.014196535068864737 = -0.002413410961707005
+	Current summation: -0.002413410961707005
+F-index (i,j): (0, 1)
+	In val * Grad val: -0.17 * 0 = -0
+	Current summation: -0.012776881561978263
+F-index (i,j): (0, 0)
+	In val * Grad val: -0.17 * 0 = -0
+	Current summation: -0.0014196535068864737
+F-index (i,j): (0, 2)
+	In val * Grad val: -0.25 * 0 = -0
+	Current summation: -0.002413410961707005
+F-index (i,j): (0, 1)
+	In val * Grad val: -0.25 * 0 = -0
+	Current summation: -0.012776881561978263
+F-index (i,j): (0, 0)
+	In val * Grad val: -0.25 * 0.057093090804489016 = -0.014273272701122254
+	Current summation: -0.015692926208008728
+F-index (i,j): (0, 2)
+	In val * Grad val: -0.33 * 0 = -0
+	Current summation: -0.002413410961707005
+F-index (i,j): (0, 1)
+	In val * Grad val: -0.33 * 0.057093090804489016 = -0.018840719965481378
+	Current summation: -0.03161760152745964
+F-index (i,j): (0, 0)
+	In val * Grad val: -0.33 * 0 = -0
+	Current summation: -0.015692926208008728
+F-index (i,j): (0, 2)
+	In val * Grad val: -0.41 * 0.057093090804489016 = -0.023408167229840494
+	Current summation: -0.025821578191547498
+F-index (i,j): (0, 1)
+	In val * Grad val: -0.41 * 0 = -0
+	Current summation: -0.03161760152745964
+F-index (i,j): (0, 0)
+	In val * Grad val: -0.41 * 0.03655669946540576 = -0.014988246780816361
+	Current summation: -0.03068117298882509
+F-index (i,j): (0, 2)
+	In val * Grad val: -0.49 * 0 = -0
+	Current summation: -0.025821578191547498
+F-index (i,j): (0, 1)
+	In val * Grad val: -0.49 * 0.03655669946540576 = -0.017912782738048822
+	Current summation: -0.04953038426550846
+F-index (i,j): (0, 0)
+	In val * Grad val: -0.49 * 0.019433786822208268 = -0.009522555542882052
+	Current summation: -0.040203728531707145
+F-index (i,j): (0, 2)
+	In val * Grad val: -0.57 * 0.03655669946540576 = -0.02083731869528128
+	Current summation: -0.04665889688682878
+F-index (i,j): (0, 1)
+	In val * Grad val: -0.57 * 0.019433786822208268 = -0.011077258488658712
+	Current summation: -0.06060764275416717
+F-index (i,j): (0, 2)
+	In val * Grad val: -0.65 * 0.019433786822208268 = -0.012631961434435375
+	Current summation: -0.059290858321264156
+F-index (i,j): (1, 0)
+	In val * Grad val: 0.2 * 0.014196535068864737 = 0.0028393070137729473
+	Current summation: 0.0028393070137729473
+F-index (i,j): (0, 0)
+	In val * Grad val: 0.2 * 0 = 0
+	Current summation: -0.040203728531707145
+F-index (i,j): (1, 1)
+	In val * Grad val: -0.1 * 0.014196535068864737 = -0.0014196535068864737
+	Current summation: -0.0014196535068864737
+F-index (i,j): (1, 0)
+	In val * Grad val: -0.1 * 0 = -0
+	Current summation: 0.0028393070137729473
+F-index (i,j): (0, 1)
+	In val * Grad val: -0.1 * 0 = -0
+	Current summation: -0.06060764275416717
+F-index (i,j): (0, 0)
+	In val * Grad val: -0.1 * 0 = -0
+	Current summation: -0.040203728531707145
+F-index (i,j): (1, 2)
+	In val * Grad val: 0.18 * 0.014196535068864737 = 0.0025553763123956526
+	Current summation: 0.0025553763123956526
+F-index (i,j): (1, 1)
+	In val * Grad val: 0.18 * 0 = 0
+	Current summation: -0.0014196535068864737
+F-index (i,j): (1, 0)
+	In val * Grad val: 0.18 * 0 = 0
+	Current summation: 0.0028393070137729473
+F-index (i,j): (0, 2)
+	In val * Grad val: 0.18 * 0 = 0
+	Current summation: -0.059290858321264156
+F-index (i,j): (0, 1)
+	In val * Grad val: 0.18 * 0 = 0
+	Current summation: -0.06060764275416717
+F-index (i,j): (0, 0)
+	In val * Grad val: 0.18 * 0 = 0
+	Current summation: -0.040203728531707145
+F-index (i,j): (1, 2)
+	In val * Grad val: 0.26 * 0 = 0
+	Current summation: 0.0025553763123956526
+F-index (i,j): (1, 1)
+	In val * Grad val: 0.26 * 0 = 0
+	Current summation: -0.0014196535068864737
+F-index (i,j): (1, 0)
+	In val * Grad val: 0.26 * 0.057093090804489016 = 0.014844203609167144
+	Current summation: 0.01768351062294009
+F-index (i,j): (0, 2)
+	In val * Grad val: 0.26 * 0 = 0
+	Current summation: -0.059290858321264156
+F-index (i,j): (0, 1)
+	In val * Grad val: 0.26 * 0 = 0
+	Current summation: -0.06060764275416717
+F-index (i,j): (0, 0)
+	In val * Grad val: 0.26 * 0 = 0
+	Current summation: -0.040203728531707145
+F-index (i,j): (1, 2)
+	In val * Grad val: 0.34 * 0 = 0
+	Current summation: 0.0025553763123956526
+F-index (i,j): (1, 1)
+	In val * Grad val: 0.34 * 0.057093090804489016 = 0.019411650873526268
+	Current summation: 0.017991997366639794
+F-index (i,j): (1, 0)
+	In val * Grad val: 0.34 * 0 = 0
+	Current summation: 0.01768351062294009
+F-index (i,j): (0, 2)
+	In val * Grad val: 0.34 * 0 = 0
+	Current summation: -0.059290858321264156
+F-index (i,j): (0, 1)
+	In val * Grad val: 0.34 * 0 = 0
+	Current summation: -0.06060764275416717
+F-index (i,j): (0, 0)
+	In val * Grad val: 0.34 * 0 = 0
+	Current summation: -0.040203728531707145
+F-index (i,j): (1, 2)
+	In val * Grad val: 0.42 * 0.057093090804489016 = 0.023979098137885384
+	Current summation: 0.026534474450281037
+F-index (i,j): (1, 1)
+	In val * Grad val: 0.42 * 0 = 0
+	Current summation: 0.017991997366639794
+F-index (i,j): (1, 0)
+	In val * Grad val: 0.42 * 0.03655669946540576 = 0.01535381377547042
+	Current summation: 0.03303732439841051
+F-index (i,j): (0, 2)
+	In val * Grad val: 0.42 * 0 = 0
+	Current summation: -0.059290858321264156
+F-index (i,j): (0, 1)
+	In val * Grad val: 0.42 * 0 = 0
+	Current summation: -0.06060764275416717
+F-index (i,j): (0, 0)
+	In val * Grad val: 0.42 * 0 = 0
+	Current summation: -0.040203728531707145
+F-index (i,j): (1, 2)
+	In val * Grad val: 0.5 * 0 = 0
+	Current summation: 0.026534474450281037
+F-index (i,j): (1, 1)
+	In val * Grad val: 0.5 * 0.03655669946540576 = 0.01827834973270288
+	Current summation: 0.036270347099342674
+F-index (i,j): (1, 0)
+	In val * Grad val: 0.5 * 0.019433786822208268 = 0.009716893411104134
+	Current summation: 0.04275421780951465
+F-index (i,j): (0, 2)
+	In val * Grad val: 0.5 * 0 = 0
+	Current summation: -0.059290858321264156
+F-index (i,j): (0, 1)
+	In val * Grad val: 0.5 * 0 = 0
+	Current summation: -0.06060764275416717
+F-index (i,j): (0, 0)
+	In val * Grad val: 0.5 * 0 = 0
+	Current summation: -0.040203728531707145
+F-index (i,j): (1, 2)
+	In val * Grad val: 0.58 * 0.03655669946540576 = 0.02120288568993534
+	Current summation: 0.04773736014021637
+F-index (i,j): (1, 1)
+	In val * Grad val: 0.58 * 0.019433786822208268 = 0.011271596356880794
+	Current summation: 0.047541943456223465
+F-index (i,j): (0, 2)
+	In val * Grad val: 0.58 * 0 = 0
+	Current summation: -0.059290858321264156
+F-index (i,j): (0, 1)
+	In val * Grad val: 0.58 * 0 = 0
+	Current summation: -0.06060764275416717
+F-index (i,j): (1, 2)
+	In val * Grad val: 0.66 * 0.019433786822208268 = 0.012826299302657457
+	Current summation: 0.06056365944287383
+F-index (i,j): (0, 2)
+	In val * Grad val: 0.66 * 0 = 0
+	Current summation: -0.059290858321264156
+F-index (i,j): (2, 0)
+	In val * Grad val: 0.3 * 0.014196535068864737 = 0.004258960520659421
+	Current summation: 0.004258960520659421
+F-index (i,j): (1, 0)
+	In val * Grad val: 0.3 * 0 = 0
+	Current summation: 0.04275421780951465
+F-index (i,j): (0, 0)
+	In val * Grad val: 0.3 * 0.022826039257793647 = 0.006847811777338094
+	Current summation: -0.03335591675436905
+F-index (i,j): (2, 1)
+	In val * Grad val: 0.11 * 0.014196535068864737 = 0.001561618857575121
+	Current summation: 0.001561618857575121
+F-index (i,j): (2, 0)
+	In val * Grad val: 0.11 * 0 = 0
+	Current summation: 0.004258960520659421
+F-index (i,j): (1, 1)
+	In val * Grad val: 0.11 * 0 = 0
+	Current summation: 0.047541943456223465
+F-index (i,j): (1, 0)
+	In val * Grad val: 0.11 * 0 = 0
+	Current summation: 0.04275421780951465
+F-index (i,j): (0, 1)
+	In val * Grad val: 0.11 * 0.022826039257793647 = 0.0025108643183573013
+	Current summation: -0.05809677843580987
+F-index (i,j): (0, 0)
+	In val * Grad val: 0.11 * 0 = 0
+	Current summation: -0.03335591675436905
+F-index (i,j): (2, 2)
+	In val * Grad val: -0.19 * 0.014196535068864737 = -0.0026973416630843
+	Current summation: -0.0026973416630843
+F-index (i,j): (2, 1)
+	In val * Grad val: -0.19 * 0 = -0
+	Current summation: 0.001561618857575121
+F-index (i,j): (2, 0)
+	In val * Grad val: -0.19 * 0 = -0
+	Current summation: 0.004258960520659421
+F-index (i,j): (1, 2)
+	In val * Grad val: -0.19 * 0 = -0
+	Current summation: 0.06056365944287383
+F-index (i,j): (1, 1)
+	In val * Grad val: -0.19 * 0 = -0
+	Current summation: 0.047541943456223465
+F-index (i,j): (1, 0)
+	In val * Grad val: -0.19 * 0 = -0
+	Current summation: 0.04275421780951465
+F-index (i,j): (0, 2)
+	In val * Grad val: -0.19 * 0.022826039257793647 = -0.004336947458980793
+	Current summation: -0.06362780578024495
+F-index (i,j): (0, 1)
+	In val * Grad val: -0.19 * 0 = -0
+	Current summation: -0.05809677843580987
+F-index (i,j): (0, 0)
+	In val * Grad val: -0.19 * 0 = -0
+	Current summation: -0.03335591675436905
+F-index (i,j): (2, 2)
+	In val * Grad val: 0.27 * 0 = 0
+	Current summation: -0.0026973416630843
+F-index (i,j): (2, 1)
+	In val * Grad val: 0.27 * 0 = 0
+	Current summation: 0.001561618857575121
+F-index (i,j): (2, 0)
+	In val * Grad val: 0.27 * 0.057093090804489016 = 0.015415134517212036
+	Current summation: 0.01967409503787146
+F-index (i,j): (1, 2)
+	In val * Grad val: 0.27 * 0 = 0
+	Current summation: 0.06056365944287383
+F-index (i,j): (1, 1)
+	In val * Grad val: 0.27 * 0 = 0
+	Current summation: 0.047541943456223465
+F-index (i,j): (1, 0)
+	In val * Grad val: 0.27 * 0 = 0
+	Current summation: 0.04275421780951465
+F-index (i,j): (0, 2)
+	In val * Grad val: 0.27 * 0 = 0
+	Current summation: -0.06362780578024495
+F-index (i,j): (0, 1)
+	In val * Grad val: 0.27 * 0 = 0
+	Current summation: -0.05809677843580987
+F-index (i,j): (0, 0)
+	In val * Grad val: 0.27 * 0 = 0
+	Current summation: -0.03335591675436905
+F-index (i,j): (2, 2)
+	In val * Grad val: 0.35 * 0 = 0
+	Current summation: -0.0026973416630843
+F-index (i,j): (2, 1)
+	In val * Grad val: 0.35 * 0.057093090804489016 = 0.019982581781571154
+	Current summation: 0.021544200639146277
+F-index (i,j): (2, 0)
+	In val * Grad val: 0.35 * 0 = 0
+	Current summation: 0.01967409503787146
+F-index (i,j): (1, 2)
+	In val * Grad val: 0.35 * 0 = 0
+	Current summation: 0.06056365944287383
+F-index (i,j): (1, 1)
+	In val * Grad val: 0.35 * 0 = 0
+	Current summation: 0.047541943456223465
+F-index (i,j): (1, 0)
+	In val * Grad val: 0.35 * 0 = 0
+	Current summation: 0.04275421780951465
+F-index (i,j): (0, 2)
+	In val * Grad val: 0.35 * 0 = 0
+	Current summation: -0.06362780578024495
+F-index (i,j): (0, 1)
+	In val * Grad val: 0.35 * 0 = 0
+	Current summation: -0.05809677843580987
+F-index (i,j): (0, 0)
+	In val * Grad val: 0.35 * 0.030432038236863156 = 0.010651213382902104
+	Current summation: -0.022704703371466947
+F-index (i,j): (2, 2)
+	In val * Grad val: 0.43 * 0.057093090804489016 = 0.024550029045930278
+	Current summation: 0.02185268738284598
+F-index (i,j): (2, 1)
+	In val * Grad val: 0.43 * 0 = 0
+	Current summation: 0.021544200639146277
+F-index (i,j): (2, 0)
+	In val * Grad val: 0.43 * 0.03655669946540576 = 0.015719380770124476
+	Current summation: 0.035393475807995935
+F-index (i,j): (1, 2)
+	In val * Grad val: 0.43 * 0 = 0
+	Current summation: 0.06056365944287383
+F-index (i,j): (1, 1)
+	In val * Grad val: 0.43 * 0 = 0
+	Current summation: 0.047541943456223465
+F-index (i,j): (1, 0)
+	In val * Grad val: 0.43 * 0 = 0
+	Current summation: 0.04275421780951465
+F-index (i,j): (0, 2)
+	In val * Grad val: 0.43 * 0 = 0
+	Current summation: -0.06362780578024495
+F-index (i,j): (0, 1)
+	In val * Grad val: 0.43 * 0.030432038236863156 = 0.013085776441851157
+	Current summation: -0.045011001993958716
+F-index (i,j): (0, 0)
+	In val * Grad val: 0.43 * 0 = 0
+	Current summation: -0.022704703371466947
+F-index (i,j): (2, 2)
+	In val * Grad val: 0.51 * 0 = 0
+	Current summation: 0.02185268738284598
+F-index (i,j): (2, 1)
+	In val * Grad val: 0.51 * 0.03655669946540576 = 0.01864391672735694
+	Current summation: 0.04018811736650321
+F-index (i,j): (2, 0)
+	In val * Grad val: 0.51 * 0.019433786822208268 = 0.009911231279326216
+	Current summation: 0.04530470708732215
+F-index (i,j): (1, 2)
+	In val * Grad val: 0.51 * 0 = 0
+	Current summation: 0.06056365944287383
+F-index (i,j): (1, 1)
+	In val * Grad val: 0.51 * 0 = 0
+	Current summation: 0.047541943456223465
+F-index (i,j): (1, 0)
+	In val * Grad val: 0.51 * 0 = 0
+	Current summation: 0.04275421780951465
+F-index (i,j): (0, 2)
+	In val * Grad val: 0.51 * 0.030432038236863156 = 0.01552033950080021
+	Current summation: -0.04810746627944474
+F-index (i,j): (0, 1)
+	In val * Grad val: 0.51 * 0 = 0
+	Current summation: -0.045011001993958716
+F-index (i,j): (0, 0)
+	In val * Grad val: 0.51 * 0.008689174345190554 = 0.0044314789160471825
+	Current summation: -0.018273224455419766
+F-index (i,j): (2, 2)
+	In val * Grad val: 0.59 * 0.03655669946540576 = 0.021568452684589397
+	Current summation: 0.043421140067435374
+F-index (i,j): (2, 1)
+	In val * Grad val: 0.59 * 0.019433786822208268 = 0.011465934225102878
+	Current summation: 0.05165405159160609
+F-index (i,j): (1, 2)
+	In val * Grad val: 0.59 * 0 = 0
+	Current summation: 0.06056365944287383
+F-index (i,j): (1, 1)
+	In val * Grad val: 0.59 * 0 = 0
+	Current summation: 0.047541943456223465
+F-index (i,j): (0, 2)
+	In val * Grad val: 0.59 * 0 = 0
+	Current summation: -0.04810746627944474
+F-index (i,j): (0, 1)
+	In val * Grad val: 0.59 * 0.008689174345190554 = 0.005126612863662426
+	Current summation: -0.03988438913029629
+F-index (i,j): (2, 2)
+	In val * Grad val: 0.67 * 0.019433786822208268 = 0.013020637170879541
+	Current summation: 0.056441777238314915
+F-index (i,j): (1, 2)
+	In val * Grad val: 0.67 * 0 = 0
+	Current summation: 0.06056365944287383
+F-index (i,j): (0, 2)
+	In val * Grad val: 0.67 * 0.008689174345190554 = 0.005821746811277672
+	Current summation: -0.04228571946816707
+F-index (i,j): (2, 0)
+	In val * Grad val: 0.4 * 0 = 0
+	Current summation: 0.04530470708732215
+F-index (i,j): (1, 0)
+	In val * Grad val: 0.4 * 0.022826039257793647 = 0.00913041570311746
+	Current summation: 0.0518846335126321
+F-index (i,j): (0, 0)
+	In val * Grad val: 0.4 * 0 = 0
+	Current summation: -0.018273224455419766
+F-index (i,j): (2, 1)
+	In val * Grad val: 0.12 * 0 = 0
+	Current summation: 0.05165405159160609
+F-index (i,j): (2, 0)
+	In val * Grad val: 0.12 * 0 = 0
+	Current summation: 0.04530470708732215
+F-index (i,j): (1, 1)
+	In val * Grad val: 0.12 * 0.022826039257793647 = 0.0027391247109352377
+	Current summation: 0.0502810681671587
+F-index (i,j): (1, 0)
+	In val * Grad val: 0.12 * 0 = 0
+	Current summation: 0.0518846335126321
+F-index (i,j): (0, 1)
+	In val * Grad val: 0.12 * 0 = 0
+	Current summation: -0.03988438913029629
+F-index (i,j): (0, 0)
+	In val * Grad val: 0.12 * 0 = 0
+	Current summation: -0.018273224455419766
+F-index (i,j): (2, 2)
+	In val * Grad val: 0.2 * 0 = 0
+	Current summation: 0.056441777238314915
+F-index (i,j): (2, 1)
+	In val * Grad val: 0.2 * 0 = 0
+	Current summation: 0.05165405159160609
+F-index (i,j): (2, 0)
+	In val * Grad val: 0.2 * 0 = 0
+	Current summation: 0.04530470708732215
+F-index (i,j): (1, 2)
+	In val * Grad val: 0.2 * 0.022826039257793647 = 0.00456520785155873
+	Current summation: 0.06512886729443255
+F-index (i,j): (1, 1)
+	In val * Grad val: 0.2 * 0 = 0
+	Current summation: 0.0502810681671587
+F-index (i,j): (1, 0)
+	In val * Grad val: 0.2 * 0 = 0
+	Current summation: 0.0518846335126321
+F-index (i,j): (0, 2)
+	In val * Grad val: 0.2 * 0 = 0
+	Current summation: -0.04228571946816707
+F-index (i,j): (0, 1)
+	In val * Grad val: 0.2 * 0 = 0
+	Current summation: -0.03988438913029629
+F-index (i,j): (0, 0)
+	In val * Grad val: 0.2 * 0 = 0
+	Current summation: -0.018273224455419766
+F-index (i,j): (2, 2)
+	In val * Grad val: -0.28 * 0 = -0
+	Current summation: 0.056441777238314915
+F-index (i,j): (2, 1)
+	In val * Grad val: -0.28 * 0 = -0
+	Current summation: 0.05165405159160609
+F-index (i,j): (2, 0)
+	In val * Grad val: -0.28 * 0 = -0
+	Current summation: 0.04530470708732215
+F-index (i,j): (1, 2)
+	In val * Grad val: -0.28 * 0 = -0
+	Current summation: 0.06512886729443255
+F-index (i,j): (1, 1)
+	In val * Grad val: -0.28 * 0 = -0
+	Current summation: 0.0502810681671587
+F-index (i,j): (1, 0)
+	In val * Grad val: -0.28 * 0 = -0
+	Current summation: 0.0518846335126321
+F-index (i,j): (0, 2)
+	In val * Grad val: -0.28 * 0 = -0
+	Current summation: -0.04228571946816707
+F-index (i,j): (0, 1)
+	In val * Grad val: -0.28 * 0 = -0
+	Current summation: -0.03988438913029629
+F-index (i,j): (0, 0)
+	In val * Grad val: -0.28 * 0.019729424536471557 = -0.005524238870212037
+	Current summation: -0.023797463325631804
+F-index (i,j): (2, 2)
+	In val * Grad val: 0.36 * 0 = 0
+	Current summation: 0.056441777238314915
+F-index (i,j): (2, 1)
+	In val * Grad val: 0.36 * 0 = 0
+	Current summation: 0.05165405159160609
+F-index (i,j): (2, 0)
+	In val * Grad val: 0.36 * 0 = 0
+	Current summation: 0.04530470708732215
+F-index (i,j): (1, 2)
+	In val * Grad val: 0.36 * 0 = 0
+	Current summation: 0.06512886729443255
+F-index (i,j): (1, 1)
+	In val * Grad val: 0.36 * 0 = 0
+	Current summation: 0.0502810681671587
+F-index (i,j): (1, 0)
+	In val * Grad val: 0.36 * 0.030432038236863156 = 0.010955533765270736
+	Current summation: 0.06284016727790284
+F-index (i,j): (0, 2)
+	In val * Grad val: 0.36 * 0 = 0
+	Current summation: -0.04228571946816707
+F-index (i,j): (0, 1)
+	In val * Grad val: 0.36 * 0.019729424536471557 = 0.00710259283312976
+	Current summation: -0.03278179629716653
+F-index (i,j): (0, 0)
+	In val * Grad val: 0.36 * 0 = 0
+	Current summation: -0.023797463325631804
+F-index (i,j): (2, 2)
+	In val * Grad val: 0.44 * 0 = 0
+	Current summation: 0.056441777238314915
+F-index (i,j): (2, 1)
+	In val * Grad val: 0.44 * 0 = 0
+	Current summation: 0.05165405159160609
+F-index (i,j): (2, 0)
+	In val * Grad val: 0.44 * 0 = 0
+	Current summation: 0.04530470708732215
+F-index (i,j): (1, 2)
+	In val * Grad val: 0.44 * 0 = 0
+	Current summation: 0.06512886729443255
+F-index (i,j): (1, 1)
+	In val * Grad val: 0.44 * 0.030432038236863156 = 0.013390096824219789
+	Current summation: 0.0636711649913785
+F-index (i,j): (1, 0)
+	In val * Grad val: 0.44 * 0 = 0
+	Current summation: 0.06284016727790284
+F-index (i,j): (0, 2)
+	In val * Grad val: 0.44 * 0.019729424536471557 = 0.008680946796047485
+	Current summation: -0.03360477267211958
+F-index (i,j): (0, 1)
+	In val * Grad val: 0.44 * 0 = 0
+	Current summation: -0.03278179629716653
+F-index (i,j): (0, 0)
+	In val * Grad val: 0.44 * 0 = 0
+	Current summation: -0.023797463325631804
+F-index (i,j): (2, 2)
+	In val * Grad val: 0.52 * 0 = 0
+	Current summation: 0.056441777238314915
+F-index (i,j): (2, 1)
+	In val * Grad val: 0.52 * 0 = 0
+	Current summation: 0.05165405159160609
+F-index (i,j): (2, 0)
+	In val * Grad val: 0.52 * 0 = 0
+	Current summation: 0.04530470708732215
+F-index (i,j): (1, 2)
+	In val * Grad val: 0.52 * 0.030432038236863156 = 0.01582465988316884
+	Current summation: 0.0809535271776014
+F-index (i,j): (1, 1)
+	In val * Grad val: 0.52 * 0 = 0
+	Current summation: 0.0636711649913785
+F-index (i,j): (1, 0)
+	In val * Grad val: 0.52 * 0.008689174345190554 = 0.004518370659499088
+	Current summation: 0.06735853793740193
+F-index (i,j): (0, 2)
+	In val * Grad val: 0.52 * 0 = 0
+	Current summation: -0.03360477267211958
+F-index (i,j): (0, 1)
+	In val * Grad val: 0.52 * 0 = 0
+	Current summation: -0.03278179629716653
+F-index (i,j): (0, 0)
+	In val * Grad val: 0.52 * 0 = 0
+	Current summation: -0.023797463325631804
+F-index (i,j): (2, 2)
+	In val * Grad val: 0.6 * 0 = 0
+	Current summation: 0.056441777238314915
+F-index (i,j): (2, 1)
+	In val * Grad val: 0.6 * 0 = 0
+	Current summation: 0.05165405159160609
+F-index (i,j): (1, 2)
+	In val * Grad val: 0.6 * 0 = 0
+	Current summation: 0.0809535271776014
+F-index (i,j): (1, 1)
+	In val * Grad val: 0.6 * 0.008689174345190554 = 0.005213504607114333
+	Current summation: 0.06888466959849283
+F-index (i,j): (0, 2)
+	In val * Grad val: 0.6 * 0 = 0
+	Current summation: -0.03360477267211958
+F-index (i,j): (0, 1)
+	In val * Grad val: 0.6 * 0 = 0
+	Current summation: -0.03278179629716653
+F-index (i,j): (2, 2)
+	In val * Grad val: 0.68 * 0 = 0
+	Current summation: 0.056441777238314915
+F-index (i,j): (1, 2)
+	In val * Grad val: 0.68 * 0.008689174345190554 = 0.005908638554729577
+	Current summation: 0.08686216573233098
+F-index (i,j): (0, 2)
+	In val * Grad val: 0.68 * 0 = 0
+	Current summation: -0.03360477267211958
+F-index (i,j): (2, 0)
+	In val * Grad val: 0.5 * 0.022826039257793647 = 0.011413019628896823
+	Current summation: 0.05671772671621897
+F-index (i,j): (1, 0)
+	In val * Grad val: 0.5 * 0 = 0
+	Current summation: 0.06735853793740193
+F-index (i,j): (0, 0)
+	In val * Grad val: 0.5 * 0 = 0
+	Current summation: -0.023797463325631804
+F-index (i,j): (2, 1)
+	In val * Grad val: 0.13 * 0.022826039257793647 = 0.002967385103513174
+	Current summation: 0.05462143669511926
+F-index (i,j): (2, 0)
+	In val * Grad val: 0.13 * 0 = 0
+	Current summation: 0.05671772671621897
+F-index (i,j): (1, 1)
+	In val * Grad val: 0.13 * 0 = 0
+	Current summation: 0.06888466959849283
+F-index (i,j): (1, 0)
+	In val * Grad val: 0.13 * 0 = 0
+	Current summation: 0.06735853793740193
+F-index (i,j): (0, 1)
+	In val * Grad val: 0.13 * 0 = 0
+	Current summation: -0.03278179629716653
+F-index (i,j): (0, 0)
+	In val * Grad val: 0.13 * 0 = 0
+	Current summation: -0.023797463325631804
+F-index (i,j): (2, 2)
+	In val * Grad val: 0.21 * 0.022826039257793647 = 0.004793468244136665
+	Current summation: 0.06123524548245158
+F-index (i,j): (2, 1)
+	In val * Grad val: 0.21 * 0 = 0
+	Current summation: 0.05462143669511926
+F-index (i,j): (2, 0)
+	In val * Grad val: 0.21 * 0 = 0
+	Current summation: 0.05671772671621897
+F-index (i,j): (1, 2)
+	In val * Grad val: 0.21 * 0 = 0
+	Current summation: 0.08686216573233098
+F-index (i,j): (1, 1)
+	In val * Grad val: 0.21 * 0 = 0
+	Current summation: 0.06888466959849283
+F-index (i,j): (1, 0)
+	In val * Grad val: 0.21 * 0 = 0
+	Current summation: 0.06735853793740193
+F-index (i,j): (0, 2)
+	In val * Grad val: 0.21 * 0 = 0
+	Current summation: -0.03360477267211958
+F-index (i,j): (0, 1)
+	In val * Grad val: 0.21 * 0 = 0
+	Current summation: -0.03278179629716653
+F-index (i,j): (0, 0)
+	In val * Grad val: 0.21 * 0 = 0
+	Current summation: -0.023797463325631804
+F-index (i,j): (2, 2)
+	In val * Grad val: 0.29 * 0 = 0
+	Current summation: 0.06123524548245158
+F-index (i,j): (2, 1)
+	In val * Grad val: 0.29 * 0 = 0
+	Current summation: 0.05462143669511926
+F-index (i,j): (2, 0)
+	In val * Grad val: 0.29 * 0 = 0
+	Current summation: 0.05671772671621897
+F-index (i,j): (1, 2)
+	In val * Grad val: 0.29 * 0 = 0
+	Current summation: 0.08686216573233098
+F-index (i,j): (1, 1)
+	In val * Grad val: 0.29 * 0 = 0
+	Current summation: 0.06888466959849283
+F-index (i,j): (1, 0)
+	In val * Grad val: 0.29 * 0.019729424536471557 = 0.005721533115576751
+	Current summation: 0.07308007105297869
+F-index (i,j): (0, 2)
+	In val * Grad val: 0.29 * 0 = 0
+	Current summation: -0.03360477267211958
+F-index (i,j): (0, 1)
+	In val * Grad val: 0.29 * 0 = 0
+	Current summation: -0.03278179629716653
+F-index (i,j): (0, 0)
+	In val * Grad val: 0.29 * 0 = 0
+	Current summation: -0.023797463325631804
+F-index (i,j): (2, 2)
+	In val * Grad val: -0.37 * 0 = -0
+	Current summation: 0.06123524548245158
+F-index (i,j): (2, 1)
+	In val * Grad val: -0.37 * 0 = -0
+	Current summation: 0.05462143669511926
+F-index (i,j): (2, 0)
+	In val * Grad val: -0.37 * 0.030432038236863156 = -0.011259854147639367
+	Current summation: 0.0454578725685796
+F-index (i,j): (1, 2)
+	In val * Grad val: -0.37 * 0 = -0
+	Current summation: 0.08686216573233098
+F-index (i,j): (1, 1)
+	In val * Grad val: -0.37 * 0.019729424536471557 = -0.007299887078494476
+	Current summation: 0.061584782519998355
+F-index (i,j): (1, 0)
+	In val * Grad val: -0.37 * 0 = -0
+	Current summation: 0.07308007105297869
+F-index (i,j): (0, 2)
+	In val * Grad val: -0.37 * 0 = -0
+	Current summation: -0.03360477267211958
+F-index (i,j): (0, 1)
+	In val * Grad val: -0.37 * 0 = -0
+	Current summation: -0.03278179629716653
+F-index (i,j): (0, 0)
+	In val * Grad val: -0.37 * 0 = -0
+	Current summation: -0.023797463325631804
+F-index (i,j): (2, 2)
+	In val * Grad val: 0.45 * 0 = 0
+	Current summation: 0.06123524548245158
+F-index (i,j): (2, 1)
+	In val * Grad val: 0.45 * 0.030432038236863156 = 0.01369441720658842
+	Current summation: 0.06831585390170769
+F-index (i,j): (2, 0)
+	In val * Grad val: 0.45 * 0 = 0
+	Current summation: 0.0454578725685796
+F-index (i,j): (1, 2)
+	In val * Grad val: 0.45 * 0.019729424536471557 = 0.0088782410414122
+	Current summation: 0.09574040677374318
+F-index (i,j): (1, 1)
+	In val * Grad val: 0.45 * 0 = 0
+	Current summation: 0.061584782519998355
+F-index (i,j): (1, 0)
+	In val * Grad val: 0.45 * 0 = 0
+	Current summation: 0.07308007105297869
+F-index (i,j): (0, 2)
+	In val * Grad val: 0.45 * 0 = 0
+	Current summation: -0.03360477267211958
+F-index (i,j): (0, 1)
+	In val * Grad val: 0.45 * 0 = 0
+	Current summation: -0.03278179629716653
+F-index (i,j): (0, 0)
+	In val * Grad val: 0.45 * 0 = 0
+	Current summation: -0.023797463325631804
+F-index (i,j): (2, 2)
+	In val * Grad val: 0.53 * 0.030432038236863156 = 0.01612898026553747
+	Current summation: 0.07736422574798905
+F-index (i,j): (2, 1)
+	In val * Grad val: 0.53 * 0 = 0
+	Current summation: 0.06831585390170769
+F-index (i,j): (2, 0)
+	In val * Grad val: 0.53 * 0.008689174345190554 = 0.004605262402950994
+	Current summation: 0.0500631349715306
+F-index (i,j): (1, 2)
+	In val * Grad val: 0.53 * 0 = 0
+	Current summation: 0.09574040677374318
+F-index (i,j): (1, 1)
+	In val * Grad val: 0.53 * 0 = 0
+	Current summation: 0.061584782519998355
+F-index (i,j): (1, 0)
+	In val * Grad val: 0.53 * 0 = 0
+	Current summation: 0.07308007105297869
+F-index (i,j): (0, 2)
+	In val * Grad val: 0.53 * 0 = 0
+	Current summation: -0.03360477267211958
+F-index (i,j): (0, 1)
+	In val * Grad val: 0.53 * 0 = 0
+	Current summation: -0.03278179629716653
+F-index (i,j): (0, 0)
+	In val * Grad val: 0.53 * 0.03926488732107161 = 0.020810390280167956
+	Current summation: -0.0029870730454638478
+F-index (i,j): (2, 2)
+	In val * Grad val: 0.61 * 0 = 0
+	Current summation: 0.07736422574798905
+F-index (i,j): (2, 1)
+	In val * Grad val: 0.61 * 0.008689174345190554 = 0.005300396350566238
+	Current summation: 0.07361625025227393
+F-index (i,j): (1, 2)
+	In val * Grad val: 0.61 * 0 = 0
+	Current summation: 0.09574040677374318
+F-index (i,j): (1, 1)
+	In val * Grad val: 0.61 * 0 = 0
+	Current summation: 0.061584782519998355
+F-index (i,j): (0, 2)
+	In val * Grad val: 0.61 * 0 = 0
+	Current summation: -0.03360477267211958
+F-index (i,j): (0, 1)
+	In val * Grad val: 0.61 * 0.03926488732107161 = 0.023951581265853682
+	Current summation: -0.008830215031312847
+F-index (i,j): (2, 2)
+	In val * Grad val: 0.69 * 0.008689174345190554 = 0.005995530298181482
+	Current summation: 0.08335975604617053
+F-index (i,j): (1, 2)
+	In val * Grad val: 0.69 * 0 = 0
+	Current summation: 0.09574040677374318
+F-index (i,j): (0, 2)
+	In val * Grad val: 0.69 * 0.03926488732107161 = 0.027092772251539412
+	Current summation: -0.006512000420580168
+F-index (i,j): (2, 0)
+	In val * Grad val: 0.6 * 0 = 0
+	Current summation: 0.0500631349715306
+F-index (i,j): (1, 0)
+	In val * Grad val: 0.6 * 0 = 0
+	Current summation: 0.07308007105297869
+F-index (i,j): (0, 0)
+	In val * Grad val: 0.6 * 0.03938918691259423 = 0.023633512147556535
+	Current summation: 0.020646439102092688
+F-index (i,j): (2, 1)
+	In val * Grad val: 0.14 * 0 = 0
+	Current summation: 0.07361625025227393
+F-index (i,j): (2, 0)
+	In val * Grad val: 0.14 * 0 = 0
+	Current summation: 0.0500631349715306
+F-index (i,j): (1, 1)
+	In val * Grad val: 0.14 * 0 = 0
+	Current summation: 0.061584782519998355
+F-index (i,j): (1, 0)
+	In val * Grad val: 0.14 * 0 = 0
+	Current summation: 0.07308007105297869
+F-index (i,j): (0, 1)
+	In val * Grad val: 0.14 * 0.03938918691259423 = 0.005514486167763193
+	Current summation: -0.003315728863549654
+F-index (i,j): (0, 0)
+	In val * Grad val: 0.14 * 0 = 0
+	Current summation: 0.020646439102092688
+F-index (i,j): (2, 2)
+	In val * Grad val: 0.22 * 0 = 0
+	Current summation: 0.08335975604617053
+F-index (i,j): (2, 1)
+	In val * Grad val: 0.22 * 0 = 0
+	Current summation: 0.07361625025227393
+F-index (i,j): (2, 0)
+	In val * Grad val: 0.22 * 0 = 0
+	Current summation: 0.0500631349715306
+F-index (i,j): (1, 2)
+	In val * Grad val: 0.22 * 0 = 0
+	Current summation: 0.09574040677374318
+F-index (i,j): (1, 1)
+	In val * Grad val: 0.22 * 0 = 0
+	Current summation: 0.061584782519998355
+F-index (i,j): (1, 0)
+	In val * Grad val: 0.22 * 0 = 0
+	Current summation: 0.07308007105297869
+F-index (i,j): (0, 2)
+	In val * Grad val: 0.22 * 0.03938918691259423 = 0.00866562112077073
+	Current summation: 0.002153620700190562
+F-index (i,j): (0, 1)
+	In val * Grad val: 0.22 * 0 = 0
+	Current summation: -0.003315728863549654
+F-index (i,j): (0, 0)
+	In val * Grad val: 0.22 * 0 = 0
+	Current summation: 0.020646439102092688
+F-index (i,j): (2, 2)
+	In val * Grad val: 0.3 * 0 = 0
+	Current summation: 0.08335975604617053
+F-index (i,j): (2, 1)
+	In val * Grad val: 0.3 * 0 = 0
+	Current summation: 0.07361625025227393
+F-index (i,j): (2, 0)
+	In val * Grad val: 0.3 * 0.019729424536471557 = 0.005918827360941467
+	Current summation: 0.05598196233247207
+F-index (i,j): (1, 2)
+	In val * Grad val: 0.3 * 0 = 0
+	Current summation: 0.09574040677374318
+F-index (i,j): (1, 1)
+	In val * Grad val: 0.3 * 0 = 0
+	Current summation: 0.061584782519998355
+F-index (i,j): (1, 0)
+	In val * Grad val: 0.3 * 0 = 0
+	Current summation: 0.07308007105297869
+F-index (i,j): (0, 2)
+	In val * Grad val: 0.3 * 0 = 0
+	Current summation: 0.002153620700190562
+F-index (i,j): (0, 1)
+	In val * Grad val: 0.3 * 0 = 0
+	Current summation: -0.003315728863549654
+F-index (i,j): (0, 0)
+	In val * Grad val: 0.3 * 0.004846915066095164 = 0.0014540745198285492
+	Current summation: 0.022100513621921235
+F-index (i,j): (2, 2)
+	In val * Grad val: 0.38 * 0 = 0
+	Current summation: 0.08335975604617053
+F-index (i,j): (2, 1)
+	In val * Grad val: 0.38 * 0.019729424536471557 = 0.0074971813238591915
+	Current summation: 0.08111343157613313
+F-index (i,j): (2, 0)
+	In val * Grad val: 0.38 * 0 = 0
+	Current summation: 0.05598196233247207
+F-index (i,j): (1, 2)
+	In val * Grad val: 0.38 * 0 = 0
+	Current summation: 0.09574040677374318
+F-index (i,j): (1, 1)
+	In val * Grad val: 0.38 * 0 = 0
+	Current summation: 0.061584782519998355
+F-index (i,j): (1, 0)
+	In val * Grad val: 0.38 * 0 = 0
+	Current summation: 0.07308007105297869
+F-index (i,j): (0, 2)
+	In val * Grad val: 0.38 * 0 = 0
+	Current summation: 0.002153620700190562
+F-index (i,j): (0, 1)
+	In val * Grad val: 0.38 * 0.004846915066095164 = 0.0018418277251161625
+	Current summation: -0.0014739011384334916
+F-index (i,j): (0, 0)
+	In val * Grad val: 0.38 * 0 = 0
+	Current summation: 0.022100513621921235
+F-index (i,j): (2, 2)
+	In val * Grad val: -0.46 * 0.019729424536471557 = -0.009075535286776917
+	Current summation: 0.07428422075939362
+F-index (i,j): (2, 1)
+	In val * Grad val: -0.46 * 0 = -0
+	Current summation: 0.08111343157613313
+F-index (i,j): (2, 0)
+	In val * Grad val: -0.46 * 0 = -0
+	Current summation: 0.05598196233247207
+F-index (i,j): (1, 2)
+	In val * Grad val: -0.46 * 0 = -0
+	Current summation: 0.09574040677374318
+F-index (i,j): (1, 1)
+	In val * Grad val: -0.46 * 0 = -0
+	Current summation: 0.061584782519998355
+F-index (i,j): (1, 0)
+	In val * Grad val: -0.46 * 0 = -0
+	Current summation: 0.07308007105297869
+F-index (i,j): (0, 2)
+	In val * Grad val: -0.46 * 0.004846915066095164 = -0.002229580930403776
+	Current summation: -7.596023021321386e-05
+F-index (i,j): (0, 1)
+	In val * Grad val: -0.46 * 0 = -0
+	Current summation: -0.0014739011384334916
+F-index (i,j): (0, 0)
+	In val * Grad val: -0.46 * 0.09693342227885395 = -0.04458937424827282
+	Current summation: -0.022488860626351585
+F-index (i,j): (2, 2)
+	In val * Grad val: 0.54 * 0 = 0
+	Current summation: 0.07428422075939362
+F-index (i,j): (2, 1)
+	In val * Grad val: 0.54 * 0 = 0
+	Current summation: 0.08111343157613313
+F-index (i,j): (2, 0)
+	In val * Grad val: 0.54 * 0 = 0
+	Current summation: 0.05598196233247207
+F-index (i,j): (1, 2)
+	In val * Grad val: 0.54 * 0 = 0
+	Current summation: 0.09574040677374318
+F-index (i,j): (1, 1)
+	In val * Grad val: 0.54 * 0 = 0
+	Current summation: 0.061584782519998355
+F-index (i,j): (1, 0)
+	In val * Grad val: 0.54 * 0.03926488732107161 = 0.02120303915337867
+	Current summation: 0.09428311020635735
+F-index (i,j): (0, 2)
+	In val * Grad val: 0.54 * 0 = 0
+	Current summation: -7.596023021321386e-05
+F-index (i,j): (0, 1)
+	In val * Grad val: 0.54 * 0.09693342227885395 = 0.05234404803058113
+	Current summation: 0.05087014689214764
+F-index (i,j): (0, 0)
+	In val * Grad val: 0.54 * 0 = 0
+	Current summation: -0.022488860626351585
+F-index (i,j): (2, 2)
+	In val * Grad val: 0.62 * 0 = 0
+	Current summation: 0.07428422075939362
+F-index (i,j): (2, 1)
+	In val * Grad val: 0.62 * 0 = 0
+	Current summation: 0.08111343157613313
+F-index (i,j): (1, 2)
+	In val * Grad val: 0.62 * 0 = 0
+	Current summation: 0.09574040677374318
+F-index (i,j): (1, 1)
+	In val * Grad val: 0.62 * 0.03926488732107161 = 0.0243442301390644
+	Current summation: 0.08592901265906275
+F-index (i,j): (0, 2)
+	In val * Grad val: 0.62 * 0.09693342227885395 = 0.060098721812889444
+	Current summation: 0.06002276158267623
+F-index (i,j): (0, 1)
+	In val * Grad val: 0.62 * 0 = 0
+	Current summation: 0.05087014689214764
+F-index (i,j): (2, 2)
+	In val * Grad val: 0.7 * 0 = 0
+	Current summation: 0.07428422075939362
+F-index (i,j): (1, 2)
+	In val * Grad val: 0.7 * 0.03926488732107161 = 0.027485421124750126
+	Current summation: 0.1232258278984933
+F-index (i,j): (0, 2)
+	In val * Grad val: 0.7 * 0 = 0
+	Current summation: 0.06002276158267623
+F-index (i,j): (2, 0)
+	In val * Grad val: 0.7 * 0 = 0
+	Current summation: 0.05598196233247207
+F-index (i,j): (1, 0)
+	In val * Grad val: 0.7 * 0.03938918691259423 = 0.02757243083881596
+	Current summation: 0.12185554104517331
+F-index (i,j): (2, 1)
+	In val * Grad val: 0.15 * 0 = 0
+	Current summation: 0.08111343157613313
+F-index (i,j): (2, 0)
+	In val * Grad val: 0.15 * 0 = 0
+	Current summation: 0.05598196233247207
+F-index (i,j): (1, 1)
+	In val * Grad val: 0.15 * 0.03938918691259423 = 0.005908378036889134
+	Current summation: 0.09183739069595188
+F-index (i,j): (1, 0)
+	In val * Grad val: 0.15 * 0 = 0
+	Current summation: 0.12185554104517331
+F-index (i,j): (2, 2)
+	In val * Grad val: 0.23 * 0 = 0
+	Current summation: 0.07428422075939362
+F-index (i,j): (2, 1)
+	In val * Grad val: 0.23 * 0 = 0
+	Current summation: 0.08111343157613313
+F-index (i,j): (2, 0)
+	In val * Grad val: 0.23 * 0 = 0
+	Current summation: 0.05598196233247207
+F-index (i,j): (1, 2)
+	In val * Grad val: 0.23 * 0.03938918691259423 = 0.009059512989896674
+	Current summation: 0.13228534088838997
+F-index (i,j): (1, 1)
+	In val * Grad val: 0.23 * 0 = 0
+	Current summation: 0.09183739069595188
+F-index (i,j): (1, 0)
+	In val * Grad val: 0.23 * 0 = 0
+	Current summation: 0.12185554104517331
+F-index (i,j): (2, 2)
+	In val * Grad val: 0.31 * 0 = 0
+	Current summation: 0.07428422075939362
+F-index (i,j): (2, 1)
+	In val * Grad val: 0.31 * 0 = 0
+	Current summation: 0.08111343157613313
+F-index (i,j): (2, 0)
+	In val * Grad val: 0.31 * 0 = 0
+	Current summation: 0.05598196233247207
+F-index (i,j): (1, 2)
+	In val * Grad val: 0.31 * 0 = 0
+	Current summation: 0.13228534088838997
+F-index (i,j): (1, 1)
+	In val * Grad val: 0.31 * 0 = 0
+	Current summation: 0.09183739069595188
+F-index (i,j): (1, 0)
+	In val * Grad val: 0.31 * 0.004846915066095164 = 0.001502543670489501
+	Current summation: 0.12335808471566281
+F-index (i,j): (2, 2)
+	In val * Grad val: 0.39 * 0 = 0
+	Current summation: 0.07428422075939362
+F-index (i,j): (2, 1)
+	In val * Grad val: 0.39 * 0 = 0
+	Current summation: 0.08111343157613313
+F-index (i,j): (2, 0)
+	In val * Grad val: 0.39 * 0 = 0
+	Current summation: 0.05598196233247207
+F-index (i,j): (1, 2)
+	In val * Grad val: 0.39 * 0 = 0
+	Current summation: 0.13228534088838997
+F-index (i,j): (1, 1)
+	In val * Grad val: 0.39 * 0.004846915066095164 = 0.001890296875777114
+	Current summation: 0.093727687571729
+F-index (i,j): (1, 0)
+	In val * Grad val: 0.39 * 0 = 0
+	Current summation: 0.12335808471566281
+F-index (i,j): (2, 2)
+	In val * Grad val: 0.47 * 0 = 0
+	Current summation: 0.07428422075939362
+F-index (i,j): (2, 1)
+	In val * Grad val: 0.47 * 0 = 0
+	Current summation: 0.08111343157613313
+F-index (i,j): (2, 0)
+	In val * Grad val: 0.47 * 0 = 0
+	Current summation: 0.05598196233247207
+F-index (i,j): (1, 2)
+	In val * Grad val: 0.47 * 0.004846915066095164 = 0.002278050081064727
+	Current summation: 0.1345633909694547
+F-index (i,j): (1, 1)
+	In val * Grad val: 0.47 * 0 = 0
+	Current summation: 0.093727687571729
+F-index (i,j): (1, 0)
+	In val * Grad val: 0.47 * 0.09693342227885395 = 0.04555870847106135
+	Current summation: 0.16891679318672417
+F-index (i,j): (2, 2)
+	In val * Grad val: -0.55 * 0 = -0
+	Current summation: 0.07428422075939362
+F-index (i,j): (2, 1)
+	In val * Grad val: -0.55 * 0 = -0
+	Current summation: 0.08111343157613313
+F-index (i,j): (2, 0)
+	In val * Grad val: -0.55 * 0.03926488732107161 = -0.02159568802658939
+	Current summation: 0.034386274305882675
+F-index (i,j): (1, 2)
+	In val * Grad val: -0.55 * 0 = -0
+	Current summation: 0.1345633909694547
+F-index (i,j): (1, 1)
+	In val * Grad val: -0.55 * 0.09693342227885395 = -0.05331338225336967
+	Current summation: 0.04041430531835933
+F-index (i,j): (1, 0)
+	In val * Grad val: -0.55 * 0 = -0
+	Current summation: 0.16891679318672417
+F-index (i,j): (2, 2)
+	In val * Grad val: 0.63 * 0 = 0
+	Current summation: 0.07428422075939362
+F-index (i,j): (2, 1)
+	In val * Grad val: 0.63 * 0.03926488732107161 = 0.024736879012275115
+	Current summation: 0.10585031058840824
+F-index (i,j): (1, 2)
+	In val * Grad val: 0.63 * 0.09693342227885395 = 0.061068056035677984
+	Current summation: 0.19563144700513269
+F-index (i,j): (1, 1)
+	In val * Grad val: 0.63 * 0 = 0
+	Current summation: 0.04041430531835933
+F-index (i,j): (2, 2)
+	In val * Grad val: 0.71 * 0.03926488732107161 = 0.027878069997960844
+	Current summation: 0.10216229075735446
+F-index (i,j): (1, 2)
+	In val * Grad val: 0.71 * 0 = 0
+	Current summation: 0.19563144700513269
+F-index (i,j): (2, 0)
+	In val * Grad val: 0.8 * 0.03938918691259423 = 0.03151134953007539
+	Current summation: 0.06589762383595807
+F-index (i,j): (2, 1)
+	In val * Grad val: 0.16 * 0.03938918691259423 = 0.006302269906015076
+	Current summation: 0.11215258049442332
+F-index (i,j): (2, 0)
+	In val * Grad val: 0.16 * 0 = 0
+	Current summation: 0.06589762383595807
+F-index (i,j): (2, 2)
+	In val * Grad val: 0.24 * 0.03938918691259423 = 0.009453404859022614
+	Current summation: 0.11161569561637708
+F-index (i,j): (2, 1)
+	In val * Grad val: 0.24 * 0 = 0
+	Current summation: 0.11215258049442332
+F-index (i,j): (2, 0)
+	In val * Grad val: 0.24 * 0 = 0
+	Current summation: 0.06589762383595807
+F-index (i,j): (2, 2)
+	In val * Grad val: 0.32 * 0 = 0
+	Current summation: 0.11161569561637708
+F-index (i,j): (2, 1)
+	In val * Grad val: 0.32 * 0 = 0
+	Current summation: 0.11215258049442332
+F-index (i,j): (2, 0)
+	In val * Grad val: 0.32 * 0.004846915066095164 = 0.0015510128211504526
+	Current summation: 0.06744863665710853
+F-index (i,j): (2, 2)
+	In val * Grad val: 0.4 * 0 = 0
+	Current summation: 0.11161569561637708
+F-index (i,j): (2, 1)
+	In val * Grad val: 0.4 * 0.004846915066095164 = 0.001938766026438066
+	Current summation: 0.11409134652086139
+F-index (i,j): (2, 0)
+	In val * Grad val: 0.4 * 0 = 0
+	Current summation: 0.06744863665710853
+F-index (i,j): (2, 2)
+	In val * Grad val: 0.48 * 0.004846915066095164 = 0.002326519231725679
+	Current summation: 0.11394221484810275
+F-index (i,j): (2, 1)
+	In val * Grad val: 0.48 * 0 = 0
+	Current summation: 0.11409134652086139
+F-index (i,j): (2, 0)
+	In val * Grad val: 0.48 * 0.09693342227885395 = 0.04652804269384989
+	Current summation: 0.11397667935095843
+F-index (i,j): (2, 2)
+	In val * Grad val: 0.56 * 0 = 0
+	Current summation: 0.11394221484810275
+F-index (i,j): (2, 1)
+	In val * Grad val: 0.56 * 0.09693342227885395 = 0.05428271647615821
+	Current summation: 0.1683740629970196
+F-index (i,j): (2, 0)
+	In val * Grad val: 0.56 * 0 = 0
+	Current summation: 0.11397667935095843
+F-index (i,j): (2, 2)
+	In val * Grad val: -0.64 * 0.09693342227885395 = -0.062037390258466524
+	Current summation: 0.05190482458963623
+F-index (i,j): (2, 1)
+	In val * Grad val: -0.64 * 0 = -0
+	Current summation: 0.1683740629970196
+F-index (i,j): (2, 2)
+	In val * Grad val: 0.72 * 0 = 0
+	Current summation: 0.05190482458963623
+New deltaWeights
+  Depth level: 0
+-0.022488860626351585 0.16891679318672417 0.11397667935095843 
+0.05087014689214764 0.04041430531835933 0.1683740629970196 
+0.06002276158267623 0.19563144700513269 0.05190482458963623 
+Printing Fully Connected Layer output...
+  Depth level: 0
+0.7405502068775088 0.7029505376656959 0.7281921416986687 
+New deltaWeights
+  Depth level: 0
+-0.022488860626351585 0.16891679318672417 0.11397667935095843 
+0.05087014689214764 0.04041430531835933 0.1683740629970196 
+0.06002276158267623 0.19563144700513269 0.05190482458963623 
+Printing Fully Connected Layer output...
+  Depth level: 0
+0.7405502068775088 0.7029505376656959 0.7281921416986687 
+New deltaWeights
+  Depth level: 0
+-0.022488860626351585 0.16891679318672417 0.11397667935095843 
+0.05087014689214764 0.04041430531835933 0.1683740629970196 
+0.06002276158267623 0.19563144700513269 0.05190482458963623 

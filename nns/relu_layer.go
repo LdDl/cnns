@@ -64,6 +64,18 @@ func (relu *ReLULayer) GetGradients() *Tensor {
 
 // CalculateGradients - calculate ReLU layer's gradients
 func (relu *ReLULayer) CalculateGradients(nextLayerGrad *Tensor) {
+	for i := 0; i < (*relu).In.X; i++ {
+		for j := 0; j < (*relu).In.Y; j++ {
+			for z := 0; z < (*relu).In.Z; z++ {
+				if (*relu).In.GetValue(i, j, z) < 0 {
+					// (*relu).InputGradients.SetValue(i, j, z, 0)
+				} else {
+					// (*relu).InputGradients.SetValue(i, j, z, nextLayerGrad.GetValue(i, j, z))
+				}
+				(*relu).InputGradients.SetValue(i, j, z, nextLayerGrad.GetValue(i, j, z))
+			}
+		}
+	}
 }
 
 // UpdateWeights - just to point, that ReLU layer does NOT updating weights

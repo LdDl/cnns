@@ -1,6 +1,7 @@
 package nns
 
 import (
+	"cnns_vika/utils/u"
 	"fmt"
 	"math/rand"
 )
@@ -23,6 +24,8 @@ type ConvLayer struct {
 	PaddingWidth   int
 	PaddingHeight  int
 	InputGradients *Tensor
+	DeltaWeights   []*Tensor
+	OldFilterGrads []*Tensor
 }
 
 // NewConvLayer - constructor for new convolutional layer. You need to specify striding step, size (square) of kernel, amount of kernels, input size.
@@ -39,7 +42,7 @@ func NewConvLayer(
 		Out: NewTensorEmpty(
 			(width-kernelWidth+2*paddingWidth)/strideWidth+1,
 			(height-kernelHeight+2*paddingHeight)/strideHeight+1,
-			depth),
+			kernelsNumber),
 		Kernels:        make([]Tensor, kernelsNumber),
 		KernelWidth:    kernelWidth,
 		KernelHeight:   kernelHeight,
@@ -60,6 +63,10 @@ func NewConvLayer(
 			}
 		}
 		(*newLayer).Kernels[f] = *kernelTensor
+
+		newLayer.DeltaWeights = append(newLayer.DeltaWeights, NewTensorEmpty(kernelWidth, kernelHeight, depth))
+		newLayer.OldFilterGrads = append(newLayer.OldFilterGrads, NewTensorEmpty(kernelWidth, kernelHeight, depth))
+
 	}
 	return newLayer
 }
@@ -107,6 +114,61 @@ func (con *ConvLayer) GetGradients() *Tensor {
 
 // CalculateGradients - calculate convolutional layer's gradients
 func (con *ConvLayer) CalculateGradients(nextLayerGrad *Tensor) {
+	for k := 0; k < len((*con).DeltaWeights); k++ {
+		for i := 0; i < (*con).KernelWidth; i++ {
+			for j := 0; j < (*con).KernelHeight; j++ {
+				for z := 0; z < (*con).In.Z; z++ {
+					(*con).DeltaWeights[k].SetValue(i, j, z, 0)
+				}
+			}
+		}
+	}
+	for x := 0; x < (*con).In.X; x++ {
+		for y := 0; y < (*con).In.Y; y++ {
+			rn := (*con).SameAsOuput(x, y)
+			for z := 0; z < (*con).In.Z; z++ {
+				sumError := 0.0
+				for i := rn.MinX; i <= rn.MaxX; i++ {
+					minx := i * (*con).StrideWidth
+					for j := rn.MinY; j <= rn.MaxY; j++ {
+						miny := j * (*con).StrideHeight
+						for k := rn.MinZ; k <= rn.MaxZ; k++ {
+							weightApplied := (*con).Kernels[k].GetValue(x-minx, y-miny, z)
+							sumError += weightApplied * nextLayerGrad.GetValue(i, j, k)
+							(*con).DeltaWeights[k].AddValue(x-minx, y-miny, z, (*con).In.GetValue(x, y, z)*nextLayerGrad.GetValue(i, j, k))
+							// fmt.Printf("delta weights index (i,j): (%v, %v)\n\t", x-minx, y-miny)
+							// fmt.Printf("In val * Grad val: %v * %v = %v\n", (*con).In.GetValue(x, y, z), nextLayerGrad.GetValue(i, j, k), (*con).In.GetValue(x, y, z)*nextLayerGrad.GetValue(i, j, k))
+							// fmt.Printf("\tCurrent summation: %v\n", (*con).DeltaWeights[k].GetValue(x-minx, y-miny, z))
+						}
+					}
+				}
+				(*con).InputGradients.SetValue(x, y, z, sumError)
+				// fmt.Printf("conv grad: %v , corresponding value: %v \n", sumError, (*con).In.GetValue(x, y, z))
+			}
+		}
+	}
+	// fmt.Println("New deltaWeights")
+	// (*con).DeltaWeights[0].Print()
+}
+
+// SameAsOuput - reshape convolutional layer's output
+func (con *ConvLayer) SameAsOuput(x, y int) RangeP {
+	a := float64(x)
+	b := float64(y)
+	return RangeP{
+		MinX: u.NormalizeRange((a-float64((*con).KernelWidth)+1.0)/float64((*con).StrideWidth), (*con).Out.X, true),
+		MinY: u.NormalizeRange((b-float64((*con).KernelHeight)+1.0)/float64((*con).StrideHeight), (*con).Out.Y, true),
+		MinZ: 0,
+		MaxX: u.NormalizeRange(a/float64((*con).StrideWidth), (*con).Out.X, false),
+		MaxY: u.NormalizeRange(b/float64((*con).StrideHeight), (*con).Out.Y, false),
+		MaxZ: len((*con).Kernels) - 1,
+	}
+}
+
+// RangeP is struct for reshaping convolution arrays
+type RangeP struct {
+	MinX, MinY, MinZ int
+	MaxX, MaxY, MaxZ int
 }
 
 // UpdateWeights - update convolutional layer's weights

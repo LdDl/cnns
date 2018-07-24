@@ -101,7 +101,6 @@ func (maxpool *MaxPoolingLayer) CalculateGradients(nextLayerGrad *Tensor) {
 		sumweightgrad := nextLayerGrad.GetValue(i, 0, 0)
 		(*maxpool).LocalGradients.SetValue(int(mappedIndex), 0, 0, sumweightgrad)
 	}
-	(*maxpool).LocalGradients.Print()
 }
 
 // UpdateWeights - just to point, that max pooling layer does NOT updating weights

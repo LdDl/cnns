@@ -256,18 +256,6 @@ func (fc *FullConnectedLayer) InputWithBiases(t *Tensor) {
 	x := (*t).X
 	y := (*t).Y
 	z := (*t).Z
-	// for k := 0; k < z; k++ {
-	// 	for j := 0; j < y; j++ {
-	// 		for i := 0; i < x; i++ {
-	// 			(*fc).In.SetValue(i, j, k, (*t).GetValue(i, j, k))
-	// 		}
-	// 	}
-	// }
-	// for k := 0; k < (*fc).In.Z; k++ {
-	// 	for j := 0; j < (*fc).In.Y; j++ {
-	// 		(*fc).In.SetValue((*fc).In.X-1, j, k, 1)
-	// 	}
-	// }
 	for i := 0; i < (x * y * z); i++ {
 		(*fc).In.SetValue(i, 0, 0, (*t).GetValue(i, 0, 0))
 	}

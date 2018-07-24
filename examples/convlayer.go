@@ -85,4 +85,10 @@ func CheckConvLayer() {
 
 	net.Layers[2].CalculateGradients(net.Layers[3].GetGradients())
 	// net.Layers[2].PrintGradients()
+
+	net.Layers[1].CalculateGradients(net.Layers[2].GetGradients())
+	// net.Layers[1].PrintGradients()
+
+	net.Layers[0].CalculateGradients(net.Layers[1].GetGradients())
+
 }
