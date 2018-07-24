@@ -14,18 +14,18 @@ import (
 // Kernels - size of neuron. 3x3, 4x2, 5x9,... and etc.
 // InputGradients - gradients
 type ConvLayer struct {
-	In             *Tensor
-	Out            *Tensor
-	Kernels        []Tensor
-	KernelWidth    int
-	KernelHeight   int
-	StrideWidth    int
-	StrideHeight   int
-	PaddingWidth   int
-	PaddingHeight  int
-	InputGradients *Tensor
-	DeltaWeights   []*Tensor
-	OldFilterGrads []*Tensor
+	In                    *Tensor
+	Out                   *Tensor
+	Kernels               []Tensor
+	KernelWidth           int
+	KernelHeight          int
+	StrideWidth           int
+	StrideHeight          int
+	PaddingWidth          int
+	PaddingHeight         int
+	InputGradients        *Tensor
+	DeltaWeights          []*Tensor
+	PreviuousDeltaWeights []*Tensor
 }
 
 // NewConvLayer - constructor for new convolutional layer. You need to specify striding step, size (square) of kernel, amount of kernels, input size.
@@ -65,7 +65,7 @@ func NewConvLayer(
 		(*newLayer).Kernels[f] = *kernelTensor
 
 		newLayer.DeltaWeights = append(newLayer.DeltaWeights, NewTensorEmpty(kernelWidth, kernelHeight, depth))
-		newLayer.OldFilterGrads = append(newLayer.OldFilterGrads, NewTensorEmpty(kernelWidth, kernelHeight, depth))
+		newLayer.PreviuousDeltaWeights = append(newLayer.PreviuousDeltaWeights, NewTensorEmpty(kernelWidth, kernelHeight, depth))
 
 	}
 	return newLayer
@@ -173,6 +173,24 @@ type RangeP struct {
 
 // UpdateWeights - update convolutional layer's weights
 func (con *ConvLayer) UpdateWeights() {
+	for f := 0; f < len((*con).Kernels); f++ {
+		for i := 0; i < (*con).KernelWidth; i++ {
+			for j := 0; j < (*con).KernelHeight; j++ {
+				for z := 0; z < (*con).In.Z; z++ {
+					// weightFilter := (*con).Kernels[f].GetValue(i, j, z)
+					previousDelta := (*con).PreviuousDeltaWeights[f].GetValue(i, j, z)
+					deltaWeight := (*con).DeltaWeights[f].GetValue(i, j, z)
+					// oldGrad := (*con).OldFilterGrads[f].GetValue(i, j, z)
+
+					_ = previousDelta
+					deltaWeight = LearningRate * deltaWeight // + Momentum*previousDelta
+					(*con).Kernels[f].SetValue(i, j, z, deltaWeight)
+					// (*con).Filters[f].SetSingle(i, j, z, UpdateWeight(weightFilter, &oldGrad, &newGrad, 1.0))
+					// (*con).OldFilterGrads[f].SetSingle(i, j, z, UpdateGradient(&oldGrad, &newGrad))
+				}
+			}
+		}
+	}
 }
 
 // DoActivation - convolutional layer's output activation
