@@ -184,7 +184,7 @@ func (con *ConvLayer) UpdateWeights() {
 
 					_ = previousDelta
 					deltaWeight = LearningRate * deltaWeight // + Momentum*previousDelta
-					(*con).Kernels[f].SetValue(i, j, z, deltaWeight)
+					(*con).Kernels[f].AddValue(i, j, z, deltaWeight)
 					// (*con).Filters[f].SetSingle(i, j, z, UpdateWeight(weightFilter, &oldGrad, &newGrad, 1.0))
 					// (*con).OldFilterGrads[f].SetSingle(i, j, z, UpdateGradient(&oldGrad, &newGrad))
 				}

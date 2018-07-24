@@ -4,8 +4,8 @@ import (
 	"cnns_vika/nns"
 )
 
-// CheckConvLayer - проверка свёрточного слоя
-func CheckConvLayer() {
+// CheckXTO - проверка свёрточного слоя для распознавания символов "X", "T" и "O"
+func CheckXTO() {
 	clayer := nns.NewConvLayer(3, 3, 1, 1, 0, 0, 1, 8, 9, 1)
 	conv := &nns.LayerStruct{
 		Layer: clayer,
@@ -22,11 +22,6 @@ func CheckConvLayer() {
 	fullyconnected := &nns.LayerStruct{
 		Layer: flayer,
 	}
-
-	// fmt.Println("<<< === CNN weights === >>>")
-	// clayer.PrintWeights()
-	// fmt.Println("<<< === FC weights === >>>")
-	// flayer.PrintWeights()
 
 	var net nns.WholeNet
 	net.Layers = append(net.Layers, conv)
@@ -76,13 +71,19 @@ func CheckConvLayer() {
 	// fmt.Println("Output - Desired:")
 	// difference.Print()
 
-	net.Layers[len(net.Layers)-1].CalculateGradients(difference)
-	for i := len(net.Layers) - 2; i >= 0; i-- {
-		net.Layers[i].CalculateGradients(net.Layers[i+1].GetGradients())
-	}
-	for i := range net.Layers {
-		net.Layers[i].UpdateWeights()
-	}
+	net.Layers[3].CalculateGradients(difference)
+	// net.Layers[3].PrintGradients()
+	net.Layers[3].UpdateWeights()
 
-	net.Layers[0].PrintWeights()
+	net.Layers[2].CalculateGradients(net.Layers[3].GetGradients())
+	// net.Layers[2].PrintGradients()
+	net.Layers[2].UpdateWeights()
+
+	net.Layers[1].CalculateGradients(net.Layers[2].GetGradients())
+	// net.Layers[1].PrintGradients()
+	net.Layers[1].UpdateWeights()
+
+	net.Layers[0].CalculateGradients(net.Layers[1].GetGradients())
+	// net.Layers[0].PrintGradients()
+	net.Layers[0].UpdateWeights()
 }
