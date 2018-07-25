@@ -5,21 +5,18 @@ import (
 )
 
 // ReLULayer is Rectified Linear Unit layer (activation: max(0, x))
-// In - input data
-// Out - output data
-// GradsIn - gradients
 type ReLULayer struct {
-	In             *Tensor
-	Out            *Tensor
-	InputGradients *Tensor
+	In                    Tensor
+	Out                   Tensor
+	InputGradientsWeights Tensor
 }
 
 // NewReLULayer - constructor for new ReLU layer. You need to specify input size
-func NewReLULayer(width, height, depth int) *ReLULayer {
+func NewReLULayer(inSize TDsize) *ReLULayer {
 	newLayer := &ReLULayer{
-		InputGradients: NewTensorEmpty(width, height, depth),
-		In:             NewTensorEmpty(width, height, depth),
-		Out:            NewTensorEmpty(width, height, depth),
+		InputGradientsWeights: NewTensor(inSize.X, inSize.Y, inSize.Z),
+		In:  NewTensor(inSize.X, inSize.Y, inSize.Z),
+		Out: NewTensor(inSize.X, inSize.Y, inSize.Z),
 	}
 	return newLayer
 }
@@ -36,20 +33,20 @@ func (relu *ReLULayer) PrintOutput() {
 }
 
 // GetOutput - get ReLU layer's output
-func (relu *ReLULayer) GetOutput() *Tensor {
+func (relu *ReLULayer) GetOutput() Tensor {
 	return (*relu).Out
 }
 
 // FeedForward - feed data to ReLU layer
 func (relu *ReLULayer) FeedForward(t *Tensor) {
-	(*relu).In = t
+	(*relu).In = (*t)
 	(*relu).DoActivation()
 }
 
 // PrintGradients - print relu layer's gradients
 func (relu *ReLULayer) PrintGradients() {
 	fmt.Println("Printing ReLU Layer gradients-weights...")
-	(*relu).InputGradients.Print()
+	(*relu).InputGradientsWeights.Print()
 }
 
 // PrintSumGradWeights - print relu layer's summ of grad*weight
@@ -58,21 +55,20 @@ func (relu *ReLULayer) PrintSumGradWeights() {
 }
 
 // GetGradients - get ReLU layer's gradients
-func (relu *ReLULayer) GetGradients() *Tensor {
-	return (*relu).InputGradients
+func (relu *ReLULayer) GetGradients() Tensor {
+	return (*relu).InputGradientsWeights
 }
 
 // CalculateGradients - calculate ReLU layer's gradients
 func (relu *ReLULayer) CalculateGradients(nextLayerGrad *Tensor) {
-	for i := 0; i < (*relu).In.X; i++ {
-		for j := 0; j < (*relu).In.Y; j++ {
-			for z := 0; z < (*relu).In.Z; z++ {
-				if (*relu).In.GetValue(i, j, z) < 0 {
-					// (*relu).InputGradients.SetValue(i, j, z, 0)
+	for i := 0; i < (*relu).In.Size.X; i++ {
+		for j := 0; j < (*relu).In.Size.Y; j++ {
+			for z := 0; z < (*relu).In.Size.Z; z++ {
+				if (*relu).In.Get(i, j, z) < 0 {
+					(*relu).InputGradientsWeights.Set(i, j, z, 0)
 				} else {
-					// (*relu).InputGradients.SetValue(i, j, z, nextLayerGrad.GetValue(i, j, z))
+					(*relu).InputGradientsWeights.Set(i, j, z, 1.0*nextLayerGrad.Get(i, j, z))
 				}
-				(*relu).InputGradients.SetValue(i, j, z, nextLayerGrad.GetValue(i, j, z))
 			}
 		}
 	}
@@ -88,5 +84,16 @@ func (relu *ReLULayer) UpdateWeights() {
 
 // DoActivation - ReLU layer's output activation
 func (relu *ReLULayer) DoActivation() {
-	Rectify(relu.In, relu.Out)
+	// Rectify(relu.In, relu.Out)
+	for i := 0; i < (*relu).In.Size.X; i++ {
+		for j := 0; j < (*relu).In.Size.Y; j++ {
+			for z := 0; z < (*relu).In.Size.Z; z++ {
+				v := (*relu).In.Get(i, j, z)
+				if v < 0 {
+					v = 0
+				}
+				(*relu).Out.Set(i, j, z, v)
+			}
+		}
+	}
 }

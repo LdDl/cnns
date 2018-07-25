@@ -3,36 +3,24 @@ package examples
 import (
 	"cnns_vika/nns"
 	"cnns_vika/utils/u"
-	"math"
 	"math/rand"
 	"time"
 )
 
-// ActivationTanh .
-func ActivationTanh(v float64) float64 {
-	return math.Tanh(v)
-}
-
-// ActivationTanhDerivative .
-func ActivationTanhDerivative(v float64) float64 {
-	return 1 - ActivationTanh(v)*ActivationTanh(v)
-}
-
 // CheckXOR - проверка полносвязного слоя при решении проблемы XOR
 func CheckXOR() {
 	rand.Seed(time.Now().UnixNano())
-
 	// Слой с тремя нейронами
-	flayer1 := nns.NewFullConnectedLayer(2, 1, 1, 2, true, false)
-	// flayer1.SetActivationFunc(ActivationTanh)
-	// flayer1.SetActivationDerivativeFunc(ActivationTanhDerivative)
+	flayer1 := nns.NewFullConnectedLayer(nns.TDsize{X: 2, Y: 1, Z: 1}, 2)
+	flayer1.SetActivationFunc(ActivationTanh)
+	flayer1.SetActivationDerivativeFunc(ActivationTanhDerivative)
 	fullyconnected1 := &nns.LayerStruct{
 		Layer: flayer1,
 	}
 	// Слой с одним выходным нейроном
-	flayer2 := nns.NewFullConnectedLayer(2, 1, 1, 1, true, true)
-	// flayer2.SetActivationFunc(ActivationTanh)
-	// flayer2.SetActivationDerivativeFunc(ActivationTanhDerivative)
+	flayer2 := nns.NewFullConnectedLayer(flayer1.Out.Size, 1)
+	flayer2.SetActivationFunc(ActivationTanh)
+	flayer2.SetActivationDerivativeFunc(ActivationTanhDerivative)
 	fullyconnected2 := &nns.LayerStruct{
 		Layer: flayer2,
 	}
@@ -40,11 +28,9 @@ func CheckXOR() {
 	var net nns.WholeNet
 	net.Layers = append(net.Layers, fullyconnected1)
 	net.Layers = append(net.Layers, fullyconnected2)
-
-	for i := 0; i < 500000; i++ {
+	for i := 0; i < 100000; i++ {
 		firstInt := u.RandomInt(0, 2)
 		secondInt := u.RandomInt(0, 2)
-
 		firstBool := false
 		secondBool := false
 		if firstInt == 1 {
@@ -58,45 +44,64 @@ func CheckXOR() {
 		if outputBool == true {
 			outputInt = 1
 		}
-		desired := nns.NewTensorEmpty(1, 1, 1)
-		desired.Set(&[][][]float64{[][]float64{[]float64{float64(outputInt)}}})
-		input := nns.NewTensorEmpty(2, 1, 1)
-		input.Set(&[][][]float64{[][]float64{[]float64{float64(firstInt), float64(secondInt)}}})
-
+		desired := nns.NewTensor(1, 1, 1)
+		desired.CopyFrom([][][]float64{[][]float64{[]float64{float64(outputInt)}}})
+		input := nns.NewTensor(2, 1, 1)
+		input.CopyFrom([][][]float64{[][]float64{[]float64{float64(firstInt), float64(secondInt)}}})
 		// Forward
-		net.Layers[0].FeedForward(input)
-		net.Layers[1].FeedForward(net.Layers[0].GetOutput())
-
+		net.Layers[0].FeedForward(&input)
+		for l := 1; l < len(net.Layers); l++ {
+			out := net.Layers[l-1].GetOutput()
+			net.Layers[l].FeedForward(&out)
+		}
 		//Backward
-		difference := net.Layers[1].GetOutput().Sub(desired)
-		// fmt.Printf("desired: %v, out: %v, difference: %v\n", desired.Data[0], net.Layers[0].GetOutput().Data[0], difference.Data[0])
-		net.Layers[1].CalculateGradients(difference)
-		net.Layers[0].CalculateGradients(net.Layers[1].GetGradients())
-		net.Layers[1].UpdateWeights()
-		net.Layers[0].UpdateWeights()
+		difference := net.Layers[len(net.Layers)-1].GetOutput()
+		difference.Sub(&desired)
 
-		// log.Println(firstInt, secondInt, outputInt, net.Layers[1].GetOutput().Data[0])
-
+		net.Layers[len(net.Layers)-1].CalculateGradients(&difference)
+		for i := len(net.Layers) - 2; i >= 0; i-- {
+			grad := net.Layers[i+1].GetGradients()
+			net.Layers[i].CalculateGradients(&grad)
+		}
+		for i := range net.Layers {
+			net.Layers[i].UpdateWeights()
+		}
 	}
 
-	inputTest := nns.NewTensorEmpty(2, 1, 1)
-	inputTest.Set(&[][][]float64{[][]float64{[]float64{0, 0}}})
-	net.Layers[0].FeedForward(inputTest)
-	net.Layers[1].FeedForward(net.Layers[0].GetOutput())
+	// 0 * 0
+	inputTest := nns.NewTensor(2, 1, 1)
+	inputTest.CopyFrom([][][]float64{[][]float64{[]float64{0, 0}}})
+	net.Layers[0].FeedForward(&inputTest)
+	for l := 1; l < len(net.Layers); l++ {
+		out := net.Layers[l-1].GetOutput()
+		net.Layers[l].FeedForward(&out)
+	}
 	net.Layers[1].PrintOutput()
 
-	inputTest.Set(&[][][]float64{[][]float64{[]float64{1.0, 0}}})
-	net.Layers[0].FeedForward(inputTest)
-	net.Layers[1].FeedForward(net.Layers[0].GetOutput())
+	// 1 * 0
+	inputTest.CopyFrom([][][]float64{[][]float64{[]float64{1.0, 0}}})
+	net.Layers[0].FeedForward(&inputTest)
+	for l := 1; l < len(net.Layers); l++ {
+		out := net.Layers[l-1].GetOutput()
+		net.Layers[l].FeedForward(&out)
+	}
 	net.Layers[1].PrintOutput()
 
-	inputTest.Set(&[][][]float64{[][]float64{[]float64{0, 1.0}}})
-	net.Layers[0].FeedForward(inputTest)
-	net.Layers[1].FeedForward(net.Layers[0].GetOutput())
+	// 0 * 1
+	inputTest.CopyFrom([][][]float64{[][]float64{[]float64{0, 1.0}}})
+	net.Layers[0].FeedForward(&inputTest)
+	for l := 1; l < len(net.Layers); l++ {
+		out := net.Layers[l-1].GetOutput()
+		net.Layers[l].FeedForward(&out)
+	}
 	net.Layers[1].PrintOutput()
 
-	inputTest.Set(&[][][]float64{[][]float64{[]float64{1.0, 1.0}}})
-	net.Layers[0].FeedForward(inputTest)
-	net.Layers[1].FeedForward(net.Layers[0].GetOutput())
+	// 1 * 1
+	inputTest.CopyFrom([][][]float64{[][]float64{[]float64{1.0, 1.0}}})
+	net.Layers[0].FeedForward(&inputTest)
+	for l := 1; l < len(net.Layers); l++ {
+		out := net.Layers[l-1].GetOutput()
+		net.Layers[l].FeedForward(&out)
+	}
 	net.Layers[1].PrintOutput()
 }
