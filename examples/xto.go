@@ -11,7 +11,7 @@ import (
 // CheckXTO - проверка свёрточного слоя для распознавания символов "X", "T" и "O"
 func CheckXTO() {
 	rand.Seed(time.Now().UnixNano())
-	clayer := nns.NewConvLayer(1, 3, 1, nns.TDsize{X: 8, Y: 9, Z: 1})
+	clayer := nns.NewConvLayer(1, 3, 2, nns.TDsize{X: 8, Y: 9, Z: 1}) //
 	conv := &nns.LayerStruct{
 		Layer: clayer,
 	}
