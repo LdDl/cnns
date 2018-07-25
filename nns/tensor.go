@@ -49,15 +49,18 @@ func (t1 *Tensor) Sub(t2 *Tensor) Tensor {
 }
 
 func (t1 *Tensor) Get(x, y, z int) float64 {
-	return (*t1).Data[z*(*t1).Size.X*(*t1).Size.Y+y*(*t1).Size.X+x]
+	return (*t1).Data[x+(y+z*(*t1).Size.Z)*(*t1).Size.X]
+	// return (*t1).Data[z*(*t1).Size.X*(*t1).Size.Y+y*(*t1).Size.X+x]
 }
 
 func (t1 *Tensor) Set(x, y, z int, val float64) {
-	(*t1).Data[z*(*t1).Size.X*(*t1).Size.Y+y*(*t1).Size.X+x] = val
+	(*t1).Data[x+(y+z*(*t1).Size.Z)*(*t1).Size.X] = val
+	// (*t1).Data[z*(*t1).Size.X*(*t1).Size.Y+y*(*t1).Size.X+x] = val
 }
 
 func (t1 *Tensor) SetAdd(x, y, z int, val float64) {
-	(*t1).Data[z*(*t1).Size.X*(*t1).Size.Y+y*(*t1).Size.X+x] += val
+	(*t1).Data[x+(y+z*(*t1).Size.Z)*(*t1).Size.X] += val
+	// (*t1).Data[z*(*t1).Size.X*(*t1).Size.Y+y*(*t1).Size.X+x] += val
 }
 
 func (t1 *Tensor) CopyFrom(data [][][]float64) {

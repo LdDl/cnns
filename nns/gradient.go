@@ -31,19 +31,23 @@ func NewTensorGradient(x, y, z int) TensorGradient {
 }
 
 func (t1 *TensorGradient) Get(x, y, z int) Gradient {
-	return (*t1).Data[z*(*t1).Size.X*(*t1).Size.Y+y*(*t1).Size.X+x]
+	return (*t1).Data[x+(y+z*(*t1).Size.Z)*(*t1).Size.X]
+	// return (*t1).Data[z*(*t1).Size.X*(*t1).Size.Y+y*(*t1).Size.X+x]
 }
 
 func (t1 *TensorGradient) Set(x, y, z int, val Gradient) {
-	(*t1).Data[z*(*t1).Size.X*(*t1).Size.Y+y*(*t1).Size.X+x] = val
+	(*t1).Data[x+(y+z*(*t1).Size.Z)*(*t1).Size.X] = val
+	// (*t1).Data[z*(*t1).Size.X*(*t1).Size.Y+y*(*t1).Size.X+x] = val
 }
 
 func (t1 *TensorGradient) SetGrad(x, y, z int, val float64) {
-	(*t1).Data[z*(*t1).Size.X*(*t1).Size.Y+y*(*t1).Size.X+x].Grad = val
+	(*t1).Data[x+(y+z*(*t1).Size.Z)*(*t1).Size.X].Grad = val
+	// (*t1).Data[z*(*t1).Size.X*(*t1).Size.Y+y*(*t1).Size.X+x].Grad = val
 }
 
 func (t1 *TensorGradient) AddToGrad(x, y, z int, val float64) {
-	(*t1).Data[z*(*t1).Size.X*(*t1).Size.Y+y*(*t1).Size.X+x].Grad += val
+	(*t1).Data[x+(y+z*(*t1).Size.Z)*(*t1).Size.X].Grad += val
+	// (*t1).Data[z*(*t1).Size.X*(*t1).Size.Y+y*(*t1).Size.X+x].Grad += val
 }
 
 func (t1 *TensorGradient) Print() {
