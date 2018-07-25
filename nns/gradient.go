@@ -1,5 +1,7 @@
 package nns
 
+import "fmt"
+
 type Gradient struct {
 	Grad    float64
 	OldGrad float64
@@ -42,4 +44,19 @@ func (t1 *TensorGradient) SetGrad(x, y, z int, val float64) {
 
 func (t1 *TensorGradient) AddToGrad(x, y, z int, val float64) {
 	(*t1).Data[z*(*t1).Size.X*(*t1).Size.Y+y*(*t1).Size.X+x].Grad += val
+}
+
+func (t1 *TensorGradient) Print() {
+	mx := (*t1).Size.X
+	my := (*t1).Size.Y
+	mz := (*t1).Size.Z
+	for z := 0; z < mz; z++ {
+		fmt.Printf("Dim: %v\n", z)
+		for y := 0; y < my; y++ {
+			for x := 0; x < mx; x++ {
+				fmt.Printf("%.8f\t", (*t1).Get(x, y, z))
+			}
+			fmt.Println()
+		}
+	}
 }

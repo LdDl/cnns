@@ -37,14 +37,14 @@ func NewConvLayer(stride, kernelSize, numberFilters int, inSize TDsize) *ConvLay
 		}
 
 		// hardcoded weights for testing purposes
-		// hcweights := [][][]float64{
-		// 	[][]float64{
-		// 		[]float64{0.10466029, -0.06228581, -0.43436298},
-		// 		[]float64{0.44050909, -0.07536250, -0.34348075},
-		// 		[]float64{0.16456005, 0.18682307, -0.40303048},
-		// 	},
-		// }
-		// t.CopyFrom(hcweights)
+		hcweights := [][][]float64{
+			[][]float64{
+				[]float64{0.10466029, -0.06228581, -0.43436298},
+				[]float64{0.44050909, -0.07536250, -0.34348075},
+				[]float64{0.16456005, 0.18682307, -0.40303048},
+			},
+		}
+		t.CopyFrom(hcweights)
 
 		newLayer.Kernels = append(newLayer.Kernels, t)
 
@@ -169,6 +169,7 @@ func (con *ConvLayer) UpdateWeights() {
 					grad := con.KernelsGradients[a].Get(i, j, z)
 					w = UpdateWeight(w, &grad, 1.0)
 					(*con).Kernels[a].Set(i, j, z, w)
+					// con.KernelsGradients[a].Print()
 					UpdateGradient(&grad)
 					con.KernelsGradients[a].Set(i, j, z, grad)
 				}

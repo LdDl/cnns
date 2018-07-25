@@ -6,6 +6,6 @@ func main() {
 	// examples.CheckAND()
 	// examples.CheckOR()
 	// examples.CheckXOR()
-	// examples.Conv()
-	examples.CheckXTO()
+	// examples.CheckXTO()
+	examples.Conv()
 }
