@@ -3,7 +3,6 @@ package nns
 import (
 	"cnns_vika/utils/u"
 	"fmt"
-	"math/rand"
 )
 
 // ConvLayer is convolutional layer structure
@@ -28,13 +27,13 @@ func NewConvLayer(stride, kernelSize, numberFilters int, inSize TDsize) *ConvLay
 	}
 	for a := 0; a < numberFilters; a++ {
 		t := NewTensor(kernelSize, kernelSize, inSize.Z)
-		for i := 0; i < kernelSize; i++ {
-			for j := 0; j < kernelSize; j++ {
-				for z := 0; z < inSize.Z; z++ {
-					t.Set(i, j, z, rand.Float64()-0.5)
-				}
-			}
-		}
+		// for i := 0; i < kernelSize; i++ {
+		// 	for j := 0; j < kernelSize; j++ {
+		// 		for z := 0; z < inSize.Z; z++ {
+		// 			t.Set(i, j, z, rand.Float64()-0.5)
+		// 		}
+		// 	}
+		// }
 
 		// hardcoded weights for testing purposes
 		hcweights := [][][]float64{

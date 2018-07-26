@@ -3,7 +3,6 @@ package nns
 import (
 	"fmt"
 	"math"
-	"math/rand"
 )
 
 // FullConnectedLayer is simple layer structure (so this layer can be used for simple neural networks like XOR problem), where
@@ -50,11 +49,11 @@ func NewFullConnectedLayer(inSize TDsize, outSize int) *FullConnectedLayer {
 		ActivationFunc:        ActivationSygmoid,           // Default Activation function is Sygmoid
 		ActivationDerivative:  ActivationSygmoidDerivative, // Default derivative of activation function is Sygmoid*(1-Sygmoid)
 	}
-	for i := 0; i < outSize; i++ {
-		for h := 0; h < inSize.X*inSize.Y*inSize.Z; h++ {
-			newLayer.Weights.Set(h, i, 0, rand.Float64()-0.5)
-		}
-	}
+	// for i := 0; i < outSize; i++ {
+	// 	for h := 0; h < inSize.X*inSize.Y*inSize.Z; h++ {
+	// 		newLayer.Weights.Set(h, i, 0, rand.Float64()-0.5)
+	// 	}
+	// }
 	// hardcoded weights for testing purposes
 	hcweights := [][][]float64{
 		[][]float64{

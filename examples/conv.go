@@ -71,4 +71,5 @@ func Conv() {
 	for i := range net.Layers {
 		net.Layers[i].UpdateWeights()
 	}
+	net.Layers[0].PrintWeights()
 }
