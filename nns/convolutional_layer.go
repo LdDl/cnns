@@ -3,6 +3,7 @@ package nns
 import (
 	"cnns_vika/utils/u"
 	"fmt"
+	"math/rand"
 )
 
 // ConvLayer is convolutional layer structure
@@ -27,23 +28,23 @@ func NewConvLayer(stride, kernelSize, numberFilters int, inSize TDsize) *ConvLay
 	}
 	for a := 0; a < numberFilters; a++ {
 		t := NewTensor(kernelSize, kernelSize, inSize.Z)
-		// for i := 0; i < kernelSize; i++ {
-		// 	for j := 0; j < kernelSize; j++ {
-		// 		for z := 0; z < inSize.Z; z++ {
-		// 			t.Set(i, j, z, rand.Float64()-0.5)
-		// 		}
-		// 	}
-		// }
+		for i := 0; i < kernelSize; i++ {
+			for j := 0; j < kernelSize; j++ {
+				for z := 0; z < inSize.Z; z++ {
+					t.Set(i, j, z, rand.Float64()-0.5)
+				}
+			}
+		}
 
 		// hardcoded weights for testing purposes
-		hcweights := [][][]float64{
-			[][]float64{
-				[]float64{0.10466029, -0.06228581, -0.43436298},
-				[]float64{0.44050909, -0.07536250, -0.34348075},
-				[]float64{0.16456005, 0.18682307, -0.40303048},
-			},
-		}
-		t.CopyFrom(hcweights)
+		// hcweights := [][][]float64{
+		// 	[][]float64{
+		// 		[]float64{0.10466029, -0.06228581, -0.43436298},
+		// 		[]float64{0.44050909, -0.07536250, -0.34348075},
+		// 		[]float64{0.16456005, 0.18682307, -0.40303048},
+		// 	},
+		// }
+		// t.CopyFrom(hcweights)
 
 		newLayer.Kernels = append(newLayer.Kernels, t)
 
