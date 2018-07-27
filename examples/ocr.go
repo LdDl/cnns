@@ -15,17 +15,6 @@ import (
 	"gocv.io/x/gocv"
 )
 
-// var (
-// 	chars = map[int]string{
-// 		0: "X",
-// 		1: "T",
-// 		2: "O",
-// 	}
-// 	trainWidth  = 28
-// 	trainHeight = 28
-// 	trainDepth  = 1
-// )
-
 var (
 	chars = map[int]string{
 		0:  "0",
