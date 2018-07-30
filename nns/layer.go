@@ -5,6 +5,39 @@ type WholeNet struct {
 	Layers []Layer
 }
 
+// FeedForward - forward pass throught the net
+func (wh *WholeNet) FeedForward(t *Tensor) {
+	(*wh).Layers[0].FeedForward(t)
+	for l := 1; l < len((*wh).Layers); l++ {
+		out := (*wh).Layers[l-1].GetOutput()
+		(*wh).Layers[l].FeedForward(&out)
+	}
+}
+
+// Backpropagate - backward pass throught the net (training)
+func (wh *WholeNet) Backpropagate(target *Tensor) {
+	difference := (*wh).Layers[len((*wh).Layers)-1].GetOutput()
+	difference.Sub(target)
+	(*wh).Layers[len((*wh).Layers)-1].CalculateGradients(&difference)
+	for i := len((*wh).Layers) - 2; i >= 0; i-- {
+		grad := (*wh).Layers[i+1].GetGradients()
+		(*wh).Layers[i].CalculateGradients(&grad)
+	}
+	for i := range (*wh).Layers {
+		(*wh).Layers[i].UpdateWeights()
+	}
+}
+
+// PrintOutput - prints net's output (last layer output)
+func (wh *WholeNet) PrintOutput() {
+	(*wh).Layers[len((*wh).Layers)-1].PrintOutput()
+}
+
+// GetOutput - returns net's output (last layer output)
+func (wh *WholeNet) GetOutput() Tensor {
+	return (*wh).Layers[len((*wh).Layers)-1].GetOutput()
+}
+
 // Layer - interface for all layer types
 type Layer interface {
 	// OutSize - returns output size (dimensions)

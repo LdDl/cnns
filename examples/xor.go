@@ -45,59 +45,29 @@ func CheckXOR() {
 		input := nns.NewTensor(2, 1, 1)
 		input.SetData([][][]float64{[][]float64{[]float64{float64(firstInt), float64(secondInt)}}})
 		// Forward
-		net.Layers[0].FeedForward(&input)
-		for l := 1; l < len(net.Layers); l++ {
-			out := net.Layers[l-1].GetOutput()
-			net.Layers[l].FeedForward(&out)
-		}
-		//Backward
-		difference := net.Layers[len(net.Layers)-1].GetOutput()
-		difference.Sub(&desired)
-
-		net.Layers[len(net.Layers)-1].CalculateGradients(&difference)
-		for i := len(net.Layers) - 2; i >= 0; i-- {
-			grad := net.Layers[i+1].GetGradients()
-			net.Layers[i].CalculateGradients(&grad)
-		}
-		for i := range net.Layers {
-			net.Layers[i].UpdateWeights()
-		}
+		net.FeedForward(&input)
+		// Backward
+		net.Backpropagate(&desired)
 	}
 
 	// 0 * 0
 	inputTest := nns.NewTensor(2, 1, 1)
 	inputTest.SetData([][][]float64{[][]float64{[]float64{0, 0}}})
-	net.Layers[0].FeedForward(&inputTest)
-	for l := 1; l < len(net.Layers); l++ {
-		out := net.Layers[l-1].GetOutput()
-		net.Layers[l].FeedForward(&out)
-	}
-	net.Layers[1].PrintOutput()
+	net.FeedForward(&inputTest)
+	net.PrintOutput()
 
 	// 1 * 0
 	inputTest.SetData([][][]float64{[][]float64{[]float64{1.0, 0}}})
-	net.Layers[0].FeedForward(&inputTest)
-	for l := 1; l < len(net.Layers); l++ {
-		out := net.Layers[l-1].GetOutput()
-		net.Layers[l].FeedForward(&out)
-	}
-	net.Layers[1].PrintOutput()
+	net.FeedForward(&inputTest)
+	net.PrintOutput()
 
 	// 0 * 1
 	inputTest.SetData([][][]float64{[][]float64{[]float64{0, 1.0}}})
-	net.Layers[0].FeedForward(&inputTest)
-	for l := 1; l < len(net.Layers); l++ {
-		out := net.Layers[l-1].GetOutput()
-		net.Layers[l].FeedForward(&out)
-	}
-	net.Layers[1].PrintOutput()
+	net.FeedForward(&inputTest)
+	net.PrintOutput()
 
 	// 1 * 1
 	inputTest.SetData([][][]float64{[][]float64{[]float64{1.0, 1.0}}})
-	net.Layers[0].FeedForward(&inputTest)
-	for l := 1; l < len(net.Layers); l++ {
-		out := net.Layers[l-1].GetOutput()
-		net.Layers[l].FeedForward(&out)
-	}
-	net.Layers[1].PrintOutput()
+	net.FeedForward(&inputTest)
+	net.PrintOutput()
 }

@@ -4,6 +4,7 @@ import (
 	"cnns_vika/nns"
 	"cnns_vika/utils/u"
 	"fmt"
+	"log"
 	"math/rand"
 	"time"
 )
@@ -73,9 +74,9 @@ func CheckXTO() {
 	var oimage = nns.NewTensor(8, 9, 1)
 	oimage.SetData(omatrix)
 
-	// log.Println("Weights before:")
-	// net.Layers[0].PrintWeights()
-	// net.Layers[3].PrintWeights()
+	log.Println("Weights before:")
+	net.Layers[0].PrintWeights()
+	net.Layers[3].PrintWeights()
 
 	// Train
 	for i := 0; i < 10000; i++ {
@@ -98,27 +99,14 @@ func CheckXTO() {
 		default:
 			break
 		}
-		// FeedForward
-		net.Layers[0].FeedForward(&train)
-		for l := 1; l < len(net.Layers); l++ {
-			out := net.Layers[l-1].GetOutput()
-			net.Layers[l].FeedForward(&out)
-		}
-		// Backpropagate
-		difference := net.Layers[len(net.Layers)-1].GetOutput()
-		difference.Sub(&desired)
-		net.Layers[len(net.Layers)-1].CalculateGradients(&difference)
-		for i := len(net.Layers) - 2; i >= 0; i-- {
-			grad := net.Layers[i+1].GetGradients()
-			net.Layers[i].CalculateGradients(&grad)
-		}
-		for i := range net.Layers {
-			net.Layers[i].UpdateWeights()
-		}
+		// Forward
+		net.FeedForward(&train)
+		// Backward
+		net.Backpropagate(&desired)
 	}
-	// log.Println("Weights after:")
-	// net.Layers[0].PrintWeights()
-	// net.Layers[3].PrintWeights()
+	log.Println("Weights after:")
+	net.Layers[0].PrintWeights()
+	net.Layers[3].PrintWeights()
 
 	// Test
 	xmatrix = [][][]float64{
@@ -165,26 +153,14 @@ func CheckXTO() {
 	oimage.SetData(omatrix)
 
 	fmt.Println("For X should be: [1, 0, 0], Got:")
-	net.Layers[0].FeedForward(&ximage)
-	for l := 1; l < len(net.Layers); l++ {
-		out := net.Layers[l-1].GetOutput()
-		net.Layers[l].FeedForward(&out)
-	}
-	net.Layers[len(net.Layers)-1].PrintOutput()
+	net.FeedForward(&ximage)
+	net.PrintOutput()
 
 	fmt.Println("For T should be: [0, 1, 0], Got:")
-	net.Layers[0].FeedForward(&timage)
-	for l := 1; l < len(net.Layers); l++ {
-		out := net.Layers[l-1].GetOutput()
-		net.Layers[l].FeedForward(&out)
-	}
-	net.Layers[len(net.Layers)-1].PrintOutput()
+	net.FeedForward(&timage)
+	net.PrintOutput()
 
 	fmt.Println("For O should be: [0, 0, 1], Got:")
-	net.Layers[0].FeedForward(&oimage)
-	for l := 1; l < len(net.Layers); l++ {
-		out := net.Layers[l-1].GetOutput()
-		net.Layers[l].FeedForward(&out)
-	}
-	net.Layers[len(net.Layers)-1].PrintOutput()
+	net.FeedForward(&oimage)
+	net.PrintOutput()
 }

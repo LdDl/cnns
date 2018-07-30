@@ -1,6 +1,9 @@
 package examples
 
-import "cnns_vika/nns"
+import (
+	"cnns_vika/nns"
+	"fmt"
+)
 
 func Conv() {
 	conv := nns.NewConvLayer(1, 3, 1, nns.TDsize{X: 8, Y: 9, Z: 1})
@@ -46,39 +49,27 @@ func Conv() {
 			[]float64{-0.65, 0.66, 0.67, 0.68, 0.69, 0.70, 0.71, 0.72},
 		},
 	}
-	var image = nns.NewTensor(8, 9, 1) // w,h,d
+	var image = nns.NewTensor(8, 9, 1)
 	image.SetData(matrix)
-	// image.Print()
+	fmt.Println("Image:")
+	image.Print()
 
-	// net.Layers[0].PrintWeights()
-	// net.Layers[len(net.Layers)-1].PrintWeights()
-	net.Layers[0].FeedForward(&image)
-	// net.Layers[0].PrintOutput()
-	for l := 1; l < len(net.Layers); l++ {
-		out := net.Layers[l-1].GetOutput()
-		net.Layers[l].FeedForward(&out)
-		// net.Layers[l].PrintOutput()
-	}
+	fmt.Println("Weights before training:")
+	net.Layers[0].PrintWeights()
+	net.Layers[len(net.Layers)-1].PrintWeights()
 
-	var desired = nns.NewTensor(3, 1, 1) // w,h,d
-	matrix = [][][]float64{
+	net.FeedForward(&image)
+
+	var desired = nns.NewTensor(3, 1, 1)
+	desired.SetData([][][]float64{
 		[][]float64{
 			[]float64{0.32, 0.45, 0.96},
 		},
-	}
-	desired.SetData(matrix)
-	difference := net.Layers[len(net.Layers)-1].GetOutput()
-	difference.Sub(&desired)
+	})
 
-	net.Layers[len(net.Layers)-1].CalculateGradients(&difference)
-	// net.Layers[len(net.Layers)-1].PrintGradients()
-	for i := len(net.Layers) - 2; i >= 0; i-- {
-		grad := net.Layers[i+1].GetGradients()
-		net.Layers[i].CalculateGradients(&grad)
-		// net.Layers[i].PrintGradients()
-	}
-	for i := range net.Layers {
-		net.Layers[i].UpdateWeights()
-	}
+	net.Backpropagate(&desired)
+
+	fmt.Println("Weights after training:")
 	net.Layers[0].PrintWeights()
+	net.Layers[len(net.Layers)-1].PrintWeights()
 }

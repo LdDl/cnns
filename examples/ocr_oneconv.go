@@ -135,11 +135,6 @@ func train(net *nns.WholeNet, data *map[string][]gocv.Mat) error {
 			temp.Image.SetData(imageArray)
 			temp.LabelStr = chars[intK]
 			temp.LabelInt = intK
-			// if temp.LabelStr == "T" {
-			// log.Println(temp.LabelStr)
-			// temp.Image.Print()
-			// temp.Desired.Print()
-			// }
 			trainers = append(trainers, temp)
 			// break
 		}
@@ -149,60 +144,13 @@ func train(net *nns.WholeNet, data *map[string][]gocv.Mat) error {
 	trainers = SuffleTrainers(trainers)
 	lentrainer := len(trainers)
 	log.Println("Number of train data", lentrainer)
-	// for i := 0; i < 500; i++ {
-	// 	trainers = append(trainers, trainers[0:lentrainer]...)
-	// }
-	// trainers = SuffleTrainers(trainers)
-	// log.Println("Number of train data", len(trainers))
 
 	for _, t := range trainers {
 		// Feedforward
-		net.Layers[0].FeedForward(&t.Image)
-		for l := 1; l < len(net.Layers); l++ {
-			out := net.Layers[l-1].GetOutput()
-			net.Layers[l].FeedForward(&out)
-		}
-		// log.Println("Train output:")
-		// net.Layers[len(net.Layers)-1].PrintOutput()
-		// log.Println("Desired:")
-		// t.Desired.Print()
-		// Backpropagate
-		difference := net.Layers[len(net.Layers)-1].GetOutput()
-		difference.Sub(&t.Desired)
-		// difference.Print()
-		net.Layers[len(net.Layers)-1].CalculateGradients(&difference)
-		for i := len(net.Layers) - 2; i >= 0; i-- {
-			grad := net.Layers[i+1].GetGradients()
-			net.Layers[i].CalculateGradients(&grad)
-		}
-		for i := range net.Layers {
-			net.Layers[i].UpdateWeights()
-		}
+		net.FeedForward(&t.Image)
+		// Backward
+		net.Backpropagate(&t.Desired)
 	}
-
-	// var xmatrix = [][][]float64{
-	// 	[][]float64{
-	// 		[]float64{0, 0, 0, 0, 0, 0, 0, 0},
-	// 		[]float64{0, 1, 1, 0, 0, 1, 1, 0},
-	// 		[]float64{0, 1, 1, 1, 1, 1, 1, 0},
-	// 		[]float64{0, 0, 1, 1, 1, 1, 0, 0},
-	// 		[]float64{0, 0, 1, 1, 1, 1, 0, 0},
-	// 		[]float64{0, 0, 1, 1, 1, 1, 0, 0},
-	// 		[]float64{0, 1, 1, 1, 1, 1, 1, 0},
-	// 		[]float64{0, 1, 1, 1, 1, 1, 1, 0},
-	// 		[]float64{0, 1, 1, 0, 0, 1, 1, 0},
-	// 	},
-	// }
-	// var ximage = nns.NewTensor(8, 9, 1)
-	// ximage.SetData(xmatrix)
-
-	// fmt.Println("For X should be: [1, 0, 0], Got:")
-	// net.Layers[0].FeedForward(&ximage)
-	// for l := 1; l < len(net.Layers); l++ {
-	// 	out := net.Layers[l-1].GetOutput()
-	// 	net.Layers[l].FeedForward(&out)
-	// }
-	// net.Layers[len(net.Layers)-1].PrintOutput()
 
 	return err
 }
@@ -249,12 +197,9 @@ func testTrained(net *nns.WholeNet, data *map[string][]gocv.Mat) error {
 	}
 	testers = SuffleTrainers(testers)
 	for _, t := range testers {
-		// Forward
-		net.Layers[0].FeedForward(&t.Image)
-		for l := 1; l < len(net.Layers); l++ {
-			out := net.Layers[l-1].GetOutput()
-			net.Layers[l].FeedForward(&out)
-		}
+		// Feedforward
+		net.FeedForward(&t.Image)
+
 		max := -math.MaxFloat64 // net.Layers[len(net.Layers)-1].GetOutput().Data[0]
 		for _, value := range net.Layers[len(net.Layers)-1].GetOutput().Data {
 			if value > max {
@@ -263,7 +208,7 @@ func testTrained(net *nns.WholeNet, data *map[string][]gocv.Mat) error {
 		}
 		log.Println(t.LabelStr, max)
 		// t.Image.Print()
-		net.Layers[len(net.Layers)-1].PrintOutput()
+		net.PrintOutput()
 		// fmt.Println("Should be:")
 		t.Desired.Print()
 	}
