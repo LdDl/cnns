@@ -21,8 +21,16 @@ type MaxPoolingLayer struct {
 	ExtendFilter          int
 }
 
+func (maxpool *MaxPoolingLayer) SetActivationFunc(f func(v float64) float64) {
+	//
+}
+
+func (maxpool *MaxPoolingLayer) SetActivationDerivativeFunc(f func(v float64) float64) {
+	//
+}
+
 // NewMaxPoolingLayer - constructor for new MaxPooling layer.
-func NewMaxPoolingLayer(stride, extendFilter int, inSize TDsize) *MaxPoolingLayer {
+func NewMaxPoolingLayer(stride, extendFilter int, inSize TDsize) *LayerStruct {
 	newLayer := &MaxPoolingLayer{
 		In:  NewTensor(inSize.X, inSize.Y, inSize.Z),
 		Out: NewTensor((inSize.X-extendFilter)/stride+1, (inSize.Y-extendFilter)/stride+1, inSize.Z),
@@ -30,7 +38,13 @@ func NewMaxPoolingLayer(stride, extendFilter int, inSize TDsize) *MaxPoolingLaye
 		Stride:                stride,
 		ExtendFilter:          extendFilter,
 	}
-	return newLayer
+	return &LayerStruct{
+		Layer: newLayer,
+	}
+}
+
+func (maxpool *MaxPoolingLayer) OutSize() Point {
+	return (*maxpool).Out.Size
 }
 
 func (maxpool *MaxPoolingLayer) mapToInput(out Point, z int) Point {

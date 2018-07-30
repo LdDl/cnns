@@ -9,4 +9,5 @@ func main() {
 	// examples.CheckXTO()
 	// examples.Conv()
 	examples.CheckOCR()
+	// examples.CheckOCRTwoConv()
 }

@@ -11,14 +11,28 @@ type ReLULayer struct {
 	InputGradientsWeights Tensor
 }
 
+func (relu *ReLULayer) SetActivationFunc(f func(v float64) float64) {
+	//
+}
+
+func (relu *ReLULayer) SetActivationDerivativeFunc(f func(v float64) float64) {
+	//
+}
+
 // NewReLULayer - constructor for new ReLU layer. You need to specify input size
-func NewReLULayer(inSize TDsize) *ReLULayer {
+func NewReLULayer(inSize TDsize) *LayerStruct {
 	newLayer := &ReLULayer{
 		InputGradientsWeights: NewTensor(inSize.X, inSize.Y, inSize.Z),
 		In:  NewTensor(inSize.X, inSize.Y, inSize.Z),
 		Out: NewTensor(inSize.X, inSize.Y, inSize.Z),
 	}
-	return newLayer
+	return &LayerStruct{
+		Layer: newLayer,
+	}
+}
+
+func (relu *ReLULayer) OutSize() Point {
+	return (*relu).Out.Size
 }
 
 // PrintWeights - just to point, that ReLU layer has not gradients

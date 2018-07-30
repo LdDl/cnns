@@ -11,19 +11,15 @@ import (
 func CheckXOR() {
 	rand.Seed(time.Now().UnixNano())
 	// Слой с тремя нейронами
-	flayer1 := nns.NewFullConnectedLayer(nns.TDsize{X: 2, Y: 1, Z: 1}, 2)
-	flayer1.SetActivationFunc(ActivationTanh)
-	flayer1.SetActivationDerivativeFunc(ActivationTanhDerivative)
-	fullyconnected1 := &nns.LayerStruct{
-		Layer: flayer1,
-	}
+	fullyconnected1 := nns.NewFullConnectedLayer(nns.TDsize{X: 2, Y: 1, Z: 1}, 2)
+	fullyconnected1.SetActivationFunc(ActivationTanh)
+	fullyconnected1.SetActivationDerivativeFunc(ActivationTanhDerivative)
+
 	// Слой с одним выходным нейроном
-	flayer2 := nns.NewFullConnectedLayer(flayer1.Out.Size, 1)
-	flayer2.SetActivationFunc(ActivationTanh)
-	flayer2.SetActivationDerivativeFunc(ActivationTanhDerivative)
-	fullyconnected2 := &nns.LayerStruct{
-		Layer: flayer2,
-	}
+	fullyconnected2 := nns.NewFullConnectedLayer(fullyconnected1.OutSize(), 1)
+	fullyconnected2.SetActivationFunc(ActivationTanh)
+	fullyconnected2.SetActivationDerivativeFunc(ActivationTanhDerivative)
+
 	// Инициализация сети
 	var net nns.WholeNet
 	net.Layers = append(net.Layers, fullyconnected1)

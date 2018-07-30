@@ -17,8 +17,16 @@ type ConvLayer struct {
 	KernelSize            int
 }
 
+func (con *ConvLayer) SetActivationFunc(f func(v float64) float64) {
+	//
+}
+
+func (con *ConvLayer) SetActivationDerivativeFunc(f func(v float64) float64) {
+	//
+}
+
 // NewConvLayer - constructor for new convolutional layer. You need to specify striding step, size (square) of kernel, amount of kernels, input size.
-func NewConvLayer(stride, kernelSize, numberFilters int, inSize TDsize) *ConvLayer {
+func NewConvLayer(stride, kernelSize, numberFilters int, inSize TDsize) *LayerStruct {
 	newLayer := &ConvLayer{
 		InputGradientsWeights: NewTensor(inSize.X, inSize.Y, inSize.Z),
 		In:         NewTensor(inSize.X, inSize.Y, inSize.Z),
@@ -53,7 +61,13 @@ func NewConvLayer(stride, kernelSize, numberFilters int, inSize TDsize) *ConvLay
 			newLayer.KernelsGradients = append(newLayer.KernelsGradients, t)
 		}
 	}
-	return newLayer
+	return &LayerStruct{
+		Layer: newLayer,
+	}
+}
+
+func (con *ConvLayer) OutSize() Point {
+	return (*con).Out.Size
 }
 
 func (con *ConvLayer) mapToInput(out Point, z int) Point {

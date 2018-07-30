@@ -25,6 +25,11 @@ type Layer interface {
 	CalculateGradients(nextLayerGradients *Tensor)
 	// UpdateWeights - update layer's weights
 	UpdateWeights()
+	// OutSize() - gets output size
+	OutSize() Point
+
+	SetActivationFunc(f func(v float64) float64)
+	SetActivationDerivativeFunc(f func(v float64) float64)
 }
 
 // LayerStruct - struct wraps layer interface

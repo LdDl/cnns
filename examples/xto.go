@@ -11,24 +11,12 @@ import (
 // CheckXTO - проверка свёрточного слоя для распознавания символов "X", "T" и "O"
 func CheckXTO() {
 	rand.Seed(time.Now().UnixNano())
-	clayer := nns.NewConvLayer(1, 3, 2, nns.TDsize{X: 8, Y: 9, Z: 1}) //
-	conv := &nns.LayerStruct{
-		Layer: clayer,
-	}
-	rlayer := nns.NewReLULayer(clayer.Out.Size)
-	relu := &nns.LayerStruct{
-		Layer: rlayer,
-	}
-	mlayer := nns.NewMaxPoolingLayer(2, 2, rlayer.Out.Size)
-	maxpool := &nns.LayerStruct{
-		Layer: mlayer,
-	}
-	flayer := nns.NewFullConnectedLayer(mlayer.Out.Size, 3)
+	conv := nns.NewConvLayer(1, 3, 2, nns.TDsize{X: 8, Y: 9, Z: 1}) //
+	relu := nns.NewReLULayer(conv.OutSize())
+	maxpool := nns.NewMaxPoolingLayer(2, 2, relu.OutSize())
+	fullyconnected := nns.NewFullConnectedLayer(maxpool.OutSize(), 3)
 	// flayer.SetActivationFunc(ActivationTanh)
 	// flayer.SetActivationDerivativeFunc(ActivationTanhDerivative)
-	fullyconnected := &nns.LayerStruct{
-		Layer: flayer,
-	}
 
 	var net nns.WholeNet
 	net.Layers = append(net.Layers, conv)

@@ -4,6 +4,7 @@ import (
 	"cnns_vika/nns"
 	"cnns_vika/utils/u"
 	"errors"
+	"fmt"
 	"image"
 	"io/ioutil"
 	"log"
@@ -50,44 +51,15 @@ var (
 // It uses GoCV library https://gocv.io (https://github.com/hybridgroup/gocv)
 func CheckOCR() {
 	rand.Seed(time.Now().UnixNano())
-	clayer := nns.NewConvLayer(1, 5, 8, nns.TDsize{X: trainWidth, Y: trainHeight, Z: 1}) //
-	conv := &nns.LayerStruct{
-		Layer: clayer,
-	}
-	rlayer := nns.NewReLULayer(clayer.Out.Size)
-	relu := &nns.LayerStruct{
-		Layer: rlayer,
-	}
-	mlayer := nns.NewMaxPoolingLayer(2, 2, rlayer.Out.Size)
-	maxpool := &nns.LayerStruct{
-		Layer: mlayer,
-	}
-
-	clayer2 := nns.NewConvLayer(1, 3, 10, mlayer.Out.Size) //
-	conv2 := &nns.LayerStruct{
-		Layer: clayer2,
-	}
-	rlayer2 := nns.NewReLULayer(clayer2.Out.Size)
-	relu2 := &nns.LayerStruct{
-		Layer: rlayer2,
-	}
-	mlayer2 := nns.NewMaxPoolingLayer(2, 2, rlayer2.Out.Size)
-	maxpool2 := &nns.LayerStruct{
-		Layer: mlayer2,
-	}
-
-	flayer := nns.NewFullConnectedLayer(mlayer2.Out.Size, 22)
-	fullyconnected := &nns.LayerStruct{
-		Layer: flayer,
-	}
+	conv := nns.NewConvLayer(1, 5, 2, nns.TDsize{X: trainWidth, Y: trainHeight, Z: 1}) //
+	relu := nns.NewReLULayer(conv.OutSize())
+	maxpool := nns.NewMaxPoolingLayer(2, 2, relu.OutSize())
+	fullyconnected := nns.NewFullConnectedLayer(maxpool.OutSize(), 22)
 
 	var net nns.WholeNet
 	net.Layers = append(net.Layers, conv)
 	net.Layers = append(net.Layers, relu)
 	net.Layers = append(net.Layers, maxpool)
-	net.Layers = append(net.Layers, conv2)
-	net.Layers = append(net.Layers, relu2)
-	net.Layers = append(net.Layers, maxpool2)
 	net.Layers = append(net.Layers, fullyconnected)
 
 	trainFiles, err := readFileNames("/home/keep/work/src/cnns_vika/datasets/symbols_2/")
@@ -96,7 +68,7 @@ func CheckOCR() {
 		return
 	}
 	labelsNumber := len(trainFiles)
-	testFiles, err := readFileNames("/home/keep/work/src/cnns_vika/datasets/symbols_test_2/")
+	testFiles, err := readFileNames("/home/keep/work/src/cnns_vika/datasets/symbols_test_3/")
 	if err != nil {
 		log.Println(err)
 		return
@@ -104,7 +76,7 @@ func CheckOCR() {
 	if labelsNumber != len(testFiles) {
 		err = errors.New("number of labels in train data and test data should be the same (for proper testing, actually)")
 		log.Println(err)
-		return
+		//return
 	}
 
 	trainMats, err := readMatsTrain(&trainFiles, adjustAmountOfFiles)
@@ -265,11 +237,11 @@ func testTrained(net *nns.WholeNet, data *map[string][]gocv.Mat) error {
 						} else if imageArray[k][j][i]/255 == 1 {
 							imageArray[k][j][i] = 0
 						}
-						// fmt.Printf("%v ", imageArray[k][j][i])
+						fmt.Printf("%v ", imageArray[k][j][i])
 					}
-					// fmt.Println()
+					fmt.Println()
 				}
-				// fmt.Println()
+				fmt.Println()
 			}
 			temp.Image.CopyFrom(imageArray)
 			testers = append(testers, temp)
@@ -361,13 +333,20 @@ func readMatsTests(data *map[string][]string) (map[string][]gocv.Mat, error) {
 			var temp gocv.Mat
 			temp = gocv.NewMat()
 			defer temp.Close()
-			temp = gocv.IMRead(j, gocv.IMReadColor)
+			temp = gocv.IMRead(j, gocv.ColorRGBAToGray)
 			// Binarization
 			gocv.CvtColor(temp, &temp, gocv.ColorRGBAToGray)
-			gocv.Threshold(temp, &temp, 127.0, 255.0, gocv.ThresholdBinary)
+			// gocv.Threshold(temp, &temp, 127.0, 255.0, gocv.ThresholdBinary)
+			gocv.AdaptiveThreshold(temp, &temp, 255.0, gocv.AdaptiveThresholdGaussian, gocv.ThresholdBinary, 7, 5)
 			// Resize
 			gocv.Resize(temp, &temp, image.Pt(trainWidth, trainHeight), 0.0, 0.0, gocv.InterpolationNearestNeighbor)
 			ret[k] = append(ret[k], temp.Clone())
+
+			// window := gocv.NewWindow("OCR detect")
+			// defer window.Close()
+			// window.IMShow(temp)
+			// window.WaitKey(0)
+
 			break
 		}
 		// break

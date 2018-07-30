@@ -39,7 +39,7 @@ func (fc *FullConnectedLayer) SetActivationDerivativeFunc(f func(v float64) floa
 }
 
 // NewFullConnectedLayer - constructor for new fully connected layer. You need to specify input size and output size
-func NewFullConnectedLayer(inSize TDsize, outSize int) *FullConnectedLayer {
+func NewFullConnectedLayer(inSize TDsize, outSize int) *LayerStruct {
 	newLayer := &FullConnectedLayer{
 		In:  NewTensor(inSize.X, inSize.Y, inSize.Z),
 		Out: NewTensor(outSize, 1, 1),
@@ -64,7 +64,13 @@ func NewFullConnectedLayer(inSize TDsize, outSize int) *FullConnectedLayer {
 	// 	},
 	// }
 	// newLayer.Weights.CopyFrom(hcweights)
-	return newLayer
+	return &LayerStruct{
+		Layer: newLayer,
+	}
+}
+
+func (fc *FullConnectedLayer) OutSize() Point {
+	return (*fc).Out.Size
 }
 
 func (fc *FullConnectedLayer) mapToInput(d Point) int {
