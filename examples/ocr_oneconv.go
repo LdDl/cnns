@@ -112,7 +112,7 @@ func train(net *nns.WholeNet, data *map[string][]gocv.Mat) error {
 			var target [][][]float64
 			target = [][][]float64{[][]float64{[]float64{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}}}
 			target[0][0][intK] = 1.0
-			temp.Desired.CopyFrom(target)
+			temp.Desired.SetData(target)
 			temp.Image = nns.NewTensor(trainWidth, trainHeight, trainDepth)
 			imageArray := make([][][]float64, trainDepth)
 			for k := range imageArray {
@@ -132,7 +132,7 @@ func train(net *nns.WholeNet, data *map[string][]gocv.Mat) error {
 				}
 				// fmt.Println()
 			}
-			temp.Image.CopyFrom(imageArray)
+			temp.Image.SetData(imageArray)
 			temp.LabelStr = chars[intK]
 			temp.LabelInt = intK
 			// if temp.LabelStr == "T" {
@@ -194,7 +194,7 @@ func train(net *nns.WholeNet, data *map[string][]gocv.Mat) error {
 	// 	},
 	// }
 	// var ximage = nns.NewTensor(8, 9, 1)
-	// ximage.CopyFrom(xmatrix)
+	// ximage.SetData(xmatrix)
 
 	// fmt.Println("For X should be: [1, 0, 0], Got:")
 	// net.Layers[0].FeedForward(&ximage)
@@ -221,7 +221,7 @@ func testTrained(net *nns.WholeNet, data *map[string][]gocv.Mat) error {
 			target[0][0][intK] = 1.0
 			var temp Trainer
 			temp.Desired = nns.NewTensor(22, 1, 1)
-			temp.Desired.CopyFrom(target)
+			temp.Desired.SetData(target)
 			temp.Image = nns.NewTensor(trainWidth, trainHeight, trainDepth)
 			temp.LabelStr = chars[intK]
 			temp.LabelInt = intK
@@ -243,7 +243,7 @@ func testTrained(net *nns.WholeNet, data *map[string][]gocv.Mat) error {
 				}
 				fmt.Println()
 			}
-			temp.Image.CopyFrom(imageArray)
+			temp.Image.SetData(imageArray)
 			testers = append(testers, temp)
 		}
 	}

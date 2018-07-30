@@ -41,9 +41,9 @@ func CheckOR() {
 			outputInt = 1
 		}
 		desired := nns.NewTensor(1, 1, 1)
-		desired.CopyFrom([][][]float64{[][]float64{[]float64{float64(outputInt)}}})
+		desired.SetData([][][]float64{[][]float64{[]float64{float64(outputInt)}}})
 		input := nns.NewTensor(2, 1, 1)
-		input.CopyFrom([][][]float64{[][]float64{[]float64{float64(firstInt), float64(secondInt)}}})
+		input.SetData([][][]float64{[][]float64{[]float64{float64(firstInt), float64(secondInt)}}})
 		// Forward
 		net.Layers[0].FeedForward(&input)
 		for l := 1; l < len(net.Layers); l++ {
@@ -66,7 +66,7 @@ func CheckOR() {
 
 	// 0 * 0
 	inputTest := nns.NewTensor(2, 1, 1)
-	inputTest.CopyFrom([][][]float64{[][]float64{[]float64{0, 0}}})
+	inputTest.SetData([][][]float64{[][]float64{[]float64{0, 0}}})
 	net.Layers[0].FeedForward(&inputTest)
 	for l := 1; l < len(net.Layers); l++ {
 		out := net.Layers[l-1].GetOutput()
@@ -75,7 +75,7 @@ func CheckOR() {
 	net.Layers[1].PrintOutput()
 
 	// 1 * 0
-	inputTest.CopyFrom([][][]float64{[][]float64{[]float64{1.0, 0}}})
+	inputTest.SetData([][][]float64{[][]float64{[]float64{1.0, 0}}})
 	net.Layers[0].FeedForward(&inputTest)
 	for l := 1; l < len(net.Layers); l++ {
 		out := net.Layers[l-1].GetOutput()
@@ -84,7 +84,7 @@ func CheckOR() {
 	net.Layers[1].PrintOutput()
 
 	// 0 * 1
-	inputTest.CopyFrom([][][]float64{[][]float64{[]float64{0, 1.0}}})
+	inputTest.SetData([][][]float64{[][]float64{[]float64{0, 1.0}}})
 	net.Layers[0].FeedForward(&inputTest)
 	for l := 1; l < len(net.Layers); l++ {
 		out := net.Layers[l-1].GetOutput()
@@ -93,7 +93,7 @@ func CheckOR() {
 	net.Layers[1].PrintOutput()
 
 	// 1 * 1
-	inputTest.CopyFrom([][][]float64{[][]float64{[]float64{1.0, 1.0}}})
+	inputTest.SetData([][][]float64{[][]float64{[]float64{1.0, 1.0}}})
 	net.Layers[0].FeedForward(&inputTest)
 	for l := 1; l < len(net.Layers); l++ {
 		out := net.Layers[l-1].GetOutput()

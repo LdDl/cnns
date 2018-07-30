@@ -67,11 +67,11 @@ func CheckXTO() {
 	}
 
 	var ximage = nns.NewTensor(8, 9, 1)
-	ximage.CopyFrom(xmatrix)
+	ximage.SetData(xmatrix)
 	var timage = nns.NewTensor(8, 9, 1)
-	timage.CopyFrom(tmatrix)
+	timage.SetData(tmatrix)
 	var oimage = nns.NewTensor(8, 9, 1)
-	oimage.CopyFrom(omatrix)
+	oimage.SetData(omatrix)
 
 	// log.Println("Weights before:")
 	// net.Layers[0].PrintWeights()
@@ -83,7 +83,7 @@ func CheckXTO() {
 		var desired = nns.NewTensor(3, 1, 1)
 		desiredMat := [][][]float64{[][]float64{[]float64{0.0, 0.0, 0.0}}}
 		desiredMat[0][0][rnd] = 1.0
-		desired.CopyFrom(desiredMat)
+		desired.SetData(desiredMat)
 		var train = nns.NewTensor(8, 9, 1)
 		switch rnd {
 		case 0:
@@ -160,9 +160,9 @@ func CheckXTO() {
 			[]float64{0, 0, 1, 0.8, 1, 1, 0, 0},
 		},
 	}
-	ximage.CopyFrom(xmatrix)
-	timage.CopyFrom(tmatrix)
-	oimage.CopyFrom(omatrix)
+	ximage.SetData(xmatrix)
+	timage.SetData(tmatrix)
+	oimage.SetData(omatrix)
 
 	fmt.Println("For X should be: [1, 0, 0], Got:")
 	net.Layers[0].FeedForward(&ximage)

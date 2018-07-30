@@ -10,6 +10,7 @@ type Tensor struct {
 	Size TDsize
 }
 
+// NewTensor - constructor for Tensor type. You need to provide dimensions: x, y and z.
 func NewTensor(x, y, z int) Tensor {
 	return Tensor{
 		Data: make([]float64, x*y*z),
@@ -21,6 +22,7 @@ func NewTensor(x, y, z int) Tensor {
 	}
 }
 
+// NewTensorCopy - constructor for Tensor type. You need to provide another tensor for cloning it into new one.
 func NewTensorCopy(t *Tensor) Tensor {
 	return Tensor{
 		Data: (*t).Data,
@@ -32,6 +34,7 @@ func NewTensorCopy(t *Tensor) Tensor {
 	}
 }
 
+// Add - element-wise summation
 func (t1 *Tensor) Add(t2 *Tensor) Tensor {
 	var ret = NewTensorCopy(t1)
 	for i := 0; i < (*t2).Size.X*(*t2).Size.Y*(*t2).Size.Z; i++ {
@@ -40,6 +43,7 @@ func (t1 *Tensor) Add(t2 *Tensor) Tensor {
 	return ret
 }
 
+// Sub - element-wise substraction
 func (t1 *Tensor) Sub(t2 *Tensor) Tensor {
 	var ret = NewTensorCopy(t1)
 	for i := 0; i < (*t2).Size.X*(*t2).Size.Y*(*t2).Size.Z; i++ {
@@ -48,22 +52,26 @@ func (t1 *Tensor) Sub(t2 *Tensor) Tensor {
 	return ret
 }
 
+// Get - gets [i][j][k]-th element
 func (t1 *Tensor) Get(x, y, z int) float64 {
 	// return (*t1).Data[x+(y+z*(*t1).Size.Z)*(*t1).Size.X]
 	return (*t1).Data[z*(*t1).Size.X*(*t1).Size.Y+y*(*t1).Size.X+x]
 }
 
+// Set - sets [i][j][k]-th element with value
 func (t1 *Tensor) Set(x, y, z int, val float64) {
 	// (*t1).Data[x+(y+z*(*t1).Size.Z)*(*t1).Size.X] = val
 	(*t1).Data[z*(*t1).Size.X*(*t1).Size.Y+y*(*t1).Size.X+x] = val
 }
 
+// SetAdd - adds value to [i][j][k]-th element
 func (t1 *Tensor) SetAdd(x, y, z int, val float64) {
 	// (*t1).Data[x+(y+z*(*t1).Size.Z)*(*t1).Size.X] += val
 	(*t1).Data[z*(*t1).Size.X*(*t1).Size.Y+y*(*t1).Size.X+x] += val
 }
 
-func (t1 *Tensor) CopyFrom(data [][][]float64) {
+// SetData - sets data for Tensor (as 3-d array)
+func (t1 *Tensor) SetData(data [][][]float64) {
 	z := len(data)
 	y := len(data[0])
 	x := len(data[0][0])
@@ -76,6 +84,7 @@ func (t1 *Tensor) CopyFrom(data [][][]float64) {
 	}
 }
 
+// Print - prints Tensor (cube as set of matrices)
 func (t1 *Tensor) Print() {
 	mx := (*t1).Size.X
 	my := (*t1).Size.Y

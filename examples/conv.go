@@ -27,7 +27,7 @@ func Conv() {
 		},
 	}
 	var image = nns.NewTensor(8, 9, 1) // w,h,d
-	image.CopyFrom(matrix)
+	image.SetData(matrix)
 	// image.Print()
 
 	// net.Layers[0].PrintWeights()
@@ -46,7 +46,7 @@ func Conv() {
 			[]float64{0.32, 0.45, 0.96},
 		},
 	}
-	desired.CopyFrom(matrix)
+	desired.SetData(matrix)
 	difference := net.Layers[len(net.Layers)-1].GetOutput()
 	difference.Sub(&desired)
 

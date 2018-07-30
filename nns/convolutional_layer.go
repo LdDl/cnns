@@ -52,7 +52,7 @@ func NewConvLayer(stride, kernelSize, numberFilters int, inSize TDsize) *LayerSt
 		// 		[]float64{0.16456005, 0.18682307, -0.40303048},
 		// 	},
 		// }
-		// t.CopyFrom(hcweights)
+		// t.SetData(hcweights)
 
 		newLayer.Kernels = append(newLayer.Kernels, t)
 

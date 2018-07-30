@@ -63,7 +63,7 @@ func NewFullConnectedLayer(inSize TDsize, outSize int) *LayerStruct {
 	// 		[]float64{-0.29341734, 0.36533501, 0.19671917, 0.02382031, -0.47169692, -0.34167172, 0.10725344, 0.47524162, -0.42054638},
 	// 	},
 	// }
-	// newLayer.Weights.CopyFrom(hcweights)
+	// newLayer.Weights.SetData(hcweights)
 	return &LayerStruct{
 		Layer: newLayer,
 	}
