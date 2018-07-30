@@ -11,14 +11,6 @@ type ReLULayer struct {
 	InputGradientsWeights Tensor
 }
 
-func (relu *ReLULayer) SetActivationFunc(f func(v float64) float64) {
-	//
-}
-
-func (relu *ReLULayer) SetActivationDerivativeFunc(f func(v float64) float64) {
-	//
-}
-
 // NewReLULayer - constructor for new ReLU layer. You need to specify input size
 func NewReLULayer(inSize TDsize) *LayerStruct {
 	newLayer := &ReLULayer{
@@ -31,24 +23,30 @@ func NewReLULayer(inSize TDsize) *LayerStruct {
 	}
 }
 
+// SetCustomWeights - set user's weights (make it carefully)
+func (relu *ReLULayer) SetCustomWeights(t *[]Tensor) {
+	fmt.Println("There are no weights for ReLU layer")
+}
+
+// OutSize - returns output size (dimensions)
 func (relu *ReLULayer) OutSize() Point {
 	return (*relu).Out.Size
 }
 
-// PrintWeights - just to point, that ReLU layer has not gradients
-func (relu *ReLULayer) PrintWeights() {
-	fmt.Println("No weights for ReLU")
-}
-
-// PrintOutput - print ReLU layer's output
-func (relu *ReLULayer) PrintOutput() {
-	fmt.Println("Printing ReLU Layer output...")
-	(*relu).Out.Print()
-}
-
-// GetOutput - get ReLU layer's output
+// GetOutput - returns ReLU layer's output
 func (relu *ReLULayer) GetOutput() Tensor {
 	return (*relu).Out
+}
+
+// GetWeights - returns ReLU layer's weights
+func (relu *ReLULayer) GetWeights() []Tensor {
+	fmt.Println("There are no weights for ReLU layer")
+	return []Tensor{}
+}
+
+// GetGradients - returns ReLU layer's gradients
+func (relu *ReLULayer) GetGradients() Tensor {
+	return (*relu).InputGradientsWeights
 }
 
 // FeedForward - feed data to ReLU layer
@@ -57,20 +55,20 @@ func (relu *ReLULayer) FeedForward(t *Tensor) {
 	(*relu).DoActivation()
 }
 
-// PrintGradients - print relu layer's gradients
-func (relu *ReLULayer) PrintGradients() {
-	fmt.Println("Printing ReLU Layer gradients-weights...")
-	(*relu).InputGradientsWeights.Print()
-}
-
-// PrintSumGradWeights - print relu layer's summ of grad*weight
-func (relu *ReLULayer) PrintSumGradWeights() {
-
-}
-
-// GetGradients - get ReLU layer's gradients
-func (relu *ReLULayer) GetGradients() Tensor {
-	return (*relu).InputGradientsWeights
+// DoActivation - ReLU layer's output activation
+func (relu *ReLULayer) DoActivation() {
+	// Rectify(relu.In, relu.Out)
+	for i := 0; i < (*relu).In.Size.X; i++ {
+		for j := 0; j < (*relu).In.Size.Y; j++ {
+			for z := 0; z < (*relu).In.Size.Z; z++ {
+				v := (*relu).In.Get(i, j, z)
+				if v < 0 {
+					v = 0
+				}
+				(*relu).Out.Set(i, j, z, v)
+			}
+		}
+	}
 }
 
 // CalculateGradients - calculate ReLU layer's gradients
@@ -96,18 +94,31 @@ func (relu *ReLULayer) UpdateWeights() {
 	*/
 }
 
-// DoActivation - ReLU layer's output activation
-func (relu *ReLULayer) DoActivation() {
-	// Rectify(relu.In, relu.Out)
-	for i := 0; i < (*relu).In.Size.X; i++ {
-		for j := 0; j < (*relu).In.Size.Y; j++ {
-			for z := 0; z < (*relu).In.Size.Z; z++ {
-				v := (*relu).In.Get(i, j, z)
-				if v < 0 {
-					v = 0
-				}
-				(*relu).Out.Set(i, j, z, v)
-			}
-		}
-	}
+// PrintOutput - print ReLU layer's output
+func (relu *ReLULayer) PrintOutput() {
+	fmt.Println("Printing ReLU Layer output...")
+	(*relu).Out.Print()
+}
+
+// PrintWeights - just to point, that ReLU layer has not weights
+func (relu *ReLULayer) PrintWeights() {
+	fmt.Println("There are no weights for ReLU layer")
+}
+
+// PrintGradients - print relu layer's local gradients
+func (relu *ReLULayer) PrintGradients() {
+	fmt.Println("Printing ReLU Layer gradients...")
+	(*relu).InputGradientsWeights.Print()
+}
+
+// SetActivationFunc - sets activation function for layer
+func (relu *ReLULayer) SetActivationFunc(f func(v float64) float64) {
+	// Nothing here. Just for interface.
+	fmt.Println("You can not set activation function for ReLU layer")
+}
+
+// SetActivationDerivativeFunc sets derivative of activation function
+func (relu *ReLULayer) SetActivationDerivativeFunc(f func(v float64) float64) {
+	// Nothing here. Just for interface.
+	fmt.Println("You can not set derivative of activation function for ReLU layer")
 }

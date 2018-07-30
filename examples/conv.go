@@ -8,6 +8,26 @@ func Conv() {
 	maxpool := nns.NewMaxPoolingLayer(2, 2, relu.OutSize())
 	fullyconnected := nns.NewFullConnectedLayer(maxpool.OutSize(), 3)
 
+	convCustomWeights := nns.NewTensor(3, 3, 1)
+	convCustomWeights.SetData([][][]float64{
+		[][]float64{
+			[]float64{0.10466029, -0.06228581, -0.43436298},
+			[]float64{0.44050909, -0.07536250, -0.34348075},
+			[]float64{0.16456005, 0.18682307, -0.40303048},
+		},
+	})
+	conv.SetCustomWeights(&[]nns.Tensor{convCustomWeights})
+
+	fcCustomWeights := nns.NewTensor(maxpool.OutSize().X*maxpool.OutSize().Y*maxpool.OutSize().Z, 3, 1)
+	fcCustomWeights.SetData([][][]float64{
+		[][]float64{
+			[]float64{-0.19908814, 0.01521263, 0.31363996, -0.28573613, -0.11934281, -0.18194183, -0.03111016, -0.21696585, -0.20689814},
+			[]float64{0.17908468, -0.28144695, -0.29681312, -0.13912858, 0.07067328, 0.36249144, -0.20688576, -0.20291744, 0.25257304},
+			[]float64{-0.29341734, 0.36533501, 0.19671917, 0.02382031, -0.47169692, -0.34167172, 0.10725344, 0.47524162, -0.42054638},
+		},
+	})
+	fullyconnected.SetCustomWeights(&[]nns.Tensor{fcCustomWeights})
+
 	var net nns.WholeNet
 	net.Layers = append(net.Layers, conv)
 	net.Layers = append(net.Layers, relu)

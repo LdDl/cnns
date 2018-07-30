@@ -17,14 +17,6 @@ type ConvLayer struct {
 	KernelSize            int
 }
 
-func (con *ConvLayer) SetActivationFunc(f func(v float64) float64) {
-	//
-}
-
-func (con *ConvLayer) SetActivationDerivativeFunc(f func(v float64) float64) {
-	//
-}
-
 // NewConvLayer - constructor for new convolutional layer. You need to specify striding step, size (square) of kernel, amount of kernels, input size.
 func NewConvLayer(stride, kernelSize, numberFilters int, inSize TDsize) *LayerStruct {
 	newLayer := &ConvLayer{
@@ -44,16 +36,6 @@ func NewConvLayer(stride, kernelSize, numberFilters int, inSize TDsize) *LayerSt
 			}
 		}
 
-		// hardcoded weights for testing purposes
-		// hcweights := [][][]float64{
-		// 	[][]float64{
-		// 		[]float64{0.10466029, -0.06228581, -0.43436298},
-		// 		[]float64{0.44050909, -0.07536250, -0.34348075},
-		// 		[]float64{0.16456005, 0.18682307, -0.40303048},
-		// 	},
-		// }
-		// t.SetData(hcweights)
-
 		newLayer.Kernels = append(newLayer.Kernels, t)
 
 		for i := 0; i < numberFilters; i++ {
@@ -66,56 +48,35 @@ func NewConvLayer(stride, kernelSize, numberFilters int, inSize TDsize) *LayerSt
 	}
 }
 
+// SetCustomWeights - set user's weights (make it carefully)
+func (con *ConvLayer) SetCustomWeights(t *[]Tensor) {
+	if len((*con).Kernels) != len(*t) {
+		fmt.Println("Amount of custom filters has to be equal to layer's amount of filters. Skipping...")
+		return
+	}
+	for i := range (*con).Kernels {
+		(*con).Kernels[i] = (*t)[i]
+	}
+}
+
+// OutSize - returns output size (dimensions)
 func (con *ConvLayer) OutSize() Point {
 	return (*con).Out.Size
 }
 
-func (con *ConvLayer) mapToInput(out Point, z int) Point {
-	return Point{
-		X: out.X * (*con).Stride,
-		Y: out.Y * (*con).Stride,
-		Z: z,
-	}
-}
-
-type Range struct {
-	MinX, MaxX int
-	MinY, MaxY int
-	MinZ, MaxZ int
-}
-
-// SameAsOuput - reshape convolutional layer's output
-func (con *ConvLayer) SameAsOuput(x, y int) Range {
-	a := float64(x)
-	b := float64(y)
-	return Range{
-		MinX: u.NormalizeRange((a-float64((*con).KernelSize)+1.0)/float64((*con).Stride), (*con).Out.Size.X, true),
-		MinY: u.NormalizeRange((b-float64((*con).KernelSize)+1.0)/float64((*con).Stride), (*con).Out.Size.Y, true),
-		MinZ: 0,
-		MaxX: u.NormalizeRange(a/float64((*con).Stride), (*con).Out.Size.X, false),
-		MaxY: u.NormalizeRange(b/float64((*con).Stride), (*con).Out.Size.Y, false),
-		MaxZ: len((*con).Kernels) - 1,
-	}
-}
-
-// PrintWeights - print convolutional layer's weights
-func (con *ConvLayer) PrintWeights() {
-	fmt.Println("Printing Convolutional Layer kernels...")
-	for i := range (*con).Kernels {
-		fmt.Printf("Kernel #%v\n", i)
-		(*con).Kernels[i].Print()
-	}
-}
-
-// PrintOutput - print convolutional layer's output
-func (con *ConvLayer) PrintOutput() {
-	fmt.Println("Printing Convolutional Layer output...")
-	(*con).Out.Print()
-}
-
-// GetOutput - get convolutional layer's output
+// GetOutput - returns convolutional layer's output
 func (con *ConvLayer) GetOutput() Tensor {
 	return (*con).Out
+}
+
+// GetWeights - returns convolutional layer's weights
+func (con *ConvLayer) GetWeights() []Tensor {
+	return (*con).Kernels
+}
+
+// GetGradients - returns convolutional layer's gradients
+func (con *ConvLayer) GetGradients() Tensor {
+	return (*con).InputGradientsWeights
 }
 
 // FeedForward - feed data to convolutional layer
@@ -124,19 +85,27 @@ func (con *ConvLayer) FeedForward(t *Tensor) {
 	(*con).DoActivation()
 }
 
-// PrintGradients - print convolutional layer's gradients
-func (con *ConvLayer) PrintGradients() {
-	fmt.Println("Printing Convolutional Layer gradients-weights...")
-	(*con).InputGradientsWeights.Print()
-}
-
-// PrintSumGradWeights - print convolutional layer's summ of grad*weight
-func (con *ConvLayer) PrintSumGradWeights() {
-}
-
-// GetGradients - get convolutional layer's gradients
-func (con *ConvLayer) GetGradients() Tensor {
-	return (*con).InputGradientsWeights
+// DoActivation - convolutional layer's output activation
+func (con *ConvLayer) DoActivation() {
+	for filter := 0; filter < len((*con).Kernels); filter++ {
+		filterData := (*con).Kernels[filter]
+		for x := 0; x < (*con).Out.Size.X; x++ {
+			for y := 0; y < (*con).Out.Size.Y; y++ {
+				mapped := con.mapToInput(Point{X: x, Y: y, Z: 0}, 0)
+				sum := 0.0
+				for i := 0; i < (*con).KernelSize; i++ {
+					for j := 0; j < (*con).KernelSize; j++ {
+						for z := 0; z < (*con).In.Size.Z; z++ {
+							f := filterData.Get(i, j, z)
+							v := (*con).In.Get(mapped.X+i, mapped.Y+j, z)
+							sum += f * v
+						}
+					}
+				}
+				(*con).Out.Set(x, y, filter, sum)
+			}
+		}
+	}
 }
 
 // CalculateGradients - calculate convolutional layer's gradients
@@ -153,7 +122,7 @@ func (con *ConvLayer) CalculateGradients(nextLayerGrad *Tensor) {
 
 	for x := 0; x < (*con).In.Size.X; x++ {
 		for y := 0; y < (*con).In.Size.Y; y++ {
-			rn := con.SameAsOuput(x, y)
+			rn := con.sameAsOuput(x, y)
 			for z := 0; z < (*con).In.Size.Z; z++ {
 				sumError := 0.0
 				for i := rn.MinX; i <= rn.MaxX; i++ {
@@ -192,25 +161,64 @@ func (con *ConvLayer) UpdateWeights() {
 	}
 }
 
-// DoActivation - convolutional layer's output activation
-func (con *ConvLayer) DoActivation() {
-	for filter := 0; filter < len((*con).Kernels); filter++ {
-		filterData := (*con).Kernels[filter]
-		for x := 0; x < (*con).Out.Size.X; x++ {
-			for y := 0; y < (*con).Out.Size.Y; y++ {
-				mapped := con.mapToInput(Point{X: x, Y: y, Z: 0}, 0)
-				sum := 0.0
-				for i := 0; i < (*con).KernelSize; i++ {
-					for j := 0; j < (*con).KernelSize; j++ {
-						for z := 0; z < (*con).In.Size.Z; z++ {
-							f := filterData.Get(i, j, z)
-							v := (*con).In.Get(mapped.X+i, mapped.Y+j, z)
-							sum += f * v
-						}
-					}
-				}
-				(*con).Out.Set(x, y, filter, sum)
-			}
-		}
+// PrintOutput - print convolutional layer's output
+func (con *ConvLayer) PrintOutput() {
+	fmt.Println("Printing Convolutional Layer output...")
+	(*con).Out.Print()
+}
+
+// PrintWeights - print convolutional layer's weights
+func (con *ConvLayer) PrintWeights() {
+	fmt.Println("Printing Convolutional Layer kernels...")
+	for i := range (*con).Kernels {
+		fmt.Printf("Kernel #%v\n", i)
+		(*con).Kernels[i].Print()
+	}
+}
+
+// PrintGradients - print convolutional layer's gradients
+func (con *ConvLayer) PrintGradients() {
+	fmt.Println("Printing Convolutional Layer gradients-weights...")
+	(*con).InputGradientsWeights.Print()
+}
+
+// SetActivationFunc - sets activation function for layer
+func (con *ConvLayer) SetActivationFunc(f func(v float64) float64) {
+	// Nothing here. Just for interface.
+	fmt.Println("You can not set activation function for convolutional layer")
+}
+
+// SetActivationDerivativeFunc sets derivative of activation function
+func (con *ConvLayer) SetActivationDerivativeFunc(f func(v float64) float64) {
+	// Nothing here. Just for interface.
+	fmt.Println("You can not set derivative of activation function for convolutional layer")
+}
+
+func (con *ConvLayer) mapToInput(out Point, z int) Point {
+	return Point{
+		X: out.X * (*con).Stride,
+		Y: out.Y * (*con).Stride,
+		Z: z,
+	}
+}
+
+// Range - struct for reshaping data indecies
+type Range struct {
+	MinX, MaxX int
+	MinY, MaxY int
+	MinZ, MaxZ int
+}
+
+// sameAsOuput - reshape convolutional layer's output
+func (con *ConvLayer) sameAsOuput(x, y int) Range {
+	a := float64(x)
+	b := float64(y)
+	return Range{
+		MinX: u.NormalizeRange((a-float64((*con).KernelSize)+1.0)/float64((*con).Stride), (*con).Out.Size.X, true),
+		MinY: u.NormalizeRange((b-float64((*con).KernelSize)+1.0)/float64((*con).Stride), (*con).Out.Size.Y, true),
+		MinZ: 0,
+		MaxX: u.NormalizeRange(a/float64((*con).Stride), (*con).Out.Size.X, false),
+		MaxY: u.NormalizeRange(b/float64((*con).Stride), (*con).Out.Size.Y, false),
+		MaxZ: len((*con).Kernels) - 1,
 	}
 }
