@@ -10,7 +10,7 @@ import (
 func ImportNet() {
 	jsonName := "datasets/conv_net.json"
 	var net nns.WholeNet
-	err := net.ImportFromFile(jsonName)
+	err := net.ImportFromFile(jsonName, false)
 	if err != nil {
 		log.Panicln(err)
 	}

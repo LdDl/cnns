@@ -107,7 +107,7 @@ func (wh *WholeNet) ExportToFile(fname string) error {
 }
 
 // ImportFromFile load network to file
-func (wh *WholeNet) ImportFromFile(fname string) error {
+func (wh *WholeNet) ImportFromFile(fname string, randomWeights bool) error {
 	var err error
 	fileBytes, err := ioutil.ReadFile(fname)
 	if err != nil {
@@ -127,13 +127,15 @@ func (wh *WholeNet) ImportFromFile(fname string) error {
 			x := data.Network.Layers[i].InputSize.X
 			y := data.Network.Layers[i].InputSize.Y
 			z := data.Network.Layers[i].InputSize.Z
-			var weights = make([]Tensor, numOfFilters)
-			for w := 0; w < numOfFilters; w++ {
-				weights[w] = NewTensor(kernelSize, kernelSize, 1)
-				weights[w].SetData(data.Network.Layers[i].Weights[w].Data)
-			}
 			conv := NewConvLayer(stride, kernelSize, numOfFilters, TDsize{X: x, Y: y, Z: z})
-			conv.SetCustomWeights(&weights)
+			if randomWeights == false {
+				var weights = make([]Tensor, numOfFilters)
+				for w := 0; w < numOfFilters; w++ {
+					weights[w] = NewTensor(kernelSize, kernelSize, 1)
+					weights[w].SetData(data.Network.Layers[i].Weights[w].Data)
+				}
+				conv.SetCustomWeights(&weights)
+			}
 			(*wh).Layers = append((*wh).Layers, conv)
 			break
 		case "relu":
@@ -158,10 +160,12 @@ func (wh *WholeNet) ImportFromFile(fname string) error {
 			z := data.Network.Layers[i].InputSize.Z
 			outSize := data.Network.Layers[i].OutputSize.X
 			fullyconnected := NewFullConnectedLayer(TDsize{X: x, Y: y, Z: z}, outSize)
-			var weights Tensor
-			weights = NewTensor(x*y*z, outSize, 1)
-			weights.SetData(data.Network.Layers[i].Weights[0].Data)
-			fullyconnected.SetCustomWeights(&[]Tensor{weights})
+			if randomWeights == false {
+				var weights Tensor
+				weights = NewTensor(x*y*z, outSize, 1)
+				weights.SetData(data.Network.Layers[i].Weights[0].Data)
+				fullyconnected.SetCustomWeights(&[]Tensor{weights})
+			}
 			(*wh).Layers = append((*wh).Layers, fullyconnected)
 			break
 		default:
