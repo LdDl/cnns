@@ -194,6 +194,11 @@ func (con *ConvLayer) SetActivationDerivativeFunc(f func(v float64) float64) {
 	fmt.Println("You can not set derivative of activation function for convolutional layer")
 }
 
+// GetType - return "conv" as layer's type
+func (con *ConvLayer) GetType() string {
+	return "conv"
+}
+
 func (con *ConvLayer) mapToInput(out Point, z int) Point {
 	return Point{
 		X: out.X * (*con).Stride,

@@ -2,6 +2,7 @@ package nns
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 )
 
@@ -41,6 +42,9 @@ type Layer interface {
 
 	// PrintGradients - print layer's gradients
 	PrintGradients()
+
+	// GetType - get type of layer
+	GetType() string
 
 	SetActivationFunc(f func(v float64) float64)
 	SetActivationDerivativeFunc(f func(v float64) float64)
@@ -105,7 +109,46 @@ func (wh *WholeNet) ExportToFile(fname string) error {
 // ImportFromFile load network to file
 func (wh *WholeNet) ImportFromFile(fname string) error {
 	var err error
+	fileBytes, err := ioutil.ReadFile(fname)
+	if err != nil {
+		return err
+	}
+	var data NetJSON
+	err = json.Unmarshal(fileBytes, &data)
+	if err != nil {
+		return err
+	}
 
+	for i := range data.Network.Layers {
+		switch data.Network.Layers[i].LayerType {
+		case "conv":
+			stride := data.Network.Layers[i].Parameters.Stride
+			kernelSize := data.Network.Layers[i].Weights[0].TDSize.X
+			numOfFilters := len(data.Network.Layers[i].Weights)
+			x := data.Network.Layers[i].InputSize.X
+			y := data.Network.Layers[i].InputSize.Y
+			z := data.Network.Layers[i].InputSize.Z
+			var weights = make([]Tensor, numOfFilters)
+			for w := 0; w < numOfFilters; w++ {
+				weights[w] = NewTensor(kernelSize, kernelSize, 1)
+				weights[w].SetData(data.Network.Layers[i].Weights[w].Data)
+			}
+			conv := NewConvLayer(stride, kernelSize, numOfFilters, TDsize{X: x, Y: y, Z: z})
+			conv.SetCustomWeights(&weights)
+			(*wh).Layers = append((*wh).Layers, conv)
+			break
+		case "relu":
+
+			break
+		case "pool":
+			break
+		case "fc":
+			break
+		default:
+			err = errors.New("Unrecognized layer type: " + data.Network.Layers[i].LayerType)
+			return err
+		}
+	}
 	return err
 }
 
@@ -119,8 +162,15 @@ type NetJSON struct {
 				Y int `json:"Y"`
 				Z int `json:"Z"`
 			} `json:"InputSize"`
-			Parameters map[string]interface{} `json:"Parameters"`
-			Weights    struct {
+			OutputSize struct {
+				X int `json:"X"`
+				Y int `json:"Y"`
+				Z int `json:"Z"`
+			} `json:"OutputSize"`
+			Parameters struct {
+				Stride int `json:"Stride"`
+			} `json:"Parameters"`
+			Weights []struct {
 				TDSize struct {
 					X int `json:"X"`
 					Y int `json:"Y"`

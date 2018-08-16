@@ -122,3 +122,8 @@ func (relu *ReLULayer) SetActivationDerivativeFunc(f func(v float64) float64) {
 	// Nothing here. Just for interface.
 	fmt.Println("You can not set derivative of activation function for ReLU layer")
 }
+
+// GetType - return "relu" as layer's type
+func (relu *ReLULayer) GetType() string {
+	return "relu"
+}

@@ -181,6 +181,11 @@ func (fc *FullConnectedLayer) SetActivationDerivativeFunc(f func(v float64) floa
 	(*fc).ActivationDerivative = f
 }
 
+// GetType - return "fc" as layer's type
+func (fc *FullConnectedLayer) GetType() string {
+	return "fc"
+}
+
 func (fc *FullConnectedLayer) mapToInput(d Point) int {
 	return d.Z*(*fc).In.Size.X*(fc).In.Size.Y + d.Y*(*fc).In.Size.X + d.X
 }

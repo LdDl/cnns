@@ -149,6 +149,11 @@ func (maxpool *MaxPoolingLayer) SetActivationDerivativeFunc(f func(v float64) fl
 	fmt.Println("You can not set derivative of activation function for pooling layer")
 }
 
+// GetType - return "maxpool" as layer's type
+func (maxpool *MaxPoolingLayer) GetType() string {
+	return "maxpool"
+}
+
 func (maxpool *MaxPoolingLayer) mapToInput(out Point, z int) Point {
 	return Point{
 		X: out.X * (*maxpool).Stride,
