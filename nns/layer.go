@@ -107,6 +107,12 @@ func (wh *WholeNet) ExportToFile(fname string) error {
 }
 
 // ImportFromFile load network to file
+/*
+	fname - filename,
+	randomWeights:
+		true: random weights for new network
+		false: weights from files for using network (or continue training))
+*/
 func (wh *WholeNet) ImportFromFile(fname string, randomWeights bool) error {
 	var err error
 	fileBytes, err := ioutil.ReadFile(fname)
