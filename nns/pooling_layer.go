@@ -128,7 +128,7 @@ func (maxpool *MaxPoolingLayer) PrintOutput() {
 
 // PrintWeights - just to point, that max pooling layer has not gradients
 func (maxpool *MaxPoolingLayer) PrintWeights() {
-	fmt.Println("No weights for Max Pool")
+	fmt.Println("There are no weights for pooling layer")
 }
 
 // PrintGradients - print max pooling layer's gradients

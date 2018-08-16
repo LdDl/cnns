@@ -123,7 +123,7 @@ func (wh *WholeNet) ImportFromFile(fname string) error {
 		switch data.Network.Layers[i].LayerType {
 		case "conv":
 			stride := data.Network.Layers[i].Parameters.Stride
-			kernelSize := data.Network.Layers[i].Weights[0].TDSize.X
+			kernelSize := data.Network.Layers[i].Parameters.KernelSize
 			numOfFilters := len(data.Network.Layers[i].Weights)
 			x := data.Network.Layers[i].InputSize.X
 			y := data.Network.Layers[i].InputSize.Y
@@ -138,9 +138,20 @@ func (wh *WholeNet) ImportFromFile(fname string) error {
 			(*wh).Layers = append((*wh).Layers, conv)
 			break
 		case "relu":
-
+			x := data.Network.Layers[i].InputSize.X
+			y := data.Network.Layers[i].InputSize.Y
+			z := data.Network.Layers[i].InputSize.Z
+			relu := NewReLULayer(TDsize{X: x, Y: y, Z: z})
+			(*wh).Layers = append((*wh).Layers, relu)
 			break
 		case "pool":
+			stride := data.Network.Layers[i].Parameters.Stride
+			kernelSize := data.Network.Layers[i].Parameters.KernelSize
+			x := data.Network.Layers[i].InputSize.X
+			y := data.Network.Layers[i].InputSize.Y
+			z := data.Network.Layers[i].InputSize.Z
+			pool := NewMaxPoolingLayer(stride, kernelSize, TDsize{X: x, Y: y, Z: z})
+			(*wh).Layers = append((*wh).Layers, pool)
 			break
 		case "fc":
 			break
@@ -162,14 +173,10 @@ type NetJSON struct {
 				Y int `json:"Y"`
 				Z int `json:"Z"`
 			} `json:"InputSize"`
-			OutputSize struct {
-				X int `json:"X"`
-				Y int `json:"Y"`
-				Z int `json:"Z"`
-			} `json:"OutputSize"`
 			Parameters struct {
-				Stride int `json:"Stride"`
-			} `json:"Parameters"`
+				Stride     int `json:"Stride"`
+				KernelSize int `json:"KernelSize"`
+			} `json:"Parameters,omitempty"`
 			Weights []struct {
 				TDSize struct {
 					X int `json:"X"`
@@ -177,7 +184,7 @@ type NetJSON struct {
 					Z int `json:"Z"`
 				} `json:"TDSize"`
 				Data [][][]float64 `json:"Data"`
-			} `json:"Weights"`
+			} `json:"Weights,omitempty"`
 		} `json:"Layers"`
 	} `json:"Network"`
 	Parameters struct {

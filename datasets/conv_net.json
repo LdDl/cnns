@@ -8,13 +8,9 @@
                     "Y": 18,
                     "Z": 1
                 },
-                "OutputSize": {
-                    "X": 16,
-                    "Y": 18,
-                    "Z": 1
-                },
                 "Parameters": {
-                    "Stride": 1
+                    "Stride": 1,
+                    "KernelSize": 3
                 },
                 "Weights": [
                     {
@@ -44,6 +40,26 @@
                         ]
                     }
                 ]
+            },
+            {
+                "LayerType": "relu",
+                "InputSize": {
+                    "X": 14,
+                    "Y": 16,
+                    "Z": 1
+                }
+            },
+            {
+                "LayerType": "pool",
+                "InputSize": {
+                    "X": 14,
+                    "Y": 16,
+                    "Z": 1
+                },
+                "Parameters": {
+                    "Stride": 2,
+                    "KernelSize": 2
+                }
             }
         ]
     },
