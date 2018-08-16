@@ -7,20 +7,20 @@ import (
 	"time"
 )
 
-// CheckXOR - проверка полносвязного слоя при решении проблемы XOR
+// CheckXOR - solve "XOR" problem
 func CheckXOR() {
 	rand.Seed(time.Now().UnixNano())
-	// Слой с тремя нейронами
+	// Fully connected layer with 3 output neurons
 	fullyconnected1 := nns.NewFullConnectedLayer(nns.TDsize{X: 2, Y: 1, Z: 1}, 2)
 	fullyconnected1.SetActivationFunc(ActivationTanh)
 	fullyconnected1.SetActivationDerivativeFunc(ActivationTanhDerivative)
 
-	// Слой с одним выходным нейроном
+	// Fully connected layer with 1 output neurons
 	fullyconnected2 := nns.NewFullConnectedLayer(fullyconnected1.OutSize(), 1)
 	fullyconnected2.SetActivationFunc(ActivationTanh)
 	fullyconnected2.SetActivationDerivativeFunc(ActivationTanhDerivative)
 
-	// Инициализация сети
+	// Init network
 	var net nns.WholeNet
 	net.Layers = append(net.Layers, fullyconnected1)
 	net.Layers = append(net.Layers, fullyconnected2)

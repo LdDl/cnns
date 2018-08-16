@@ -17,6 +17,7 @@ import (
 )
 
 var (
+	// Labels
 	chars = map[int]string{
 		0:  "0",
 		1:  "1",
@@ -44,11 +45,15 @@ var (
 	trainWidth          = 16
 	trainHeight         = 18
 	trainDepth          = 1
-	adjustAmountOfFiles = 20000
+	adjustAmountOfFiles = 20000 // see 246-th line of this code
 )
 
-// CheckOCR - проверка свёрточного слоя для решения задачи OCR
+// CheckOCR - solve OCR problem
 // It uses GoCV library https://gocv.io (https://github.com/hybridgroup/gocv)
+// gocv.IMRead - reading image from filesystem
+// gocv.CvtColor - do grayscale
+// gocv.Threshold - threshold
+// gocv.Resize - resize image
 func CheckOCR() {
 	rand.Seed(time.Now().UnixNano())
 	conv := nns.NewConvLayer(1, 5, 2, nns.TDsize{X: trainWidth, Y: trainHeight, Z: 1}) //
@@ -62,20 +67,23 @@ func CheckOCR() {
 	net.Layers = append(net.Layers, maxpool)
 	net.Layers = append(net.Layers, fullyconnected)
 
+	// Paste your path for training data
 	trainFiles, err := readFileNames("/home/keep/work/src/cnns_vika/datasets/symbols_2/")
 	if err != nil {
 		log.Println(err)
 		return
 	}
 	labelsNumber := len(trainFiles)
+	// Paste your path for test data
 	testFiles, err := readFileNames("/home/keep/work/src/cnns_vika/datasets/symbols_test_3/")
 	if err != nil {
 		log.Println(err)
 		return
 	}
 	if labelsNumber != len(testFiles) {
-		err = errors.New("number of labels in train data and test data should be the same (for proper testing, actually)")
+		err = errors.New("Warning: number of labels in train data and test data should be the same (for proper testing, actually)")
 		log.Println(err)
+		// Just warning. For testing every label you should have equal amount of labels both in train data and test data.
 		//return
 	}
 
@@ -97,6 +105,7 @@ func CheckOCR() {
 	testTrained(&net, &testMats)
 }
 
+// train - train network
 func train(net *nns.WholeNet, data *map[string][]gocv.Mat) error {
 	var err error
 	rand.Seed(time.Now().UnixNano())
@@ -155,6 +164,7 @@ func train(net *nns.WholeNet, data *map[string][]gocv.Mat) error {
 	return err
 }
 
+// testTrained - test network
 func testTrained(net *nns.WholeNet, data *map[string][]gocv.Mat) error {
 	var err error
 	var testers []Trainer
@@ -232,8 +242,9 @@ func SuffleTrainers(data []Trainer) []Trainer {
 	return data
 }
 
-// readMatsTrain - fill map[string][]gocv.Mat with data.
+// readMatsTrain - fill map[string][]gocv.Mat with data (for training)
 // adjust - parameter to fill data with same amount of images for each label (needed if you have a few amount of images for some label)
+// but, for a good training you have to provide a lot of unique data (not randomly repeated)
 func readMatsTrain(data *map[string][]string, adjust int) (map[string][]gocv.Mat, error) {
 	var err error
 	var ret map[string][]gocv.Mat
@@ -266,6 +277,7 @@ func readMatsTrain(data *map[string][]string, adjust int) (map[string][]gocv.Mat
 	return ret, err
 }
 
+// readMatsTests - fill map[string][]gocv.Mat with data (for testing)
 func readMatsTests(data *map[string][]string) (map[string][]gocv.Mat, error) {
 	var err error
 	var ret map[string][]gocv.Mat
@@ -286,19 +298,14 @@ func readMatsTests(data *map[string][]string) (map[string][]gocv.Mat, error) {
 			// Resize
 			gocv.Resize(temp, &temp, image.Pt(trainWidth, trainHeight), 0.0, 0.0, gocv.InterpolationNearestNeighbor)
 			ret[k] = append(ret[k], temp.Clone())
-
-			// window := gocv.NewWindow("OCR detect")
-			// defer window.Close()
-			// window.IMShow(temp)
-			// window.WaitKey(0)
-
-			break
+			// break
 		}
 		// break
 	}
 	return ret, err
 }
 
+// readFileNames - get filenames in directory
 func readFileNames(dir string) (map[string][]string, error) {
 	var err error
 	charMap := make(map[string][]string)

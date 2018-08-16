@@ -5,6 +5,7 @@ import (
 	"fmt"
 )
 
+// Conv - check convolution
 func Conv() {
 	conv := nns.NewConvLayer(1, 3, 1, nns.TDsize{X: 8, Y: 9, Z: 1})
 	relu := nns.NewReLULayer(conv.OutSize())

@@ -9,13 +9,15 @@ import (
 	"time"
 )
 
-// CheckXTO - проверка свёрточного слоя для распознавания символов "X", "T" и "O"
+// CheckXTO - recognition of "X", "T" и "O" symbols represented as matrices
 func CheckXTO() {
 	rand.Seed(time.Now().UnixNano())
-	conv := nns.NewConvLayer(1, 3, 2, nns.TDsize{X: 8, Y: 9, Z: 1}) //
+	conv := nns.NewConvLayer(1, 3, 2, nns.TDsize{X: 8, Y: 9, Z: 1})
 	relu := nns.NewReLULayer(conv.OutSize())
 	maxpool := nns.NewMaxPoolingLayer(2, 2, relu.OutSize())
 	fullyconnected := nns.NewFullConnectedLayer(maxpool.OutSize(), 3)
+
+	// You can play with activation function for fully connected layer
 	// flayer.SetActivationFunc(ActivationTanh)
 	// flayer.SetActivationDerivativeFunc(ActivationTanhDerivative)
 
@@ -80,6 +82,9 @@ func CheckXTO() {
 
 	// Train
 	for i := 0; i < 10000; i++ {
+		// 0 - X
+		// 1 - T
+		// 2 - O
 		var rnd = u.RandomInt(0, 3)
 		var desired = nns.NewTensor(3, 1, 1)
 		desiredMat := [][][]float64{[][]float64{[]float64{0.0, 0.0, 0.0}}}
@@ -108,7 +113,7 @@ func CheckXTO() {
 	net.Layers[0].PrintWeights()
 	net.Layers[3].PrintWeights()
 
-	// Test
+	// Test trained network
 	xmatrix = [][][]float64{
 		[][]float64{
 			[]float64{0, 0, 0, 0, 0, 0, 0, 0},

@@ -8,30 +8,30 @@ import (
 	"time"
 )
 
-// ActivationTanh .
+// ActivationTanh - hyperbolic tangent
 func ActivationTanh(v float64) float64 {
 	return math.Tanh(v)
 }
 
-// ActivationTanhDerivative .
+// ActivationTanhDerivative - derivative of hyperbolic tangent
 func ActivationTanhDerivative(v float64) float64 {
 	return 1 - ActivationTanh(v)*ActivationTanh(v)
 }
 
-// CheckAND - проверка полносвязного слоя при решении проблемы AND
+// CheckAND - solve "AND" problem
 func CheckAND() {
 	rand.Seed(time.Now().UnixNano())
-	// Слой с тремя нейронами
+	// Fully connected layer with 3 output neurons
 	fullyconnected1 := nns.NewFullConnectedLayer(nns.TDsize{X: 2, Y: 1, Z: 1}, 2)
 	fullyconnected1.SetActivationFunc(ActivationTanh)
 	fullyconnected1.SetActivationDerivativeFunc(ActivationTanhDerivative)
 
-	// Слой с одним выходным нейроном
+	// Fully connected layer with 1 output neurons
 	fullyconnected2 := nns.NewFullConnectedLayer(fullyconnected1.OutSize(), 1)
 	fullyconnected2.SetActivationFunc(ActivationTanh)
 	fullyconnected2.SetActivationDerivativeFunc(ActivationTanhDerivative)
 
-	// Инициализация сети
+	// Init network
 	var net nns.WholeNet
 	net.Layers = append(net.Layers, fullyconnected1)
 	net.Layers = append(net.Layers, fullyconnected2)

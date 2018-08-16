@@ -7,7 +7,7 @@ func main() {
 	// examples.CheckOR()
 	// examples.CheckXOR()
 	// examples.CheckXTO()
-	// examples.Conv()
-	examples.CheckOCR()
+	examples.Conv()
+	// examples.CheckOCR()
 	// examples.CheckOCRTwoConv()
 }

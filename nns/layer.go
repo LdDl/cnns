@@ -1,41 +1,13 @@
 package nns
 
+import (
+	"encoding/json"
+	"io/ioutil"
+)
+
 // WholeNet - net itself (array of layers)
 type WholeNet struct {
 	Layers []Layer
-}
-
-// FeedForward - forward pass throught the net
-func (wh *WholeNet) FeedForward(t *Tensor) {
-	(*wh).Layers[0].FeedForward(t)
-	for l := 1; l < len((*wh).Layers); l++ {
-		out := (*wh).Layers[l-1].GetOutput()
-		(*wh).Layers[l].FeedForward(&out)
-	}
-}
-
-// Backpropagate - backward pass throught the net (training)
-func (wh *WholeNet) Backpropagate(target *Tensor) {
-	difference := (*wh).Layers[len((*wh).Layers)-1].GetOutput()
-	difference.Sub(target)
-	(*wh).Layers[len((*wh).Layers)-1].CalculateGradients(&difference)
-	for i := len((*wh).Layers) - 2; i >= 0; i-- {
-		grad := (*wh).Layers[i+1].GetGradients()
-		(*wh).Layers[i].CalculateGradients(&grad)
-	}
-	for i := range (*wh).Layers {
-		(*wh).Layers[i].UpdateWeights()
-	}
-}
-
-// PrintOutput - prints net's output (last layer output)
-func (wh *WholeNet) PrintOutput() {
-	(*wh).Layers[len((*wh).Layers)-1].PrintOutput()
-}
-
-// GetOutput - returns net's output (last layer output)
-func (wh *WholeNet) GetOutput() Tensor {
-	return (*wh).Layers[len((*wh).Layers)-1].GetOutput()
 }
 
 // Layer - interface for all layer types
@@ -78,4 +50,89 @@ type Layer interface {
 // LayerStruct - struct wraps layer interface
 type LayerStruct struct {
 	Layer
+}
+
+// FeedForward - forward pass throught the net
+func (wh *WholeNet) FeedForward(t *Tensor) {
+	(*wh).Layers[0].FeedForward(t)
+	for l := 1; l < len((*wh).Layers); l++ {
+		out := (*wh).Layers[l-1].GetOutput()
+		(*wh).Layers[l].FeedForward(&out)
+	}
+}
+
+// Backpropagate - backward pass throught the net (training)
+func (wh *WholeNet) Backpropagate(target *Tensor) {
+	difference := (*wh).Layers[len((*wh).Layers)-1].GetOutput()
+	difference.Sub(target)
+	(*wh).Layers[len((*wh).Layers)-1].CalculateGradients(&difference)
+	for i := len((*wh).Layers) - 2; i >= 0; i-- {
+		grad := (*wh).Layers[i+1].GetGradients()
+		(*wh).Layers[i].CalculateGradients(&grad)
+	}
+	for i := range (*wh).Layers {
+		(*wh).Layers[i].UpdateWeights()
+	}
+}
+
+// PrintOutput - prints net's output (last layer output)
+func (wh *WholeNet) PrintOutput() {
+	(*wh).Layers[len((*wh).Layers)-1].PrintOutput()
+}
+
+// GetOutput - returns net's output (last layer output)
+func (wh *WholeNet) GetOutput() Tensor {
+	return (*wh).Layers[len((*wh).Layers)-1].GetOutput()
+}
+
+// ExportToFile saves network to file
+func (wh *WholeNet) ExportToFile(fname string) error {
+	var err error
+	var save NetJSON
+
+	saveJSON, err := json.Marshal(save)
+	if err != nil {
+		return err
+	}
+	err = ioutil.WriteFile(fname, saveJSON, 0644)
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+// ImportFromFile load network to file
+func (wh *WholeNet) ImportFromFile(fname string) error {
+	var err error
+
+	return err
+}
+
+// NetJSON - json representation of network structure (for import and export)
+type NetJSON struct {
+	Network struct {
+		Layers []struct {
+			LayerType string `json:"LayerType"`
+			InputSize struct {
+				X int `json:"X"`
+				Y int `json:"Y"`
+				Z int `json:"Z"`
+			} `json:"InputSize"`
+			Parameters map[string]interface{} `json:"Parameters"`
+			Weights    struct {
+				TDSize struct {
+					X int `json:"X"`
+					Y int `json:"Y"`
+					Z int `json:"Z"`
+				} `json:"TDSize"`
+				Data [][][]float64 `json:"Data"`
+			} `json:"Weights"`
+		} `json:"Layers"`
+	} `json:"Network"`
+	Parameters struct {
+		LearningRate float64 `json:"LearningRate"`
+		Momentum     float64 `json:"Momentum"`
+		WeightDecay  float64 `json:"WeightDecay"`
+	} `json:"Parameters"`
 }
