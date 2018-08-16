@@ -118,7 +118,6 @@ func (wh *WholeNet) ImportFromFile(fname string) error {
 	if err != nil {
 		return err
 	}
-
 	for i := range data.Network.Layers {
 		switch data.Network.Layers[i].LayerType {
 		case "conv":
@@ -154,6 +153,16 @@ func (wh *WholeNet) ImportFromFile(fname string) error {
 			(*wh).Layers = append((*wh).Layers, pool)
 			break
 		case "fc":
+			x := data.Network.Layers[i].InputSize.X
+			y := data.Network.Layers[i].InputSize.Y
+			z := data.Network.Layers[i].InputSize.Z
+			outSize := data.Network.Layers[i].OutputSize.X
+			fullyconnected := NewFullConnectedLayer(TDsize{X: x, Y: y, Z: z}, outSize)
+			var weights Tensor
+			weights = NewTensor(x*y*z, outSize, 1)
+			weights.SetData(data.Network.Layers[i].Weights[0].Data)
+			fullyconnected.SetCustomWeights(&[]Tensor{weights})
+			(*wh).Layers = append((*wh).Layers, fullyconnected)
 			break
 		default:
 			err = errors.New("Unrecognized layer type: " + data.Network.Layers[i].LayerType)
@@ -185,6 +194,13 @@ type NetJSON struct {
 				} `json:"TDSize"`
 				Data [][][]float64 `json:"Data"`
 			} `json:"Weights,omitempty"`
+			// Actually "OutputSize" parameter is usefull for fully connected layer only
+			// There are automatic calculation of output size for other layers' types
+			OutputSize struct {
+				X int `json:"X"`
+				Y int `json:"Y"`
+				Z int `json:"Z"`
+			} `json:"OutputSize,omitempty"`
 		} `json:"Layers"`
 	} `json:"Network"`
 	Parameters struct {

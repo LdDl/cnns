@@ -35,9 +35,7 @@ func NewConvLayer(stride, kernelSize, numberFilters int, inSize TDsize) *LayerSt
 				}
 			}
 		}
-
 		newLayer.Kernels = append(newLayer.Kernels, t)
-
 		for i := 0; i < numberFilters; i++ {
 			t := NewTensorGradient(kernelSize, kernelSize, inSize.Z)
 			newLayer.KernelsGradients = append(newLayer.KernelsGradients, t)

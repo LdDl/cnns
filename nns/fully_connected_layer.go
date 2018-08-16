@@ -35,15 +35,6 @@ func NewFullConnectedLayer(inSize TDsize, outSize int) *LayerStruct {
 			newLayer.Weights.Set(h, i, 0, rand.Float64()-0.5)
 		}
 	}
-	// hardcoded weights for testing purposes
-	// hcweights := [][][]float64{
-	// 	[][]float64{
-	// 		[]float64{-0.19908814, 0.01521263, 0.31363996, -0.28573613, -0.11934281, -0.18194183, -0.03111016, -0.21696585, -0.20689814},
-	// 		[]float64{0.17908468, -0.28144695, -0.29681312, -0.13912858, 0.07067328, 0.36249144, -0.20688576, -0.20291744, 0.25257304},
-	// 		[]float64{-0.29341734, 0.36533501, 0.19671917, 0.02382031, -0.47169692, -0.34167172, 0.10725344, 0.47524162, -0.42054638},
-	// 	},
-	// }
-	// newLayer.Weights.SetData(hcweights)
 	return &LayerStruct{
 		Layer: newLayer,
 	}
