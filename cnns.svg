@@ -2,11 +2,13 @@
 <svg version="1.1" 
      xmlns="http://www.w3.org/2000/svg"
      xmlns:xlink="http://www.w3.org/1999/xlink"
-     height="161"
+     height="33"
+     width="333"
 >
-  <text font-size="100" y="100">
-    <tspan stroke="#000000" stroke-width="2.71828" fill="#6AD7E5">C</tspan><tspan stroke="#000000" stroke-width="0.5" fill="#000000">onvolutional</tspan>
-    <tspan stroke="#000000" stroke-width="2.71828" fill="#6AD7E5">N</tspan>eural
-    <tspan stroke="#000000" stroke-width="2.71828" fill="#6AD7E5">N</tspan>etwork<tspan stroke="#000000" stroke-width="2.71828" fill="#6AD7E5">s</tspan>
+  <text font-size="24" y="24">
+    <tspan stroke="#000000" stroke-width="0.618" fill="#6AD7E5">C</tspan><tspan stroke="#000000" stroke-width="0.618" fill="#000000">onvolutional</tspan>
+    <tspan stroke="#000000" stroke-width="0.618" fill="#6AD7E5">N</tspan>eural
+    <tspan stroke="#000000" stroke-width="0.618" fill="#6AD7E5">N</tspan>etwork<tspan stroke="#000000" stroke-width="0.618" fill="#6AD7E5">s</tspan>
   </text>
+  
 </svg>
