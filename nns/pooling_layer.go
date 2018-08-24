@@ -1,9 +1,10 @@
 package nns
 
 import (
-	"cnns_vika/utils/u"
 	"fmt"
 	"math"
+
+	"github.com/LdDl/cnns/utils/u"
 )
 
 // MaxPoolingLayer is Max Pooling layer structure

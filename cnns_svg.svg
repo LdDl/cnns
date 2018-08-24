@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.1" 
+     xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     height="43.618"
+     width="555"
+>
+  <text font-size="42" y="42">
+    <tspan text-anchor="start" stroke="#000000" stroke-width="0.618" fill="#6AD7E5">C</tspan><tspan text-anchor="start" stroke="#000000" stroke-width="0.0" fill="#000000">onvolutional</tspan>
+    <tspan text-anchor="start" stroke="#000000" stroke-width="0.618" fill="#6AD7E5">N</tspan><tspan text-anchor="start" stroke="#000000" stroke-width="0.0" fill="#000000">eural</tspan>
+    <tspan text-anchor="start" stroke="#000000" stroke-width="0.618" fill="#6AD7E5">N</tspan><tspan text-anchor="start" stroke="#000000" stroke-width="0.0" fill="#000000">etwork</tspan><tspan text-anchor="start" stroke="#000000" stroke-width="0.618" fill="#6AD7E5">s</tspan>
+  </text>
+  
+</svg>

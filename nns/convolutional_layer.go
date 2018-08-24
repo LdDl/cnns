@@ -1,9 +1,10 @@
 package nns
 
 import (
-	"cnns_vika/utils/u"
 	"fmt"
 	"math/rand"
+
+	"github.com/LdDl/cnns/utils/u"
 )
 
 // ConvLayer is convolutional layer structure

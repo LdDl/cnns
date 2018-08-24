@@ -1,8 +1,6 @@
 package examples
 
 import (
-	"cnns_vika/nns"
-	"cnns_vika/utils/u"
 	"errors"
 	"fmt"
 	"image"
@@ -12,6 +10,10 @@ import (
 	"math/rand"
 	"strconv"
 	"time"
+
+	"github.com/LdDl/cnns/nns"
+
+	"github.com/LdDl/cnns/utils/u"
 
 	"gocv.io/x/gocv"
 )
@@ -68,14 +70,14 @@ func CheckOCR() {
 	net.Layers = append(net.Layers, fullyconnected)
 
 	// Paste your path for training data
-	trainFiles, err := readFileNames("/home/keep/work/src/cnns_vika/datasets/symbols_2/")
+	trainFiles, err := readFileNames("/home/keep/work/src/github.com/LdDl/cnnsdatasets/symbols_2/")
 	if err != nil {
 		log.Println(err)
 		return
 	}
 	labelsNumber := len(trainFiles)
 	// Paste your path for test data
-	testFiles, err := readFileNames("/home/keep/work/src/cnns_vika/datasets/symbols_test_3/")
+	testFiles, err := readFileNames("/home/keep/work/src/github.com/LdDl/cnnsdatasets/symbols_test_3/")
 	if err != nil {
 		log.Println(err)
 		return

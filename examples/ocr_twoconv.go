@@ -1,11 +1,12 @@
 package examples
 
 import (
-	"cnns_vika/nns"
 	"errors"
 	"log"
 	"math/rand"
 	"time"
+
+	"github.com/LdDl/cnns/nns"
 )
 
 // CheckOCRTwoConv - проверка свёрточного слоя для решения задачи OCR
@@ -31,13 +32,13 @@ func CheckOCRTwoConv() {
 	net.Layers = append(net.Layers, maxpool2)
 	net.Layers = append(net.Layers, fullyconnected)
 
-	trainFiles, err := readFileNames("/home/keep/work/src/cnns_vika/datasets/symbols_2/")
+	trainFiles, err := readFileNames("/home/keep/work/src/github.com/LdDl/cnnsdatasets/symbols_2/")
 	if err != nil {
 		log.Println(err)
 		return
 	}
 	labelsNumber := len(trainFiles)
-	testFiles, err := readFileNames("/home/keep/work/src/cnns_vika/datasets/symbols_test_3/")
+	testFiles, err := readFileNames("/home/keep/work/src/github.com/LdDl/cnnsdatasets/symbols_test_3/")
 	if err != nil {
 		log.Println(err)
 		return

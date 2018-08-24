@@ -1,8 +1,9 @@
 package examples
 
 import (
-	"cnns_vika/nns"
 	"fmt"
+
+	"github.com/LdDl/cnns/nns"
 )
 
 // Conv - check convolution

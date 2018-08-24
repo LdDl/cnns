@@ -1,12 +1,14 @@
 package examples
 
 import (
-	"cnns_vika/nns"
-	"cnns_vika/utils/u"
 	"fmt"
 	"log"
 	"math/rand"
 	"time"
+
+	"github.com/LdDl/cnns/nns"
+
+	"github.com/LdDl/cnns/utils/u"
 )
 
 // CheckXTO - recognition of "X", "T" и "O" symbols represented as matrices

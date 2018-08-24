@@ -1,6 +1,6 @@
 package main
 
-import "cnns_vika/examples"
+import "github.com/LdDl/cnns/examples"
 
 func main() {
 	// examples.CheckAND()

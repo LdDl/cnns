@@ -1,9 +1,10 @@
 package examples
 
 import (
-	"cnns_vika/nns"
 	"fmt"
 	"log"
+
+	"github.com/LdDl/cnns/nns"
 )
 
 // ImportNet - example of how ImportFromFile(fname string) works

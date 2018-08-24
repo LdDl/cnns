@@ -1,10 +1,12 @@
 package examples
 
 import (
-	"cnns_vika/nns"
-	"cnns_vika/utils/u"
 	"math/rand"
 	"time"
+
+	"github.com/LdDl/cnns/nns"
+
+	"github.com/LdDl/cnns/utils/u"
 )
 
 // CheckXOR - solve "XOR" problem
