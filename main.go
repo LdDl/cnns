@@ -10,5 +10,6 @@ func main() {
 	// examples.Conv()
 	// examples.CheckOCR()
 	// examples.CheckOCRTwoConv()
-	examples.ImportNet()
+	// examples.ImportNet()
+	examples.YoloTry()
 }
