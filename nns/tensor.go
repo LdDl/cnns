@@ -99,3 +99,21 @@ func (t1 *Tensor) Print() {
 		}
 	}
 }
+
+// GetData3D returns Tensor as 3-dimensional array
+func (t1 *Tensor) GetData3D() [][][]float64 {
+	mx := (*t1).Size.X
+	my := (*t1).Size.Y
+	mz := (*t1).Size.Z
+	ret := make([][][]float64, mz)
+	for z := 0; z < mz; z++ {
+		ret[z] = make([][]float64, my)
+		for y := 0; y < my; y++ {
+			ret[z][y] = make([]float64, mx)
+			for x := 0; x < mx; x++ {
+				ret[z][y][x] = (*t1).Get(x, y, z)
+			}
+		}
+	}
+	return ret
+}

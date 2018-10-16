@@ -63,6 +63,11 @@ func (con *ConvLayer) OutSize() Point {
 	return (*con).Out.Size
 }
 
+// GetInputSize - returns input size (dimensions)
+func (con *ConvLayer) GetInputSize() Point {
+	return (*con).In.Size
+}
+
 // GetOutput - returns convolutional layer's output
 func (con *ConvLayer) GetOutput() Tensor {
 	return (*con).Out
@@ -196,6 +201,16 @@ func (con *ConvLayer) SetActivationDerivativeFunc(f func(v float64) float64) {
 // GetType - return "conv" as layer's type
 func (con *ConvLayer) GetType() string {
 	return "conv"
+}
+
+// GetStride - get stride of layer
+func (con *ConvLayer) GetStride() int {
+	return con.Stride
+}
+
+// GetKernelSize - return "conv" as layer's type
+func (con *ConvLayer) GetKernelSize() int {
+	return con.KernelSize
 }
 
 func (con *ConvLayer) mapToInput(out Point, z int) Point {

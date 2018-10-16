@@ -59,6 +59,11 @@ func (fc *FullConnectedLayer) OutSize() Point {
 	return (*fc).Out.Size
 }
 
+// GetInputSize - returns input size (dimensions)
+func (fc *FullConnectedLayer) GetInputSize() Point {
+	return (*fc).In.Size
+}
+
 // GetOutput - returns fully connected layer's output
 func (fc *FullConnectedLayer) GetOutput() Tensor {
 	return (*fc).Out // Here we outputing ACTIVATED values
@@ -170,6 +175,16 @@ func (fc *FullConnectedLayer) SetActivationFunc(f func(v float64) float64) {
 // SetActivationDerivativeFunc sets derivative of activation function for fully connected layer. You need to specify function: func(v float64) float64
 func (fc *FullConnectedLayer) SetActivationDerivativeFunc(f func(v float64) float64) {
 	(*fc).ActivationDerivative = f
+}
+
+// GetStride - get stride of layer
+func (fc *FullConnectedLayer) GetStride() int {
+	return 0
+}
+
+// GetKernelSize - return "conv" as layer's type
+func (fc *FullConnectedLayer) GetKernelSize() int {
+	return 0
 }
 
 // GetType - return "fc" as layer's type

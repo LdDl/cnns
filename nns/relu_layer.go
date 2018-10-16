@@ -33,6 +33,11 @@ func (relu *ReLULayer) OutSize() Point {
 	return (*relu).Out.Size
 }
 
+// GetInputSize - returns input size (dimensions)
+func (relu *ReLULayer) GetInputSize() Point {
+	return (*relu).In.Size
+}
+
 // GetOutput - returns ReLU layer's output
 func (relu *ReLULayer) GetOutput() Tensor {
 	return (*relu).Out
@@ -121,6 +126,16 @@ func (relu *ReLULayer) SetActivationFunc(f func(v float64) float64) {
 func (relu *ReLULayer) SetActivationDerivativeFunc(f func(v float64) float64) {
 	// Nothing here. Just for interface.
 	fmt.Println("You can not set derivative of activation function for ReLU layer")
+}
+
+// GetStride - get stride of layer
+func (relu *ReLULayer) GetStride() int {
+	return 0
+}
+
+// GetKernelSize - return "conv" as layer's type
+func (relu *ReLULayer) GetKernelSize() int {
+	return 0
 }
 
 // GetType - return "relu" as layer's type

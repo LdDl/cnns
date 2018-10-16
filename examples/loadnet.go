@@ -7,8 +7,8 @@ import (
 	"github.com/LdDl/cnns/nns"
 )
 
-// ImportNet - example of how ImportFromFile(fname string) works
-func ImportNet() {
+// ImportExportNet - example of how ImportFromFile(fname string, randomWeights bool) and ExportToFile(fname string) works
+func ImportExportNet() {
 	jsonName := "datasets/conv_net.json"
 	var net nns.WholeNet
 	err := net.ImportFromFile(jsonName, false)
@@ -53,4 +53,10 @@ func ImportNet() {
 	fmt.Println("Weights after training:")
 	net.Layers[0].PrintWeights()
 	net.Layers[len(net.Layers)-1].PrintWeights()
+
+	fmt.Println("Saving weights")
+	err = net.ExportToFile("datasets/conv_net_saved.json")
+	if err != nil {
+		log.Println(err)
+	}
 }

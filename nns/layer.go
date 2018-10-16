@@ -3,6 +3,7 @@ package nns
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 )
 
@@ -15,6 +16,9 @@ type WholeNet struct {
 type Layer interface {
 	// OutSize - returns output size (dimensions)
 	OutSize() Point
+
+	// GetInputSize - returns input size (dimensions)
+	GetInputSize() Point
 
 	// GetOutput - returns layer's output
 	GetOutput() Tensor
@@ -42,6 +46,12 @@ type Layer interface {
 
 	// PrintGradients - print layer's gradients
 	PrintGradients()
+
+	// GetStride - get stride of layer
+	GetStride() int
+
+	// GetKernelSize - get kernel size of layer
+	GetKernelSize() int
 
 	// GetType - get type of layer
 	GetType() string
@@ -87,23 +97,6 @@ func (wh *WholeNet) PrintOutput() {
 // GetOutput - returns net's output (last layer output)
 func (wh *WholeNet) GetOutput() Tensor {
 	return (*wh).Layers[len((*wh).Layers)-1].GetOutput()
-}
-
-// ExportToFile saves network to file
-func (wh *WholeNet) ExportToFile(fname string) error {
-	var err error
-	var save NetJSON
-
-	saveJSON, err := json.Marshal(save)
-	if err != nil {
-		return err
-	}
-	err = ioutil.WriteFile(fname, saveJSON, 0644)
-	if err != nil {
-		return err
-	}
-
-	return err
 }
 
 // ImportFromFile load network to file
@@ -182,40 +175,111 @@ func (wh *WholeNet) ImportFromFile(fname string, randomWeights bool) error {
 	return err
 }
 
+// ExportToFile saves network to file
+func (wh *WholeNet) ExportToFile(fname string) error {
+	var err error
+	var save NetJSON
+
+	for i := 0; i < len(wh.Layers); i++ {
+		switch wh.Layers[i].GetType() {
+		case "conv":
+			var newLayer NetLayerJSON
+			newLayer.LayerType = "conv"
+			newLayer.InputSize = wh.Layers[i].GetInputSize()
+			newLayer.Parameters.Stride = wh.Layers[i].GetStride()
+			newLayer.Parameters.KernelSize = wh.Layers[i].GetKernelSize()
+			kernels := wh.Layers[i].GetWeights()
+			newLayer.Weights = make([]TensorJSON, len(kernels))
+			for k := range kernels {
+				newLayer.Weights[k].TDSize = kernels[k].Size
+				newLayer.Weights[k].Data = kernels[k].GetData3D()
+			}
+			save.Network.Layers = append(save.Network.Layers, newLayer)
+			break
+		case "relu":
+			var newLayer NetLayerJSON
+			newLayer.LayerType = "relu"
+			newLayer.InputSize = wh.Layers[i].GetInputSize()
+			save.Network.Layers = append(save.Network.Layers, newLayer)
+			break
+		case "pool":
+			var newLayer NetLayerJSON
+			newLayer.LayerType = "pool"
+			newLayer.InputSize = wh.Layers[i].GetInputSize()
+			newLayer.Parameters.Stride = wh.Layers[i].GetStride()
+			newLayer.Parameters.KernelSize = wh.Layers[i].GetKernelSize()
+			save.Network.Layers = append(save.Network.Layers, newLayer)
+			break
+		case "fc":
+			var newLayer NetLayerJSON
+			newLayer.LayerType = "fc"
+			newLayer.InputSize = wh.Layers[i].GetInputSize()
+			newLayer.OutputSize = wh.Layers[i].GetOutput().Size
+			newLayer.Weights = make([]TensorJSON, 1)
+			kernels := wh.Layers[i].GetWeights()
+			if len(kernels) != 1 {
+				err = fmt.Errorf("Fully connected layer can have only 1 'kernel'")
+				return err
+			}
+			newLayer.Weights[0].TDSize = kernels[0].Size
+			newLayer.Weights[0].Data = kernels[0].GetData3D()
+
+			save.Network.Layers = append(save.Network.Layers, newLayer)
+			break
+		default:
+			err = fmt.Errorf("Unrecognized layer type: %v", wh.Layers[i].GetType())
+			return err
+		}
+	}
+
+	// Hardcoded training parameters
+	save.Parameters.LearningRate = 0.01
+	save.Parameters.Momentum = 0.6
+	save.Parameters.WeightDecay = 0.001
+
+	saveJSON, err := json.Marshal(save)
+	if err != nil {
+		return err
+	}
+
+	err = ioutil.WriteFile(fname, saveJSON, 0644)
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
 // NetJSON - json representation of network structure (for import and export)
 type NetJSON struct {
-	Network struct {
-		Layers []struct {
-			LayerType string `json:"LayerType"`
-			InputSize struct {
-				X int `json:"X"`
-				Y int `json:"Y"`
-				Z int `json:"Z"`
-			} `json:"InputSize"`
-			Parameters struct {
-				Stride     int `json:"Stride"`
-				KernelSize int `json:"KernelSize"`
-			} `json:"Parameters,omitempty"`
-			Weights []struct {
-				TDSize struct {
-					X int `json:"X"`
-					Y int `json:"Y"`
-					Z int `json:"Z"`
-				} `json:"TDSize"`
-				Data [][][]float64 `json:"Data"`
-			} `json:"Weights,omitempty"`
-			// Actually "OutputSize" parameter is usefull for fully connected layer only
-			// There are automatic calculation of output size for other layers' types
-			OutputSize struct {
-				X int `json:"X"`
-				Y int `json:"Y"`
-				Z int `json:"Z"`
-			} `json:"OutputSize,omitempty"`
-		} `json:"Layers"`
-	} `json:"Network"`
-	Parameters struct {
-		LearningRate float64 `json:"LearningRate"`
-		Momentum     float64 `json:"Momentum"`
-		WeightDecay  float64 `json:"WeightDecay"`
-	} `json:"Parameters"`
+	Network    NetworkJSON    `json:"Network"`
+	Parameters LearningParams `json:"Parameters"`
+}
+
+// TensorJSON ...
+type TensorJSON struct {
+	TDSize TDsize        `json:"TDSize"`
+	Data   [][][]float64 `json:"Data"`
+}
+
+// LayerParamsJSON ...
+type LayerParamsJSON struct {
+	Stride     int `json:"Stride"`
+	KernelSize int `json:"KernelSize"`
+}
+
+// NetLayerJSON ...
+type NetLayerJSON struct {
+	LayerType  string          `json:"LayerType"`
+	InputSize  TDsize          `json:"InputSize"`
+	Parameters LayerParamsJSON `json:"Parameters,omitempty"`
+	Weights    []TensorJSON    `json:"Weights,omitempty"`
+	// Actually "OutputSize" parameter is usefull for fully connected layer only
+	// There are automatic calculation of output size for other layers' types
+	OutputSize TDsize `json:"OutputSize,omitempty"`
+}
+
+// NetworkJSON ...
+type NetworkJSON struct {
+	Layers []NetLayerJSON `json:"Layers"`
 }

@@ -44,6 +44,11 @@ func (maxpool *MaxPoolingLayer) OutSize() Point {
 	return (*maxpool).Out.Size
 }
 
+// GetInputSize - returns input size (dimensions)
+func (maxpool *MaxPoolingLayer) GetInputSize() Point {
+	return (*maxpool).In.Size
+}
+
 // GetOutput - returns max pooling layer's output
 func (maxpool *MaxPoolingLayer) GetOutput() Tensor {
 	return (*maxpool).Out
@@ -150,9 +155,19 @@ func (maxpool *MaxPoolingLayer) SetActivationDerivativeFunc(f func(v float64) fl
 	fmt.Println("You can not set derivative of activation function for pooling layer")
 }
 
+// GetStride - get stride of layer
+func (maxpool *MaxPoolingLayer) GetStride() int {
+	return maxpool.Stride
+}
+
+// GetKernelSize - return "conv" as layer's type
+func (maxpool *MaxPoolingLayer) GetKernelSize() int {
+	return maxpool.ExtendFilter
+}
+
 // GetType - return "maxpool" as layer's type
 func (maxpool *MaxPoolingLayer) GetType() string {
-	return "maxpool"
+	return "pool"
 }
 
 func (maxpool *MaxPoolingLayer) mapToInput(out Point, z int) Point {

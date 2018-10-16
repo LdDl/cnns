@@ -44,8 +44,8 @@ var (
 		20: "X",
 		21: "Y",
 	}
-	trainWidth          = 16
-	trainHeight         = 18
+	trainWidth          = 10
+	trainHeight         = 15
 	trainDepth          = 1
 	adjustAmountOfFiles = 20000 // see 246-th line of this code
 )
@@ -70,14 +70,14 @@ func CheckOCR() {
 	net.Layers = append(net.Layers, fullyconnected)
 
 	// Paste your path for training data
-	trainFiles, err := readFileNames("/home/keep/work/src/github.com/LdDl/cnnsdatasets/symbols_2/")
+	trainFiles, err := readFileNames("/home/keep/work/src/github.com/LdDl/cnns/datasets/symbols_2/")
 	if err != nil {
 		log.Println(err)
 		return
 	}
 	labelsNumber := len(trainFiles)
 	// Paste your path for test data
-	testFiles, err := readFileNames("/home/keep/work/src/github.com/LdDl/cnnsdatasets/symbols_test_3/")
+	testFiles, err := readFileNames("/home/keep/work/src/github.com/LdDl/cnns/datasets/symbols_test_3/")
 	if err != nil {
 		log.Println(err)
 		return
@@ -109,6 +109,7 @@ func CheckOCR() {
 
 // train - train network
 func train(net *nns.WholeNet, data *map[string][]gocv.Mat) error {
+	st := time.Now()
 	var err error
 	rand.Seed(time.Now().UnixNano())
 	var trainers []Trainer
@@ -162,7 +163,7 @@ func train(net *nns.WholeNet, data *map[string][]gocv.Mat) error {
 		// Backward
 		net.Backpropagate(&t.Desired)
 	}
-
+	log.Println("Elapsed to train", time.Since(st))
 	return err
 }
 
@@ -197,11 +198,11 @@ func testTrained(net *nns.WholeNet, data *map[string][]gocv.Mat) error {
 						} else if imageArray[k][j][i]/255 == 1 {
 							imageArray[k][j][i] = 0
 						}
-						fmt.Printf("%v ", imageArray[k][j][i])
+						// fmt.Printf("%v ", imageArray[k][j][i])
 					}
-					fmt.Println()
+					// fmt.Println()
 				}
-				fmt.Println()
+				// fmt.Println()
 			}
 			temp.Image.SetData(imageArray)
 			testers = append(testers, temp)
@@ -210,18 +211,21 @@ func testTrained(net *nns.WholeNet, data *map[string][]gocv.Mat) error {
 	testers = SuffleTrainers(testers)
 	for _, t := range testers {
 		// Feedforward
+		st := time.Now()
 		net.FeedForward(&t.Image)
-
+		log.Println("Elapsed to detect", time.Since(st))
 		max := -math.MaxFloat64 // net.Layers[len(net.Layers)-1].GetOutput().Data[0]
-		for _, value := range net.Layers[len(net.Layers)-1].GetOutput().Data {
+		maxidx := -math.MaxInt64
+		for i, value := range net.Layers[len(net.Layers)-1].GetOutput().Data {
 			if value > max {
 				max = value
+				maxidx = i
 			}
 		}
-		log.Println(t.LabelStr, max)
+		log.Println(t.LabelStr, max, maxidx, chars[maxidx])
 		// t.Image.Print()
 		net.PrintOutput()
-		// fmt.Println("Should be:")
+		fmt.Println("Should be:")
 		t.Desired.Print()
 	}
 	return err
