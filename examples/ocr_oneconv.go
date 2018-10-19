@@ -58,7 +58,7 @@ var (
 // gocv.Resize - resize image
 func CheckOCR() {
 	rand.Seed(time.Now().UnixNano())
-	conv := nns.NewConvLayer(1, 5, 2, nns.TDsize{X: trainWidth, Y: trainHeight, Z: 1}) //
+	conv := nns.NewConvLayer(1, 5, 4, nns.TDsize{X: trainWidth, Y: trainHeight, Z: 1}) //
 	relu := nns.NewReLULayer(conv.OutSize())
 	maxpool := nns.NewMaxPoolingLayer(2, 2, relu.OutSize())
 	fullyconnected := nns.NewFullConnectedLayer(maxpool.OutSize(), 22)
@@ -103,8 +103,22 @@ func CheckOCR() {
 	}
 
 	train(&net, &trainMats)
-
+	// _ = trainMats
+	// err = net.ImportFromFile("datasets/ocr_one_conv.txt", false)
+	// if err != nil {
+	// 	log.Println(err)
+	// 	return
+	// }
+	// log.Println(net.Layers[0].GetWeights())
 	testTrained(&net, &testMats)
+
+	// log.Println(net.Layers[len(net.Layers)-1].GetWeights())
+
+	err = net.ExportToFile("datasets/ocr_one_conv.json")
+	if err != nil {
+		log.Println(err)
+		return
+	}
 }
 
 // train - train network

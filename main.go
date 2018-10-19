@@ -9,7 +9,8 @@ func main() {
 	// examples.CheckXTO()
 	// examples.Conv()
 	// examples.CheckOCR()
+	examples.CheckOCRNetFromFile()
 	// examples.CheckOCRTwoConv()
-	examples.ImportExportNet()
+	// examples.ImportExportNet()
 	// examples.YoloTry()
 }
