@@ -92,7 +92,7 @@ func (fc *FullConnectedLayer) DoActivation() {
 		for i := 0; i < (*fc).In.Size.X; i++ {
 			for j := 0; j < (*fc).In.Size.Y; j++ {
 				for z := 0; z < (*fc).In.Size.Z; z++ {
-					m := fc.mapToInput(Point{X: i, Y: j, Z: z})
+					m := fc.mapToInput(i, j, z)
 					inputv += (*fc).In.Get(i, j, z) * (*fc).Weights.Get(m, n, 0)
 				}
 			}
@@ -112,7 +112,7 @@ func (fc *FullConnectedLayer) CalculateGradients(nextLayerGradients *Tensor) {
 		for i := 0; i < (*fc).In.Size.X; i++ {
 			for j := 0; j < (*fc).In.Size.Y; j++ {
 				for z := 0; z < (*fc).In.Size.Z; z++ {
-					m := fc.mapToInput(Point{X: i, Y: j, Z: z})
+					m := fc.mapToInput(i, j, z)
 					// fmt.Printf("%v * %v\n", (*fc).SumLocalGradientsWeights[n].Grad, (*fc).Weights.Get(m, n, 0))
 					(*fc).InputGradientsWeights.SetAdd(i, j, z, (*fc).SumLocalGradientsWeights[n].Grad*(*fc).Weights.Get(m, n, 0))
 				}
@@ -128,7 +128,7 @@ func (fc *FullConnectedLayer) UpdateWeights() {
 		for i := 0; i < (*fc).In.Size.X; i++ {
 			for j := 0; j < (*fc).In.Size.Y; j++ {
 				for z := 0; z < (*fc).In.Size.Z; z++ {
-					m := fc.mapToInput(Point{X: i, Y: j, Z: z})
+					m := fc.mapToInput(i, j, z)
 					w := (*fc).Weights.Get(m, n, 0)
 					w = UpdateWeight(w, &grad, (*fc).In.Get(i, j, z))
 					(*fc).Weights.Set(m, n, 0, w)
@@ -192,6 +192,10 @@ func (fc *FullConnectedLayer) GetType() string {
 	return "fc"
 }
 
-func (fc *FullConnectedLayer) mapToInput(d Point) int {
-	return d.Z*(*fc).In.Size.X*(fc).In.Size.Y + d.Y*(*fc).In.Size.X + d.X
+// func (fc *FullConnectedLayer) mapToInput(d Point) int {
+// 	return d.Z*(*fc).In.Size.X*(fc).In.Size.Y + d.Y*(*fc).In.Size.X + d.X
+// }
+
+func (fc *FullConnectedLayer) mapToInput(i, j, k int) int {
+	return k*(*fc).In.Size.X*(fc).In.Size.Y + j*(*fc).In.Size.X + i
 }

@@ -95,13 +95,14 @@ func (con *ConvLayer) DoActivation() {
 		filterData := (*con).Kernels[filter]
 		for x := 0; x < (*con).Out.Size.X; x++ {
 			for y := 0; y < (*con).Out.Size.Y; y++ {
-				mapped := con.mapToInput(Point{X: x, Y: y, Z: 0}, 0)
+				// mappedX, mappedY, _ := con.mapToInput(x, y, 0)
+				mappedX, mappedY := x*(*con).Stride, y*(*con).Stride
 				sum := 0.0
 				for i := 0; i < (*con).KernelSize; i++ {
 					for j := 0; j < (*con).KernelSize; j++ {
 						for z := 0; z < (*con).In.Size.Z; z++ {
 							f := filterData.Get(i, j, z)
-							v := (*con).In.Get(mapped.X+i, mapped.Y+j, z)
+							v := (*con).In.Get(mappedX+i, mappedY+j, z)
 							sum += f * v
 						}
 					}
@@ -213,12 +214,8 @@ func (con *ConvLayer) GetKernelSize() int {
 	return con.KernelSize
 }
 
-func (con *ConvLayer) mapToInput(out Point, z int) Point {
-	return Point{
-		X: out.X * (*con).Stride,
-		Y: out.Y * (*con).Stride,
-		Z: z,
-	}
+func (con *ConvLayer) mapToInput(i, j, k int) (x int, y int, z int) {
+	return i * (*con).Stride, j * (*con).Stride, k
 }
 
 // Range - struct for reshaping data indecies

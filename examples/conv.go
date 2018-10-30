@@ -20,7 +20,7 @@ import (
 		FC:
 			Input size: Pooling.OutputSize
 			Outputsize: 3 (actually 3x1x1)
-	Using custom weights (for testing purposes) also. You can check step_by_step_cnss.xlsx file.
+	Using custom weights (for testing purposes) also. You can check "step_by_step_cnss.xlsx" file.
 */
 func Conv() {
 	conv := nns.NewConvLayer(1, 3, 1, nns.TDsize{X: 8, Y: 9, Z: 1})
@@ -34,13 +34,6 @@ func Conv() {
 		0.44050909, -0.07536250, -0.34348075,
 		0.16456005, 0.18682307, -0.40303048,
 	})
-	// convCustomWeights.SetData3D([][][]float64{
-	// 	[][]float64{
-	// 		[]float64{0.10466029, -0.06228581, -0.43436298},
-	// 		[]float64{0.44050909, -0.07536250, -0.34348075},
-	// 		[]float64{0.16456005, 0.18682307, -0.40303048},
-	// 	},
-	// })
 	conv.SetCustomWeights(&[]nns.Tensor{convCustomWeights})
 
 	fcCustomWeights := nns.NewTensor(maxpool.OutSize().X*maxpool.OutSize().Y*maxpool.OutSize().Z, 3, 1)
@@ -49,13 +42,6 @@ func Conv() {
 		0.17908468, -0.28144695, -0.29681312, -0.13912858, 0.07067328, 0.36249144, -0.20688576, -0.20291744, 0.25257304,
 		-0.29341734, 0.36533501, 0.19671917, 0.02382031, -0.47169692, -0.34167172, 0.10725344, 0.47524162, -0.42054638,
 	})
-	// fcCustomWeights.SetData3D([][][]float64{
-	// 	[][]float64{
-	// 		[]float64{-0.19908814, 0.01521263, 0.31363996, -0.28573613, -0.11934281, -0.18194183, -0.03111016, -0.21696585, -0.20689814},
-	// 		[]float64{0.17908468, -0.28144695, -0.29681312, -0.13912858, 0.07067328, 0.36249144, -0.20688576, -0.20291744, 0.25257304},
-	// 		[]float64{-0.29341734, 0.36533501, 0.19671917, 0.02382031, -0.47169692, -0.34167172, 0.10725344, 0.47524162, -0.42054638},
-	// 	},
-	// })
 	fullyconnected.SetCustomWeights(&[]nns.Tensor{fcCustomWeights})
 
 	var net nns.WholeNet

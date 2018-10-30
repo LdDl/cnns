@@ -76,11 +76,12 @@ func (maxpool *MaxPoolingLayer) DoActivation() {
 	for x := 0; x < (*maxpool).Out.Size.X; x++ {
 		for y := 0; y < (*maxpool).Out.Size.Y; y++ {
 			for z := 0; z < (*maxpool).In.Size.Z; z++ {
-				mapped := maxpool.mapToInput(Point{X: x, Y: y, Z: 0}, 0)
+				// mappedX, mappedY, _ := maxpool.mapToInput(x, y, 0)
+				mappedX, mappedY := x*(*maxpool).Stride, y*(*maxpool).Stride
 				mval := -1.0 * math.MaxFloat64
 				for i := 0; i < (*maxpool).ExtendFilter; i++ {
 					for j := 0; j < (*maxpool).ExtendFilter; j++ {
-						v := (*maxpool).In.Get(mapped.X+i, mapped.Y+j, z)
+						v := (*maxpool).In.Get(mappedX+i, mappedY+j, z)
 						if v > mval {
 							mval = v
 						}
@@ -170,12 +171,8 @@ func (maxpool *MaxPoolingLayer) GetType() string {
 	return "pool"
 }
 
-func (maxpool *MaxPoolingLayer) mapToInput(out Point, z int) Point {
-	return Point{
-		X: out.X * (*maxpool).Stride,
-		Y: out.Y * (*maxpool).Stride,
-		Z: z,
-	}
+func (maxpool *MaxPoolingLayer) mapToInput(i, j, k int) (x int, y int, z int) {
+	return i * (*maxpool).Stride, j * (*maxpool).Stride, k
 }
 
 // sameAsOuput - reshape convolutional layer's output
