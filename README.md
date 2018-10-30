@@ -5,6 +5,7 @@
 # CNNs #
 CNNS (Convolutional Neural Networks) is a little package for developing simple neural networks, such as CNN (you don't say?) and MLP.
 
+# I AM WORKING ON DOCS AND SOME MAJOR FIXES CURRENTLY #
 
 ## Table of Contents
 
