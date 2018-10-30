@@ -7,10 +7,10 @@ func main() {
 	// examples.CheckOR()
 	// examples.CheckXOR()
 	// examples.CheckXTO()
-	// examples.Conv()
+	examples.Conv()
 	// examples.CheckOCR()
-	examples.CheckOCRNetFromFile()
+	// examples.CheckOCRNetFromFile()
 	// examples.CheckOCRTwoConv()
 	// examples.ImportExportNet()
-	examples.YoloTry()
+
 }

@@ -131,7 +131,7 @@ func (wh *WholeNet) ImportFromFile(fname string, randomWeights bool) error {
 				var weights = make([]Tensor, numOfFilters)
 				for w := 0; w < numOfFilters; w++ {
 					weights[w] = NewTensor(kernelSize, kernelSize, 1)
-					weights[w].SetData(data.Network.Layers[i].Weights[w].Data)
+					weights[w].SetData3D(data.Network.Layers[i].Weights[w].Data)
 				}
 				conv.SetCustomWeights(&weights)
 			}
@@ -162,7 +162,7 @@ func (wh *WholeNet) ImportFromFile(fname string, randomWeights bool) error {
 			if randomWeights == false {
 				var weights Tensor
 				weights = NewTensor(x*y*z, outSize, 1)
-				weights.SetData(data.Network.Layers[i].Weights[0].Data)
+				weights.SetData3D(data.Network.Layers[i].Weights[0].Data)
 				fullyconnected.SetCustomWeights(&[]Tensor{weights})
 			}
 			(*wh).Layers = append((*wh).Layers, fullyconnected)

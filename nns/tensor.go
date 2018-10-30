@@ -4,13 +4,22 @@ import (
 	"fmt"
 )
 
-// Tensor is structure storing Data: one-dimensional array; and TDsize: tensor data size (see "Size" structure)
+// Tensor is structure storing date
+/*
+	Data - one-dimensional array
+	TDsize: tensor data size (see "Size" structure)
+*/
 type Tensor struct {
 	Data []float64
 	Size TDsize
 }
 
-// NewTensor - constructor for Tensor type. You need to provide dimensions: x, y and z.
+// NewTensor is constructor for Tensor type.
+/*
+	x - number of columns (width)
+	y - number of rows (height)
+	z - depth
+*/
 func NewTensor(x, y, z int) Tensor {
 	return Tensor{
 		Data: make([]float64, x*y*z),
@@ -22,7 +31,10 @@ func NewTensor(x, y, z int) Tensor {
 	}
 }
 
-// NewTensorCopy - constructor for Tensor type. You need to provide another tensor for cloning it into new one.
+// NewTensorCopy is constructor for Tensor type.
+/*
+	t - *Tensor which you want to copy
+*/
 func NewTensorCopy(t *Tensor) Tensor {
 	return Tensor{
 		Data: (*t).Data,
@@ -34,7 +46,7 @@ func NewTensorCopy(t *Tensor) Tensor {
 	}
 }
 
-// Add - element-wise summation
+// Add - Element-wise summation
 func (t1 *Tensor) Add(t2 *Tensor) Tensor {
 	var ret = NewTensorCopy(t1)
 	for i := 0; i < (*t2).Size.X*(*t2).Size.Y*(*t2).Size.Z; i++ {
@@ -43,7 +55,7 @@ func (t1 *Tensor) Add(t2 *Tensor) Tensor {
 	return ret
 }
 
-// Sub - element-wise substraction
+// Sub - Element-wise substraction
 func (t1 *Tensor) Sub(t2 *Tensor) Tensor {
 	var ret = NewTensorCopy(t1)
 	for i := 0; i < (*t2).Size.X*(*t2).Size.Y*(*t2).Size.Z; i++ {
@@ -52,29 +64,49 @@ func (t1 *Tensor) Sub(t2 *Tensor) Tensor {
 	return ret
 }
 
-// Get - gets [i][j][k]-th element
+// Get - Return [i][j][k]-th element
+/*
+	x - row
+	y - col
+	z - depth
+*/
 func (t1 *Tensor) Get(x, y, z int) float64 {
 	// return (*t1).Data[x+(y+z*(*t1).Size.Z)*(*t1).Size.X]
 	return (*t1).Data[z*(*t1).Size.X*(*t1).Size.Y+y*(*t1).Size.X+x]
 }
 
-// Set - sets [i][j][k]-th element with value
+// Set - Set [i][j][k]-th element with value
+/*
+	x - row
+	y - col
+	z - depth
+	value - value of float64
+*/
 func (t1 *Tensor) Set(x, y, z int, val float64) {
 	// (*t1).Data[x+(y+z*(*t1).Size.Z)*(*t1).Size.X] = val
 	(*t1).Data[z*(*t1).Size.X*(*t1).Size.Y+y*(*t1).Size.X+x] = val
 }
 
-// SetAdd - adds value to [i][j][k]-th element
+// SetAdd - Add value to [i][j][k]-th element
+/*
+	x - row
+	y - col
+	z - depth
+	value - value of float64
+*/
 func (t1 *Tensor) SetAdd(x, y, z int, val float64) {
 	// (*t1).Data[x+(y+z*(*t1).Size.Z)*(*t1).Size.X] += val
 	(*t1).Data[z*(*t1).Size.X*(*t1).Size.Y+y*(*t1).Size.X+x] += val
 }
 
-// SetData - sets data for Tensor (as 3-d array)
-func (t1 *Tensor) SetData(data [][][]float64) {
-	z := len(data)
-	y := len(data[0])
-	x := len(data[0][0])
+// SetData3D - Set data for Tensor (as 3-d array)
+/*
+	data - 3-D array of float64
+*/
+func (t1 *Tensor) SetData3D(data [][][]float64) {
+	z := len(data)       // depth
+	y := len(data[0])    // height (number of rows)
+	x := len(data[0][0]) // width (number of columns)
 	for i := 0; i < x; i++ {
 		for j := 0; j < y; j++ {
 			for k := 0; k < z; k++ {
@@ -84,7 +116,24 @@ func (t1 *Tensor) SetData(data [][][]float64) {
 	}
 }
 
-// Print - prints Tensor (cube as set of matrices)
+// SetData - Set data for Tensor
+/*
+	r - number of rows
+	c - number of columns
+	d - depth
+	data - 1-D array of float64
+*/
+func (t1 *Tensor) SetData(r, c, d int, data []float64) {
+	for i := 0; i < r; i++ {
+		for j := 0; j < c; j++ {
+			for k := 0; k < d; k++ {
+				(*t1).Set(i, j, k, data[k*r*d+j*r+i])
+			}
+		}
+	}
+}
+
+// Print - Pretty print *Tensor
 func (t1 *Tensor) Print() {
 	mx := (*t1).Size.X
 	my := (*t1).Size.Y

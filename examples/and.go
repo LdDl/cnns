@@ -54,9 +54,9 @@ func CheckAND() {
 			outputInt = 1
 		}
 		desired := nns.NewTensor(1, 1, 1)
-		desired.SetData([][][]float64{[][]float64{[]float64{float64(outputInt)}}})
+		desired.SetData3D([][][]float64{[][]float64{[]float64{float64(outputInt)}}})
 		input := nns.NewTensor(2, 1, 1)
-		input.SetData([][][]float64{[][]float64{[]float64{float64(firstInt), float64(secondInt)}}})
+		input.SetData3D([][][]float64{[][]float64{[]float64{float64(firstInt), float64(secondInt)}}})
 		// Forward
 		net.FeedForward(&input)
 		// Backward
@@ -69,17 +69,17 @@ func CheckAND() {
 	net.PrintOutput()
 
 	// 1 * 0
-	inputTest.SetData([][][]float64{[][]float64{[]float64{1.0, 0}}})
+	inputTest.SetData3D([][][]float64{[][]float64{[]float64{1.0, 0}}})
 	net.FeedForward(&inputTest)
 	net.PrintOutput()
 
 	// 0 * 1
-	inputTest.SetData([][][]float64{[][]float64{[]float64{0, 1.0}}})
+	inputTest.SetData3D([][][]float64{[][]float64{[]float64{0, 1.0}}})
 	net.FeedForward(&inputTest)
 	net.PrintOutput()
 
 	// 1 * 1
-	inputTest.SetData([][][]float64{[][]float64{[]float64{1.0, 1.0}}})
+	inputTest.SetData3D([][][]float64{[][]float64{[]float64{1.0, 1.0}}})
 	net.FeedForward(&inputTest)
 	net.PrintOutput()
 }

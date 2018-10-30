@@ -36,7 +36,7 @@ func ImportExportNet() {
 		},
 	}
 	var image = nns.NewTensor(8, 9, 1)
-	image.SetData(matrix)
+	image.SetData3D(matrix)
 	fmt.Println("Image:")
 	image.Print()
 	fmt.Println("Weights before training:")
@@ -44,7 +44,7 @@ func ImportExportNet() {
 	net.Layers[len(net.Layers)-1].PrintWeights()
 	net.FeedForward(&image)
 	var desired = nns.NewTensor(3, 1, 1)
-	desired.SetData([][][]float64{
+	desired.SetData3D([][][]float64{
 		[][]float64{
 			[]float64{0.32, 0.45, 0.96},
 		},
