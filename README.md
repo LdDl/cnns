@@ -1,7 +1,5 @@
 [![GoDoc](https://godoc.org/github.com/golang/gddo?status.svg)](https://godoc.org/github.com/LdDl/cnns/nns)
 
-
-# cnns
 ![alt text](https://raw.githubusercontent.com/LdDl/cnns/master/cnns_png.png)
 
 # CNNs #
