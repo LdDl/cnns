@@ -7,14 +7,24 @@ CNNS (Convolutional Neural Networks) is a little package for developing simple n
 ## Table of Contents
 
 - [Features](#features)
+- [Theoretical](#theoretical)
+    - [MLP](#mlp)
+    - [CNN](#cnn)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Support](#support)
 
 ## Features
 
-- CNN
-- MLP
+- CNN (convolutional neural network)
+- MLP (multilayer perceptron)
+
+## Theoretical
+
+### MLP
+@todo
+### CNN
+@todo
 
 ## Installation
 
