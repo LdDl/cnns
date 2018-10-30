@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"log"
 )
 
 // WholeNet - net itself (array of layers)
@@ -136,9 +135,7 @@ func (wh *WholeNet) ImportFromFile(fname string, randomWeights bool) error {
 				}
 				conv.SetCustomWeights(&weights)
 			}
-			log.Println("logger", conv.GetWeights())
 			(*wh).Layers = append((*wh).Layers, conv)
-			log.Println("logger 2", (*wh).Layers[0].GetWeights(), i)
 			break
 		case "relu":
 			x := data.Network.Layers[i].InputSize.X
