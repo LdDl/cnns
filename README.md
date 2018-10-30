@@ -1,3 +1,6 @@
+[![GoDoc](https://godoc.org/github.com/golang/gddo?status.svg)](https://godoc.org/github.com/LdDl/cnns/nns)
+
+
 # cnns
 ![alt text](https://raw.githubusercontent.com/LdDl/cnns/master/cnns_png.png)
 
@@ -39,4 +42,4 @@ go get github.com/LdDl/cnns
 
 ## Support
 
-If you have troubles please [open an issue](https://github.com/LdDl/cnns/issues/new).
+If you have troubles or questions please [open an issue](https://github.com/LdDl/cnns/issues/new).

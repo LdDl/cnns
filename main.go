@@ -12,5 +12,5 @@ func main() {
 	examples.CheckOCRNetFromFile()
 	// examples.CheckOCRTwoConv()
 	// examples.ImportExportNet()
-	// examples.YoloTry()
+	examples.YoloTry()
 }
