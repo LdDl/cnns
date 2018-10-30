@@ -13,7 +13,8 @@ CNNS (Convolutional Neural Networks) is a little package for developing simple n
 
 ## Features
 
-@todo
+- CNN
+- MLP
 
 ## Installation
 
