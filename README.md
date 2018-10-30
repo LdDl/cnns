@@ -5,6 +5,7 @@
 # CNNs #
 CNNS (Convolutional Neural Networks) is a little package for developing simple neural networks, such as CNN (you don't say?) and MLP.
 
+
 ## Table of Contents
 
 - [Features](#features)
@@ -27,6 +28,7 @@ CNNS (Convolutional Neural Networks) is a little package for developing simple n
 ### CNN
 @todo
 
+Step-by-step feedforward and backpropagation calculations are made in file of Excel format (xlsx) which can be obtained in root of this repository (step_by_step_cnns.xlsx). You can check examples/conv.go also.
 ## Installation
 
 Installation is pretty simple:
