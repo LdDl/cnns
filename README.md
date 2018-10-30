@@ -28,7 +28,7 @@ CNNS (Convolutional Neural Networks) is a little package for developing simple n
 ### CNN
 @todo
 
-Step-by-step feedforward and backpropagation calculations are made in file of Excel format (xlsx) which can be obtained in root of this repository (step_by_step_cnns.xlsx). You can check examples/conv.go also.
+Step-by-step feedforward and backpropagation calculations are made in file of Excel format (xlsx) which can be obtained in root of this repository ([step_by_step_cnns.xlsx](https://github.com/LdDl/cnns/blob/master/step_by_step_cnns.xlsx)). You can check [examples/conv.go](https://github.com/LdDl/cnns/blob/master/examples/conv.go) also.
 ## Installation
 
 Installation is pretty simple:
