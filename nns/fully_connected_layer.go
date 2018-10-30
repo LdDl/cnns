@@ -2,7 +2,6 @@ package nns
 
 import (
 	"fmt"
-	"math"
 	"math/rand"
 )
 
@@ -155,16 +154,6 @@ func (fc *FullConnectedLayer) PrintWeights() {
 func (fc *FullConnectedLayer) PrintGradients() {
 	fmt.Println("Printing Fully Connected Layer gradients-weights...")
 	(*fc).InputGradientsWeights.Print()
-}
-
-// ActivationSygmoid is default ActivationFunc
-func ActivationSygmoid(v float64) float64 {
-	return 1.0 / (1.0 + math.Exp(-1.0*v))
-}
-
-// ActivationSygmoidDerivative is default derivative of ActivationFunc (which is ActivationSygmoid)
-func ActivationSygmoidDerivative(v float64) float64 {
-	return ActivationSygmoid(v) * (1 - ActivationSygmoid(v))
 }
 
 // SetActivationFunc sets activation function for fully connected layer. You need to specify function: func(v float64) float64
