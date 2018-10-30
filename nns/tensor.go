@@ -99,7 +99,7 @@ func (t1 *Tensor) SetAdd(x, y, z int, val float64) {
 	(*t1).Data[z*(*t1).Size.X*(*t1).Size.Y+y*(*t1).Size.X+x] += val
 }
 
-// SetData3D - Set data for Tensor (as 3-d array)
+// SetData3D - Set data for *Tensor (as 3-d array)
 /*
 	data - 3-D array of float64.
 */
@@ -116,7 +116,7 @@ func (t1 *Tensor) SetData3D(data [][][]float64) {
 	}
 }
 
-// SetData - Set data for Tensor
+// SetData - Set data for *Tensor
 /*
 	r - number of rows;
 	c - number of columns (width);
@@ -133,7 +133,7 @@ func (t1 *Tensor) SetData(c, r, d int, data []float64) {
 	}
 }
 
-// Print - Pretty print *Tensor
+// Print - Pretty print for *Tensor
 func (t1 *Tensor) Print() {
 	mx := (*t1).Size.X
 	my := (*t1).Size.Y
@@ -149,7 +149,7 @@ func (t1 *Tensor) Print() {
 	}
 }
 
-// GetData3D returns Tensor as 3-dimensional array
+// GetData3D - Return *Tensor as 3-D array
 func (t1 *Tensor) GetData3D() [][][]float64 {
 	mx := (*t1).Size.X
 	my := (*t1).Size.Y
