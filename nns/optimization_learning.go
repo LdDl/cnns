@@ -26,3 +26,6 @@ func UpdateWeight(w float64, grad *Gradient, multp float64) float64 {
 func UpdateGradient(grad *Gradient) {
 	(*grad).OldGrad = (*grad).Grad + (*grad).OldGrad*lp.Momentum
 }
+
+
+

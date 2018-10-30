@@ -1,7 +1,6 @@
 package examples
 
 import (
-	"math"
 	"math/rand"
 	"time"
 
@@ -10,28 +9,18 @@ import (
 	"github.com/LdDl/cnns/utils/u"
 )
 
-// ActivationTanh - hyperbolic tangent
-func ActivationTanh(v float64) float64 {
-	return math.Tanh(v)
-}
-
-// ActivationTanhDerivative - derivative of hyperbolic tangent
-func ActivationTanhDerivative(v float64) float64 {
-	return 1 - ActivationTanh(v)*ActivationTanh(v)
-}
-
 // CheckAND - solve "AND" problem
 func CheckAND() {
 	rand.Seed(time.Now().UnixNano())
 	// Fully connected layer with 3 output neurons
 	fullyconnected1 := nns.NewFullConnectedLayer(nns.TDsize{X: 2, Y: 1, Z: 1}, 2)
-	fullyconnected1.SetActivationFunc(ActivationTanh)
-	fullyconnected1.SetActivationDerivativeFunc(ActivationTanhDerivative)
+	fullyconnected1.SetActivationFunc(nns.ActivationTanh)
+	fullyconnected1.SetActivationDerivativeFunc(nns.ActivationTanhDerivative)
 
 	// Fully connected layer with 1 output neurons
 	fullyconnected2 := nns.NewFullConnectedLayer(fullyconnected1.OutSize(), 1)
-	fullyconnected2.SetActivationFunc(ActivationTanh)
-	fullyconnected2.SetActivationDerivativeFunc(ActivationTanhDerivative)
+	fullyconnected2.SetActivationFunc(nns.ActivationTanh)
+	fullyconnected2.SetActivationDerivativeFunc(nns.ActivationTanhDerivative)
 
 	// Init network
 	var net nns.WholeNet

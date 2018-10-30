@@ -14,13 +14,13 @@ func CheckOR() {
 	rand.Seed(time.Now().UnixNano())
 	// Fully connected layer with 3 output neurons
 	fullyconnected1 := nns.NewFullConnectedLayer(nns.TDsize{X: 2, Y: 1, Z: 1}, 2)
-	fullyconnected1.SetActivationFunc(ActivationTanh)
-	fullyconnected1.SetActivationDerivativeFunc(ActivationTanhDerivative)
+	fullyconnected1.SetActivationFunc(nns.ActivationTanh)
+	fullyconnected1.SetActivationDerivativeFunc(nns.ActivationTanhDerivative)
 
 	// Fully connected layer with 1 output neurons
 	fullyconnected2 := nns.NewFullConnectedLayer(fullyconnected1.OutSize(), 1)
-	fullyconnected2.SetActivationFunc(ActivationTanh)
-	fullyconnected2.SetActivationDerivativeFunc(ActivationTanhDerivative)
+	fullyconnected2.SetActivationFunc(nns.ActivationTanh)
+	fullyconnected2.SetActivationDerivativeFunc(nns.ActivationTanhDerivative)
 
 	// Init network
 	var net nns.WholeNet
