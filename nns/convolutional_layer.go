@@ -209,7 +209,7 @@ func (con *ConvLayer) GetStride() int {
 	return con.Stride
 }
 
-// GetKernelSize - return "conv" as layer's type
+// GetKernelSize - return kernel size
 func (con *ConvLayer) GetKernelSize() int {
 	return con.KernelSize
 }

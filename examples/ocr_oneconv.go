@@ -47,7 +47,7 @@ var (
 	trainWidth          = 10
 	trainHeight         = 15
 	trainDepth          = 1
-	adjustAmountOfFiles = 20000 // see 246-th line of this code
+	adjustAmountOfFiles = 2000 // see 246-th line of this code
 )
 
 // CheckOCR - solve OCR problem
@@ -114,7 +114,7 @@ func CheckOCR() {
 
 	// log.Println(net.Layers[len(net.Layers)-1].GetWeights())
 
-	err = net.ExportToFile("datasets/ocr_one_conv.json")
+	err = net.ExportToFile("datasets/ocr_one_conv_2k.json")
 	if err != nil {
 		log.Println(err)
 		return
