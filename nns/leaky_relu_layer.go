@@ -9,8 +9,8 @@ import (
 	In - Input data;
 	Out - Output data;
 	InputGradientsWeights - Incoming gradients*weights (backpropagation);
-	alpha - In simple ReLU you have f(x) = max(x,0) as activation
-	function, but in Leaky ReLU it is: f(x) = alpha*x (for x < 0) and f(x) = x (for x >= 0).
+	alpha - In simple ReLU you have f(x) = max(x,0) as activation function,
+	but in Leaky ReLU it is: f(x) = alpha*x (for x < 0) and f(x) = x (for x >= 0).
 */
 type LeakyReLULayer struct {
 	In                    Tensor
