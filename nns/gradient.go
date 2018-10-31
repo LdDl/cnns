@@ -2,11 +2,17 @@ package nns
 
 import "fmt"
 
+// Gradient - Gradient.
+/*
+	Grad - current value of gradient;
+	OldGradient - previous value of gradient.
+*/
 type Gradient struct {
 	Grad    float64
 	OldGrad float64
 }
 
+// NewGradient - Constructor for Gradient.
 func NewGradient() Gradient {
 	return Gradient{
 		Grad:    0.0,
@@ -14,11 +20,13 @@ func NewGradient() Gradient {
 	}
 }
 
+// TensorGradient - Tensor for gradient.
 type TensorGradient struct {
 	Data []Gradient
 	Size TDsize
 }
 
+// NewTensorGradient - Constructor for tensor of gradients.
 func NewTensorGradient(x, y, z int) TensorGradient {
 	return TensorGradient{
 		Data: make([]Gradient, x*y*z),
@@ -30,26 +38,31 @@ func NewTensorGradient(x, y, z int) TensorGradient {
 	}
 }
 
+// Get - Return (i,j,k)-th gradient from tensor.
 func (t1 *TensorGradient) Get(x, y, z int) Gradient {
 	// return (*t1).Data[x+(y+z*(*t1).Size.Z)*(*t1).Size.X]
 	return (*t1).Data[z*(*t1).Size.X*(*t1).Size.Y+y*(*t1).Size.X+x]
 }
 
+// Set - Set (i,j,k)-th gradient with new gradient value
 func (t1 *TensorGradient) Set(x, y, z int, val Gradient) {
 	// (*t1).Data[x+(y+z*(*t1).Size.Z)*(*t1).Size.X] = val
 	(*t1).Data[z*(*t1).Size.X*(*t1).Size.Y+y*(*t1).Size.X+x] = val
 }
 
+// SetGrad - Set (i,j,k)-th gradient's current value with new one.
 func (t1 *TensorGradient) SetGrad(x, y, z int, val float64) {
 	// (*t1).Data[x+(y+z*(*t1).Size.Z)*(*t1).Size.X].Grad = val
 	(*t1).Data[z*(*t1).Size.X*(*t1).Size.Y+y*(*t1).Size.X+x].Grad = val
 }
 
+// AddToGrad - Add float64 to (i,j,k)-th gradient's current value.
 func (t1 *TensorGradient) AddToGrad(x, y, z int, val float64) {
 	// (*t1).Data[x+(y+z*(*t1).Size.Z)*(*t1).Size.X].Grad += val
 	(*t1).Data[z*(*t1).Size.X*(*t1).Size.Y+y*(*t1).Size.X+x].Grad += val
 }
 
+// Print - Pretty print tensor of gradients.
 func (t1 *TensorGradient) Print() {
 	mx := (*t1).Size.X
 	my := (*t1).Size.Y
