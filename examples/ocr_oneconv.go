@@ -47,7 +47,7 @@ var (
 	trainWidth          = 10
 	trainHeight         = 15
 	trainDepth          = 1
-	adjustAmountOfFiles = 2000 // see 246-th line of this code
+	adjustAmountOfFiles = 10000 // see 246-th line of this code
 )
 
 // CheckOCR - solve OCR problem
@@ -147,11 +147,12 @@ func train(net *nns.WholeNet, data *map[string][]gocv.Mat) error {
 					imageArray[k][j] = make([]float64, trainWidth)
 					for i := range imageArray[k][j] {
 						imageArray[k][j][i] = float64(v[mat].GetUCharAt3(j, i, k))
-						if imageArray[k][j][i]/255 == 0 {
-							imageArray[k][j][i] = 1
-						} else if imageArray[k][j][i]/255 == 1 {
-							imageArray[k][j][i] = 0
-						}
+						imageArray[k][j][i] /= 255.0
+						// if imageArray[k][j][i]/255 == 0 {
+						// 	imageArray[k][j][i] = 1
+						// } else if imageArray[k][j][i]/255 == 1 {
+						// 	imageArray[k][j][i] = 0
+						// }
 						// fmt.Printf("%v ", imageArray[k][j][i])
 					}
 					// fmt.Println()
@@ -207,11 +208,12 @@ func testTrained(net *nns.WholeNet, data *map[string][]gocv.Mat) error {
 					imageArray[k][j] = make([]float64, trainWidth)
 					for i := range imageArray[k][j] {
 						imageArray[k][j][i] = float64(v[mat].GetUCharAt3(j, i, k))
-						if imageArray[k][j][i]/255 == 0 {
-							imageArray[k][j][i] = 1
-						} else if imageArray[k][j][i]/255 == 1 {
-							imageArray[k][j][i] = 0
-						}
+						imageArray[k][j][i] /= 255.0
+						// if imageArray[k][j][i]/255 == 0 {
+						// 	imageArray[k][j][i] = 1
+						// } else if imageArray[k][j][i]/255 == 1 {
+						// 	imageArray[k][j][i] = 0
+						// }
 						// fmt.Printf("%v ", imageArray[k][j][i])
 					}
 					// fmt.Println()
@@ -280,7 +282,7 @@ func readMatsTrain(data *map[string][]string, adjust int) (map[string][]gocv.Mat
 			temp = gocv.IMRead(j, gocv.IMReadColor)
 			// Binarization
 			gocv.CvtColor(temp, &temp, gocv.ColorRGBAToGray)
-			gocv.Threshold(temp, &temp, 127.0, 255.0, gocv.ThresholdBinary)
+			// gocv.Threshold(temp, &temp, 127.0, 255.0, gocv.ThresholdBinary)
 			// Resize
 			gocv.Resize(temp, &temp, image.Pt(trainWidth, trainHeight), 0.0, 0.0, gocv.InterpolationNearestNeighbor)
 			ret[k] = append(ret[k], temp.Clone())
@@ -314,7 +316,7 @@ func readMatsTests(data *map[string][]string) (map[string][]gocv.Mat, error) {
 			// Binarization
 			gocv.CvtColor(temp, &temp, gocv.ColorRGBAToGray)
 			// gocv.Threshold(temp, &temp, 127.0, 255.0, gocv.ThresholdBinary)
-			gocv.AdaptiveThreshold(temp, &temp, 255.0, gocv.AdaptiveThresholdGaussian, gocv.ThresholdBinary, 7, 5)
+			// gocv.AdaptiveThreshold(temp, &temp, 255.0, gocv.AdaptiveThresholdGaussian, gocv.ThresholdBinary, 7, 5)
 			// Resize
 			gocv.Resize(temp, &temp, image.Pt(trainWidth, trainHeight), 0.0, 0.0, gocv.InterpolationNearestNeighbor)
 			ret[k] = append(ret[k], temp.Clone())

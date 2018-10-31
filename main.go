@@ -8,7 +8,7 @@ import "github.com/LdDl/cnns/examples"
 */
 
 func main() {
-	// examples.Conv()
+	examples.Conv()
 	// examples.CheckAND()
 	// examples.CheckOR()
 	// examples.CheckXOR()

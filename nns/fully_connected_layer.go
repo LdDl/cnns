@@ -134,7 +134,8 @@ func (fc *FullConnectedLayer) UpdateWeights() {
 				}
 			}
 		}
-		UpdateGradient(&fc.SumLocalGradientsWeights[n])
+		// UpdateGradient(&fc.SumLocalGradientsWeights[n])
+		(*fc).SumLocalGradientsWeights[n].Update()
 	}
 }
 
