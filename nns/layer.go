@@ -10,6 +10,7 @@ import (
 // WholeNet - net itself (array of layers)
 type WholeNet struct {
 	Layers []Layer
+	LP     LearningParams
 }
 
 // Layer - interface for all layer types
@@ -172,6 +173,10 @@ func (wh *WholeNet) ImportFromFile(fname string, randomWeights bool) error {
 			return err
 		}
 	}
+
+	(*wh).LP.LearningRate = data.Parameters.LearningRate
+	(*wh).LP.Momentum = data.Parameters.Momentum
+	(*wh).LP.WeightDecay = data.Parameters.WeightDecay
 	return err
 }
 

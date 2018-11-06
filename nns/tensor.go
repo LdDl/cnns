@@ -75,6 +75,16 @@ func (t1 *Tensor) Get(x, y, z int) float64 {
 	return (*t1).Data[z*(*t1).Size.X*(*t1).Size.Y+y*(*t1).Size.X+x]
 }
 
+// GetPtr - Return [i][j][k]-th element (as pointer)
+/*
+	x - row;
+	y - col;
+	z - depth.
+*/
+func (t1 *Tensor) GetPtr(x, y, z int) *float64 {
+	return &t1.Data[z*t1.Size.X*t1.Size.Y+y*t1.Size.X+x]
+}
+
 // Set - Set [i][j][k]-th element with value.
 /*
 	x - row;

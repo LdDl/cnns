@@ -22,7 +22,7 @@ func NewGradient() Gradient {
 
 // Update - Update gradient with new values (based on gradient from previous training iteration).
 func (grad *Gradient) Update() {
-	(*grad).OldGrad = (*grad).Grad + (*grad).OldGrad*lp.Momentum
+	(*grad).OldGrad = (*grad).Grad //+ (*grad).OldGrad*lp.Momentum
 }
 
 // TensorGradient - Tensor for gradient.

@@ -128,9 +128,13 @@ func (fc *FullConnectedLayer) UpdateWeights() {
 			for j := 0; j < (*fc).In.Size.Y; j++ {
 				for z := 0; z < (*fc).In.Size.Z; z++ {
 					m := fc.mapToInput(i, j, z)
-					w := (*fc).Weights.Get(m, n, 0)
-					w = UpdateWeight(w, &grad, (*fc).In.Get(i, j, z))
-					(*fc).Weights.Set(m, n, 0, w)
+					dw := grad.Grad * lp.LearningRate * (*fc).In.Get(i, j, z)
+					dw *= -1.0
+					(*fc).Weights.SetAdd(m, n, 0, dw)
+					// w := (*fc).Weights.Get(m, n, 0)
+					// w = UpdateWeight(w, &grad, (*fc).In.Get(i, j, z))
+					// (*fc).Weights.Set(m, n, 0, w)
+
 				}
 			}
 		}

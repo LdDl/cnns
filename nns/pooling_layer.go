@@ -8,10 +8,10 @@ import (
 )
 
 // MaxPoolingLayer is Max Pooling layer structure
-// In - input data
-// Out - output data
-// Stride - striding step
-// InputGradientsWeights - gradients
+// In - Input data
+// Out - Output data
+// Stride - Striding step
+// InputGradientsWeights - Gradients
 type MaxPoolingLayer struct {
 	In                    Tensor
 	Out                   Tensor
