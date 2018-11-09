@@ -1,7 +1,9 @@
 package nns
 
 import (
+	"errors"
 	"fmt"
+	"math"
 )
 
 // Tensor - Structure for storing data of float64.
@@ -175,4 +177,31 @@ func (t1 *Tensor) GetData3D() [][][]float64 {
 		}
 	}
 	return ret
+}
+
+func (t1 *Tensor) Conv2D(kernel *Tensor) (*Tensor, error) {
+	if kernel.Size.X%2 != 1 || kernel.Size.Y%2 != 1 {
+		return nil, errors.New("Kernel size has to be odd")
+	}
+	if kernel.Size.X != kernel.Size.Y {
+		return nil, errors.New("W and H have to be same")
+	}
+
+	pad := math.Floor(float64(kernel.Size.X) / 2)
+	out := NewTensor(t1.Size.X+int(pad), t1.Size.Y, t1.Size.Z)
+
+	t1.Print()
+	out.Print()
+
+	for i := 0; i < t1.Size.Y; i++ {
+		for j := 0; j < t1.Size.X; j++ {
+			for ki := 0; ki < kernel.Size.Y; ki++ {
+				for kj := 0; kj < kernel.Size.X; kj++ {
+					//  @TODO
+					// out.SetAdd(i, j, 0, out.Get(i+ki, j+kj, 0)*kernel.Get(ki, kj, 0))
+				}
+			}
+		}
+	}
+	return &out, nil
 }

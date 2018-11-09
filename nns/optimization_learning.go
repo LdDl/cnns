@@ -22,8 +22,8 @@ var (
 
 // UpdateWeight - Update weights with new value.
 func UpdateWeight(w float64, grad *Gradient, multp float64) float64 {
-	m := (*grad).Grad                //+ (*grad).OldGrad*lp.Momentum
-	w -= lp.LearningRate * m * multp //+ lp.LearningRate*lp.WeightDecay*w
+	m := (*grad).Grad + (*grad).OldGrad*lp.Momentum
+	w -= lp.LearningRate*m*multp + lp.LearningRate*lp.WeightDecay*w
 	return w
 }
 

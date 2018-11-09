@@ -26,8 +26,8 @@ func NewFullConnectedLayer(inSize TDsize, outSize int) *LayerStruct {
 		Weights:               NewTensor(inSize.X*inSize.Y*inSize.Z, outSize, 1),
 		Input:                 make([]float64, outSize),
 		SumLocalGradientsWeights: make([]Gradient, outSize),
-		ActivationFunc:           ActivationSygmoid,           // Default Activation function is Sygmoid
-		ActivationDerivative:     ActivationSygmoidDerivative, // Default derivative of activation function is Sygmoid*(1-Sygmoid)
+		ActivationFunc:           ActivationTanh,           // Default Activation function is TanH
+		ActivationDerivative:     ActivationTanhDerivative, // Default derivative of activation function is 1 - TanH(x)*TanH(x)
 	}
 	for i := 0; i < outSize; i++ {
 		for h := 0; h < inSize.X*inSize.Y*inSize.Z; h++ {
@@ -112,7 +112,7 @@ func (fc *FullConnectedLayer) CalculateGradients(nextLayerGradients *Tensor) {
 			for j := 0; j < (*fc).In.Size.Y; j++ {
 				for z := 0; z < (*fc).In.Size.Z; z++ {
 					m := fc.mapToInput(i, j, z)
-					// fmt.Printf("%v * %v\n", (*fc).SumLocalGradientsWeights[n].Grad, (*fc).Weights.Get(m, n, 0))
+					// fmt.Printf("D: %v * %v\n", (*fc).SumLocalGradientsWeights[n].Grad, (*fc).Weights.Get(m, n, 0))
 					(*fc).InputGradientsWeights.SetAdd(i, j, z, (*fc).SumLocalGradientsWeights[n].Grad*(*fc).Weights.Get(m, n, 0))
 				}
 			}
@@ -124,22 +124,21 @@ func (fc *FullConnectedLayer) CalculateGradients(nextLayerGradients *Tensor) {
 func (fc *FullConnectedLayer) UpdateWeights() {
 	for n := 0; n < (*fc).Out.Size.X; n++ {
 		grad := (*fc).SumLocalGradientsWeights[n]
+		// log.Println("G:", grad)
 		for i := 0; i < (*fc).In.Size.X; i++ {
 			for j := 0; j < (*fc).In.Size.Y; j++ {
 				for z := 0; z < (*fc).In.Size.Z; z++ {
 					m := fc.mapToInput(i, j, z)
-					dw := grad.Grad * lp.LearningRate * (*fc).In.Get(i, j, z)
-					dw *= -1.0
-					(*fc).Weights.SetAdd(m, n, 0, dw)
-					// w := (*fc).Weights.Get(m, n, 0)
-					// w = UpdateWeight(w, &grad, (*fc).In.Get(i, j, z))
-					// (*fc).Weights.Set(m, n, 0, w)
-
+					// dw := grad.Grad * lp.LearningRate * (*fc).In.Get(i, j, z) // delta-Weight
+					// (*fc).Weights.SetAdd(m, n, 0, dw)
+					w := (*fc).Weights.Get(m, n, 0)
+					w = UpdateWeight(w, &grad, (*fc).In.Get(i, j, z))
+					(*fc).Weights.Set(m, n, 0, w)
 				}
 			}
 		}
-		// UpdateGradient(&fc.SumLocalGradientsWeights[n])
-		(*fc).SumLocalGradientsWeights[n].Update()
+		UpdateGradient(&fc.SumLocalGradientsWeights[n])
+		//(*fc).SumLocalGradientsWeights[n].Update()
 	}
 }
 
