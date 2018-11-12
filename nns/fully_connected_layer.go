@@ -11,6 +11,7 @@ type FullConnectedLayer struct {
 	Out                            Tensor
 	DeltaComponentForPreviousLayer Tensor
 	Weights                        Tensor
+	PreviousIterationWeights       Tensor
 	LocalDelta                     []Gradient
 	Input                          []float64
 	ActivationFunc                 func(v float64) float64
@@ -23,7 +24,8 @@ func NewFullConnectedLayer(inSize TDsize, outSize int) *LayerStruct {
 		In:  NewTensor(inSize.X, inSize.Y, inSize.Z),
 		Out: NewTensor(outSize, 1, 1),
 		DeltaComponentForPreviousLayer: NewTensor(inSize.X, inSize.Y, inSize.Z),
-		Weights:              NewTensor(inSize.X*inSize.Y*inSize.Z, outSize, 1),
+		Weights:                  NewTensor(inSize.X*inSize.Y*inSize.Z, outSize, 1),
+		PreviousIterationWeights: NewTensor(inSize.X*inSize.Y*inSize.Z, outSize, 1),
 		Input:                make([]float64, outSize),
 		LocalDelta:           make([]Gradient, outSize),
 		ActivationFunc:       ActivationTanh,           // Default Activation function is TanH
@@ -143,7 +145,6 @@ func (fc *FullConnectedLayer) CalculateGradients(nextLayerGradients *Tensor) {
 				}
 			}
 		}
-
 	}
 
 }
@@ -165,16 +166,28 @@ func (fc *FullConnectedLayer) UpdateWeights() {
 			for j := 0; j < (*fc).In.Size.Y; j++ {
 				for z := 0; z < (*fc).In.Size.Z; z++ {
 					m := fc.mapToInput(i, j, z)
-					fmt.Printf("%v * %v = %v\n", grad.Grad, fc.In.Get(i, j, z), grad.Grad*lp.LearningRate*(*fc).In.Get(i, j, z))
-					dw := -1.0 * (lp.LearningRate * grad.Grad * (*fc).In.Get(i, j, z)) // delta-Weight
+					// fmt.Printf("%v * %v = %v\n", grad.Grad, fc.In.Get(i, j, z), grad.Grad*lp.LearningRate*(*fc).In.Get(i, j, z))
+
+					/*
+						Without inertia
+					*/
+					// dw := -1.0 * (lp.LearningRate * grad.Grad * (*fc).In.Get(i, j, z)) // delta-Weight
+
+					/*
+						With inertia (notice, that η has to be < 0 and we are multiplying η by -1.0)
+						See reference: https://en.wikipedia.org/wiki/Backpropagation#Inertia
+					*/
+					dw := (1.0-lp.Momentum)*(-1.0*(lp.LearningRate*grad.Grad*(*fc).In.Get(i, j, z))) +
+						lp.Momentum*(*fc).PreviousIterationWeights.Get(m, n, 0)
+
+					(*fc).PreviousIterationWeights.Set(m, n, 0, dw)
+
+					// w{n,i} = w{n,i} + Δw{n, i}
 					(*fc).Weights.SetAdd(m, n, 0, dw)
-					// w := (*fc).Weights.Get(m, n, 0)
-					// w = UpdateWeight(w, &grad, (*fc).In.Get(i, j, z))
-					// (*fc).Weights.Set(m, n, 0, w)
 				}
 			}
 		}
-		UpdateGradient(&fc.LocalDelta[n])
+		// UpdateGradient(&fc.LocalDelta[n])
 		//(*fc).LocalDelta[n].Update()
 	}
 }
