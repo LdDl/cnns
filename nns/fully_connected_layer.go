@@ -2,6 +2,7 @@ package nns
 
 import (
 	"fmt"
+	"log"
 	"math/rand"
 )
 
@@ -161,7 +162,7 @@ func (fc *FullConnectedLayer) CalculateGradients(nextLayerGradients *Tensor) {
 func (fc *FullConnectedLayer) UpdateWeights() {
 	for n := 0; n < (*fc).Out.Size.X; n++ {
 		grad := (*fc).LocalDelta[n]
-		// log.Println("G:", grad)
+		log.Println("G:", grad)
 		for i := 0; i < (*fc).In.Size.X; i++ {
 			for j := 0; j < (*fc).In.Size.Y; j++ {
 				for z := 0; z < (*fc).In.Size.Z; z++ {
@@ -188,7 +189,7 @@ func (fc *FullConnectedLayer) UpdateWeights() {
 			}
 		}
 		// UpdateGradient(&fc.LocalDelta[n])
-		//(*fc).LocalDelta[n].Update()
+		// (*fc).LocalDelta[n].Update()
 	}
 }
 

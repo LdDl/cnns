@@ -8,11 +8,11 @@ import "github.com/LdDl/cnns/examples"
 */
 
 func main() {
-	// examples.ExampleOne()
+	examples.ExampleOne()
 	// examples.Conv()
 	// examples.CheckAND()
 	// examples.CheckOR()
-	examples.CheckXOR()
+	// examples.CheckXOR()
 	// examples.CheckXTO()
 	// examples.CheckOCR()
 	// examples.CheckOCRNetFromFile()

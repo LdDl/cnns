@@ -24,19 +24,19 @@ func ExampleOne() {
 	inputData := nns.NewTensor(2, 1, 1)
 	inputData.SetData(2, 1, 1, []float64{0.2, 0.5})
 
-	net.FeedForward(&inputData)
-	obj := net.GetOutput()
-	log.Println("out")
-	obj.Print()
-
-	desired := nns.NewTensor(1, 1, 1)
-	desired.SetData(1, 1, 1, []float64{0.4})
-	net.Backpropagate(&desired)
-
-	fmt.Printf("Layers (after):\n")
-	for i := range net.Layers {
-		fmt.Printf("%v weights:\n", net.Layers[i].GetType())
-		net.Layers[i].PrintWeights()
+	for e := 0; e < 3; e++ {
+		net.FeedForward(&inputData)
+		// obj := net.GetOutput()
+		// log.Println("out")
+		// obj.Print()
+		desired := nns.NewTensor(1, 1, 1)
+		desired.SetData(1, 1, 1, []float64{0.4})
+		net.Backpropagate(&desired)
+		fmt.Printf("Layers (after):\n")
+		for i := range net.Layers {
+			fmt.Printf("%v weights:\n", net.Layers[i].GetType())
+			net.Layers[i].PrintWeights()
+		}
 	}
 
 }
