@@ -158,8 +158,8 @@ func (con *ConvLayer) UpdateWeights() {
 					w = UpdateWeight(w, &grad, 1.0)
 					(*con).Kernels[a].Set(i, j, z, w)
 					// con.KernelsGradients[a].Print()
-					// UpdateGradient(&grad)
-					grad.Update()
+					UpdateGradient(&grad)
+					// grad.Update()
 					con.KernelsGradients[a].Set(i, j, z, grad)
 				}
 			}

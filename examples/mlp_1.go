@@ -26,6 +26,7 @@ func ExampleOne() {
 
 	net.FeedForward(&inputData)
 	obj := net.GetOutput()
+	log.Println("out")
 	obj.Print()
 
 	desired := nns.NewTensor(1, 1, 1)

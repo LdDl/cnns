@@ -2,6 +2,7 @@ package nns
 
 import (
 	"fmt"
+	"log"
 	"math/rand"
 )
 
@@ -102,22 +103,58 @@ func (fc *FullConnectedLayer) DoActivation() {
 }
 
 // CalculateGradients - calculate fully connected layer's gradients
+/*
+	i - current layer
+	(i + 1) - next layer (actually previous in term of backpropagation)
+
+	Last layer:
+		δ{i} = (out - target) * derivative(out)
+
+	Hidden layer:
+		δ{i} = [sum(δ{i+1}*w{i+1}{i})] * derivative(out) = sum[derivative(out)*δ{i+1}*w{i+1}{i}]
+*/
 func (fc *FullConnectedLayer) CalculateGradients(nextLayerGradients *Tensor) {
 	for i := 0; i < (*fc).InputGradientsWeights.Size.X*(*fc).InputGradientsWeights.Size.Y*(*fc).InputGradientsWeights.Size.Z; i++ {
 		(*fc).InputGradientsWeights.Data[i] = 0.0
 	}
+
+	fmt.Println("Debug START")
+	//
 	for n := 0; n < (*fc).Out.Size.X; n++ {
 		(*fc).SumLocalGradientsWeights[n].Grad = (*nextLayerGradients).Get(n, 0, 0) * (*fc).ActivationDerivative((*fc).Input[n])
+		log.Printf("Grad for %v-th neuron: %v * %v = %v \n", n, (*nextLayerGradients).Get(n, 0, 0), (*fc).ActivationDerivative((*fc).Input[n]), (*fc).SumLocalGradientsWeights[n].Grad)
+	}
+	fmt.Println("Debug DONE")
+
+	for n := 0; n < (*fc).Out.Size.X; n++ {
 		for i := 0; i < (*fc).In.Size.X; i++ {
 			for j := 0; j < (*fc).In.Size.Y; j++ {
 				for z := 0; z < (*fc).In.Size.Z; z++ {
 					m := fc.mapToInput(i, j, z)
+					v := (*fc).ActivationDerivative((*fc).Input[n]) * (*nextLayerGradients).Get(n, 0, 0) * (*fc).Weights.Get(m, n, 0)
 					// fmt.Printf("D: %v * %v\n", (*fc).SumLocalGradientsWeights[n].Grad, (*fc).Weights.Get(m, n, 0))
-					(*fc).InputGradientsWeights.SetAdd(i, j, z, (*fc).SumLocalGradientsWeights[n].Grad*(*fc).Weights.Get(m, n, 0))
+					(*fc).InputGradientsWeights.SetAdd(i, j, z, v)
 				}
 			}
 		}
+
 	}
+
+	// for n := 0; n < (*fc).Out.Size.X; n++ {
+	// 	(*fc).SumLocalGradientsWeights[n].Grad = (*nextLayerGradients).Get(n, 0, 0) * (*fc).ActivationDerivative((*fc).Input[n])
+	// 	// log.Printf("Grad for %v-th neuron: %v %v\n", n, (*nextLayerGradients).Get(n, 0, 0), (*fc).ActivationDerivative((*fc).Input[n]))
+	// 	for i := 0; i < (*fc).In.Size.X; i++ {
+	// 		for j := 0; j < (*fc).In.Size.Y; j++ {
+	// 			for z := 0; z < (*fc).In.Size.Z; z++ {
+	// 				m := fc.mapToInput(i, j, z)
+	// 				// fmt.Printf("D: %v * %v\n", (*fc).SumLocalGradientsWeights[n].Grad, (*fc).Weights.Get(m, n, 0))
+	// 				(*fc).InputGradientsWeights.SetAdd(i, j, z, (*fc).SumLocalGradientsWeights[n].Grad*(*fc).Weights.Get(m, n, 0))
+	// 			}
+	// 		}
+	// 	}
+	// 	// (*fc).InputGradientsWeights.Print()
+	// }
+
 }
 
 // UpdateWeights - update fully connected layer's weights
@@ -129,11 +166,11 @@ func (fc *FullConnectedLayer) UpdateWeights() {
 			for j := 0; j < (*fc).In.Size.Y; j++ {
 				for z := 0; z < (*fc).In.Size.Z; z++ {
 					m := fc.mapToInput(i, j, z)
-					// dw := grad.Grad * lp.LearningRate * (*fc).In.Get(i, j, z) // delta-Weight
-					// (*fc).Weights.SetAdd(m, n, 0, dw)
-					w := (*fc).Weights.Get(m, n, 0)
-					w = UpdateWeight(w, &grad, (*fc).In.Get(i, j, z))
-					(*fc).Weights.Set(m, n, 0, w)
+					dw := grad.Grad * lp.LearningRate * (*fc).In.Get(i, j, z) // delta-Weight
+					(*fc).Weights.SetAdd(m, n, 0, dw)
+					// w := (*fc).Weights.Get(m, n, 0)
+					// w = UpdateWeight(w, &grad, (*fc).In.Get(i, j, z))
+					// (*fc).Weights.Set(m, n, 0, w)
 				}
 			}
 		}

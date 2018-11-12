@@ -29,5 +29,5 @@ func UpdateWeight(w float64, grad *Gradient, multp float64) float64 {
 
 // UpdateGradient - Update gradient with new values (based on gradient from previous training iteration).
 func UpdateGradient(grad *Gradient) {
-	(*grad).OldGrad = (*grad).Grad //+ (*grad).OldGrad*lp.Momentum
+	(*grad).OldGrad = (*grad).Grad + (*grad).OldGrad*lp.Momentum
 }
