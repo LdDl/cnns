@@ -64,6 +64,7 @@ go get github.com/LdDl/cnns
 - Dropout layer;
 - ~~Integrate inertia momentum into backpropagation functions for FC layer;~~
 - Integrate inertia momentum into backpropagation functions for Conv layer.
+- Explain examples with [GoCV](https://github.com/hybridgroup/gocv/#gocv) package
 
 ## Support
 
