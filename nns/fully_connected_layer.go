@@ -2,20 +2,19 @@ package nns
 
 import (
 	"fmt"
-	"log"
 	"math/rand"
 )
 
 // FullConnectedLayer is simple layer structure (so this layer can be used for simple neural networks like XOR problem)
 type FullConnectedLayer struct {
-	In                       Tensor
-	Out                      Tensor
-	InputGradientsWeights    Tensor
-	Weights                  Tensor
-	SumLocalGradientsWeights []Gradient
-	Input                    []float64
-	ActivationFunc           func(v float64) float64
-	ActivationDerivative     func(v float64) float64
+	In                             Tensor
+	Out                            Tensor
+	DeltaComponentForPreviousLayer Tensor
+	Weights                        Tensor
+	LocalDelta                     []Gradient
+	Input                          []float64
+	ActivationFunc                 func(v float64) float64
+	ActivationDerivative           func(v float64) float64
 }
 
 // NewFullConnectedLayer - constructor for new fully connected layer. You need to specify input size and output size
@@ -23,12 +22,12 @@ func NewFullConnectedLayer(inSize TDsize, outSize int) *LayerStruct {
 	newLayer := &FullConnectedLayer{
 		In:  NewTensor(inSize.X, inSize.Y, inSize.Z),
 		Out: NewTensor(outSize, 1, 1),
-		InputGradientsWeights: NewTensor(inSize.X, inSize.Y, inSize.Z),
-		Weights:               NewTensor(inSize.X*inSize.Y*inSize.Z, outSize, 1),
-		Input:                 make([]float64, outSize),
-		SumLocalGradientsWeights: make([]Gradient, outSize),
-		ActivationFunc:           ActivationTanh,           // Default Activation function is TanH
-		ActivationDerivative:     ActivationTanhDerivative, // Default derivative of activation function is 1 - TanH(x)*TanH(x)
+		DeltaComponentForPreviousLayer: NewTensor(inSize.X, inSize.Y, inSize.Z),
+		Weights:              NewTensor(inSize.X*inSize.Y*inSize.Z, outSize, 1),
+		Input:                make([]float64, outSize),
+		LocalDelta:           make([]Gradient, outSize),
+		ActivationFunc:       ActivationTanh,           // Default Activation function is TanH
+		ActivationDerivative: ActivationTanhDerivative, // Default derivative of activation function is 1 - TanH(x)*TanH(x)
 	}
 	for i := 0; i < outSize; i++ {
 		for h := 0; h < inSize.X*inSize.Y*inSize.Z; h++ {
@@ -76,7 +75,7 @@ func (fc *FullConnectedLayer) GetWeights() []Tensor {
 
 // GetGradients - returns SUM(next layer grad * weights) as gradients
 func (fc *FullConnectedLayer) GetGradients() Tensor {
-	return (*fc).InputGradientsWeights
+	return (*fc).DeltaComponentForPreviousLayer
 }
 
 // FeedForward - feed data to fully connected layer
@@ -106,67 +105,68 @@ func (fc *FullConnectedLayer) DoActivation() {
 /*
 	i - current layer
 	(i + 1) - next layer (actually previous in term of backpropagation)
+	w{i, j} - weight for i-th neuron of current layer from j-th neuron of previous (in term of feedforward) layer.
+
+	k - index of current layer
+	k + 1 - index of next layer (in term of feed forward)
+	k - 1 - index of previous layer (in term of feed forward)
+
+	i - index of neuron on current layer
+	n - index of neuron on other layer (does not matter which one: next or previous, just "other", but connected of course)
+
+	w{n, i} - weight for n-th neuron on layer for i-th neuron on previous (in term of feed forward) layer
+
 
 	Last layer:
-		δ{i} = (out - target) * derivative(out)
+		δ{i, k} = (out{i, k} - target{i, k}) * derivative(input{i, k}) = LocalDelta
 
 	Hidden layer:
-		δ{i} = [sum(δ{i+1}*w{i+1}{i})] * derivative(out) = sum[derivative(out)*δ{i+1}*w{i+1}{i}]
+		δ{i, k} = derivative(input{i, k-1}) * [sum(δ{n, k+1} * w{n, i}, for n=0 to len(num of neurons on k+1 layer))] =
+				= [sum(δ{n, k+1} * w{n, i} * derivative(input{i, k-1}), for n=0 to len(num of neurons on k+1 layer))]
+				= [sum(LocalDelta{n} * w{n, i}), for n=0 to len(num of neurons on k+1 layer))]
+
 */
 func (fc *FullConnectedLayer) CalculateGradients(nextLayerGradients *Tensor) {
-	for i := 0; i < (*fc).InputGradientsWeights.Size.X*(*fc).InputGradientsWeights.Size.Y*(*fc).InputGradientsWeights.Size.Z; i++ {
-		(*fc).InputGradientsWeights.Data[i] = 0.0
+	for i := 0; i < (*fc).DeltaComponentForPreviousLayer.Size.X*(*fc).DeltaComponentForPreviousLayer.Size.Y*(*fc).DeltaComponentForPreviousLayer.Size.Z; i++ {
+		(*fc).DeltaComponentForPreviousLayer.Data[i] = 0.0
 	}
 
-	fmt.Println("Debug START")
-	//
 	for n := 0; n < (*fc).Out.Size.X; n++ {
-		(*fc).SumLocalGradientsWeights[n].Grad = (*nextLayerGradients).Get(n, 0, 0) * (*fc).ActivationDerivative((*fc).Input[n])
-		log.Printf("Grad for %v-th neuron: %v * %v = %v \n", n, (*nextLayerGradients).Get(n, 0, 0), (*fc).ActivationDerivative((*fc).Input[n]), (*fc).SumLocalGradientsWeights[n].Grad)
-	}
-	fmt.Println("Debug DONE")
-
-	for n := 0; n < (*fc).Out.Size.X; n++ {
+		(*fc).LocalDelta[n].Grad = (*nextLayerGradients).Get(n, 0, 0) * (*fc).ActivationDerivative((*fc).Input[n])
 		for i := 0; i < (*fc).In.Size.X; i++ {
 			for j := 0; j < (*fc).In.Size.Y; j++ {
 				for z := 0; z < (*fc).In.Size.Z; z++ {
 					m := fc.mapToInput(i, j, z)
-					v := (*fc).ActivationDerivative((*fc).Input[n]) * (*nextLayerGradients).Get(n, 0, 0) * (*fc).Weights.Get(m, n, 0)
-					// fmt.Printf("D: %v * %v\n", (*fc).SumLocalGradientsWeights[n].Grad, (*fc).Weights.Get(m, n, 0))
-					(*fc).InputGradientsWeights.SetAdd(i, j, z, v)
+					v := (*fc).LocalDelta[n].Grad * (*fc).Weights.Get(m, n, 0)
+					// fmt.Printf("D: %v * %v\n", (*fc).LocalDelta[n].Grad, (*fc).Weights.Get(m, n, 0))
+					(*fc).DeltaComponentForPreviousLayer.SetAdd(i, j, z, v)
 				}
 			}
 		}
 
 	}
 
-	// for n := 0; n < (*fc).Out.Size.X; n++ {
-	// 	(*fc).SumLocalGradientsWeights[n].Grad = (*nextLayerGradients).Get(n, 0, 0) * (*fc).ActivationDerivative((*fc).Input[n])
-	// 	// log.Printf("Grad for %v-th neuron: %v %v\n", n, (*nextLayerGradients).Get(n, 0, 0), (*fc).ActivationDerivative((*fc).Input[n]))
-	// 	for i := 0; i < (*fc).In.Size.X; i++ {
-	// 		for j := 0; j < (*fc).In.Size.Y; j++ {
-	// 			for z := 0; z < (*fc).In.Size.Z; z++ {
-	// 				m := fc.mapToInput(i, j, z)
-	// 				// fmt.Printf("D: %v * %v\n", (*fc).SumLocalGradientsWeights[n].Grad, (*fc).Weights.Get(m, n, 0))
-	// 				(*fc).InputGradientsWeights.SetAdd(i, j, z, (*fc).SumLocalGradientsWeights[n].Grad*(*fc).Weights.Get(m, n, 0))
-	// 			}
-	// 		}
-	// 	}
-	// 	// (*fc).InputGradientsWeights.Print()
-	// }
-
 }
 
 // UpdateWeights - update fully connected layer's weights
+/*
+	Δw{n, i} - change of weight for n-th neuron on layer for i-th neuron on previous (in term of feed forward) layer
+
+	η - learning rate
+	input{n} - activated output of previous layer
+
+	Δw{n, i} =  -(η * ΔE/Δw{n, i}) = -(η)*δ{i}*input{n}
+*/
 func (fc *FullConnectedLayer) UpdateWeights() {
 	for n := 0; n < (*fc).Out.Size.X; n++ {
-		grad := (*fc).SumLocalGradientsWeights[n]
+		grad := (*fc).LocalDelta[n]
 		// log.Println("G:", grad)
 		for i := 0; i < (*fc).In.Size.X; i++ {
 			for j := 0; j < (*fc).In.Size.Y; j++ {
 				for z := 0; z < (*fc).In.Size.Z; z++ {
 					m := fc.mapToInput(i, j, z)
-					dw := grad.Grad * lp.LearningRate * (*fc).In.Get(i, j, z) // delta-Weight
+					fmt.Printf("%v * %v = %v\n", grad.Grad, fc.In.Get(i, j, z), grad.Grad*lp.LearningRate*(*fc).In.Get(i, j, z))
+					dw := -1.0 * (lp.LearningRate * grad.Grad * (*fc).In.Get(i, j, z)) // delta-Weight
 					(*fc).Weights.SetAdd(m, n, 0, dw)
 					// w := (*fc).Weights.Get(m, n, 0)
 					// w = UpdateWeight(w, &grad, (*fc).In.Get(i, j, z))
@@ -174,8 +174,8 @@ func (fc *FullConnectedLayer) UpdateWeights() {
 				}
 			}
 		}
-		UpdateGradient(&fc.SumLocalGradientsWeights[n])
-		//(*fc).SumLocalGradientsWeights[n].Update()
+		UpdateGradient(&fc.LocalDelta[n])
+		//(*fc).LocalDelta[n].Update()
 	}
 }
 
@@ -194,7 +194,7 @@ func (fc *FullConnectedLayer) PrintWeights() {
 // PrintGradients - print fully connected layer's gradients
 func (fc *FullConnectedLayer) PrintGradients() {
 	fmt.Println("Printing Fully Connected Layer gradients-weights...")
-	(*fc).InputGradientsWeights.Print()
+	(*fc).DeltaComponentForPreviousLayer.Print()
 }
 
 // SetActivationFunc sets activation function for fully connected layer. You need to specify function: func(v float64) float64
