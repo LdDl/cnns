@@ -62,7 +62,7 @@ go get github.com/LdDl/cnns
 - Define learning parametrs not in library (they are predefined now). Need to change the way network uses learning parameters for backpropagation;
 - Padding for Conv layer;
 - Dropout layer;
-- Integrate inertia momentum into backpropagation functions for FC layer.
+- ~~Integrate inertia momentum into backpropagation functions for FC layer;~~
 - Integrate inertia momentum into backpropagation functions for Conv layer.
 
 ## Support
