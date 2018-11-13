@@ -41,7 +41,7 @@ CNNS (Convolutional Neural Networks) is a little package for developing simple n
         [step_by_step_mlp(inertia).xlsx](https://github.com/LdDl/cnns/blob/master/step_by_step_mlp(inertia).xlsx)
         and associated example [examples/mlp_1.go](https://github.com/LdDl/cnns/blob/master/examples/mlp_1.go)
 
-    There are 3 epochs provided (see tabs: Step_1, Step_2, Step_3)) for MLP also.
+There are 3 epochs provided (see tabs: Step_1, Step_2, Step_3)) for each net also.
 
 ## Installation
 
