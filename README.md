@@ -13,6 +13,7 @@ CNNS (Convolutional Neural Networks) is a little package for developing simple n
 - [Theoretical](#theoretical)
     - [MLP](#mlp)
     - [CNN](#cnn)
+    - [Examples](#examples)
 - [Installation](#installation)
 - [Usage](#usage)
 - [ToDo](#todo)
@@ -30,6 +31,7 @@ CNNS (Convolutional Neural Networks) is a little package for developing simple n
 ### CNN
 @todo
 
+### Examples
 * Step-by-step feedforward and backpropagation calculations in CNN are made in file of Excel format (xlsx): [step_by_step_cnn(inertia).xlsx](https://github.com/LdDl/cnns/blob/master/step_by_step_cnn(inertia).xlsx). You can check associated example [examples/conv.go](https://github.com/LdDl/cnns/blob/master/examples/conv.go) also. Notice, that example uses inertia extension. 
 
 * Step-by-step feedforward and backpropagation calculations in MLP:
