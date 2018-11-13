@@ -154,7 +154,7 @@ func (t1 *Tensor) Print() {
 		fmt.Printf("Dim: %v\n", z)
 		for y := 0; y < my; y++ {
 			for x := 0; x < mx; x++ {
-				fmt.Printf("%.8f\t", (*t1).Get(x, y, z))
+				fmt.Printf("%.10f\t", (*t1).Get(x, y, z))
 			}
 			fmt.Println()
 		}

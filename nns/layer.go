@@ -81,6 +81,7 @@ func (wh *WholeNet) Backpropagate(target *Tensor) {
 	difference := (*wh).Layers[len((*wh).Layers)-1].GetOutput()
 	difference.Sub(target)
 	(*wh).Layers[len((*wh).Layers)-1].CalculateGradients(&difference)
+
 	// target.Sub(&difference)
 	// (*wh).Layers[len((*wh).Layers)-1].CalculateGradients(target)
 	for i := len((*wh).Layers) - 2; i >= 0; i-- {

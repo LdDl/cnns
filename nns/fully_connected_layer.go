@@ -2,7 +2,6 @@ package nns
 
 import (
 	"fmt"
-	"log"
 	"math/rand"
 )
 
@@ -85,6 +84,7 @@ func (fc *FullConnectedLayer) GetGradients() Tensor {
 func (fc *FullConnectedLayer) FeedForward(t *Tensor) {
 	(*fc).In = (*t)
 	(*fc).DoActivation()
+	// fc.PrintWeights()
 }
 
 // DoActivation - fully connected layer's output activation
@@ -133,21 +133,23 @@ func (fc *FullConnectedLayer) CalculateGradients(nextLayerGradients *Tensor) {
 	for i := 0; i < (*fc).DeltaComponentForPreviousLayer.Size.X*(*fc).DeltaComponentForPreviousLayer.Size.Y*(*fc).DeltaComponentForPreviousLayer.Size.Z; i++ {
 		(*fc).DeltaComponentForPreviousLayer.Data[i] = 0.0
 	}
-
 	for n := 0; n < (*fc).Out.Size.X; n++ {
 		(*fc).LocalDelta[n].Grad = (*nextLayerGradients).Get(n, 0, 0) * (*fc).ActivationDerivative((*fc).Input[n])
+		// fmt.Printf("errs: %v * %v \n", (*nextLayerGradients).Get(n, 0, 0), (*fc).ActivationDerivative((*fc).Input[n]))
 		for i := 0; i < (*fc).In.Size.X; i++ {
 			for j := 0; j < (*fc).In.Size.Y; j++ {
 				for z := 0; z < (*fc).In.Size.Z; z++ {
 					m := fc.mapToInput(i, j, z)
 					v := (*fc).LocalDelta[n].Grad * (*fc).Weights.Get(m, n, 0)
-					// fmt.Printf("D: %v * %v\n", (*fc).LocalDelta[n].Grad, (*fc).Weights.Get(m, n, 0))
+					// fmt.Printf("Dcomp: %v * %v | ", (*fc).LocalDelta[n].Grad, (*fc).Weights.Get(m, n, 0))
 					(*fc).DeltaComponentForPreviousLayer.SetAdd(i, j, z, v)
 				}
 			}
+			// fmt.Println()
 		}
 	}
-
+	// fmt.Println("epoch")
+	// (*fc).DeltaComponentForPreviousLayer.Print()
 }
 
 // UpdateWeights - update fully connected layer's weights
@@ -160,15 +162,15 @@ func (fc *FullConnectedLayer) CalculateGradients(nextLayerGradients *Tensor) {
 	Δw{n, i} =  -(η * ΔE/Δw{n, i}) = -(η)*δ{i}*input{n}
 */
 func (fc *FullConnectedLayer) UpdateWeights() {
+	// (*fc).PreviousIterationWeights.Print()
 	for n := 0; n < (*fc).Out.Size.X; n++ {
 		grad := (*fc).LocalDelta[n]
-		log.Println("G:", grad)
+		// log.Println("G:", grad)
 		for i := 0; i < (*fc).In.Size.X; i++ {
 			for j := 0; j < (*fc).In.Size.Y; j++ {
 				for z := 0; z < (*fc).In.Size.Z; z++ {
 					m := fc.mapToInput(i, j, z)
 					// fmt.Printf("%v * %v = %v\n", grad.Grad, fc.In.Get(i, j, z), grad.Grad*lp.LearningRate*(*fc).In.Get(i, j, z))
-
 					/*
 						Without inertia
 					*/
@@ -180,7 +182,15 @@ func (fc *FullConnectedLayer) UpdateWeights() {
 					*/
 					dw := (1.0-lp.Momentum)*(-1.0*(lp.LearningRate*grad.Grad*(*fc).In.Get(i, j, z))) +
 						lp.Momentum*(*fc).PreviousIterationWeights.Get(m, n, 0)
-
+					// fmt.Printf("Debug fc: (1.0-%v)*(-1.0*(%v*%v*%v)) + %v*%v = %v\n",
+					// 	lp.Momentum,
+					// 	lp.LearningRate,
+					// 	grad.Grad,
+					// 	(*fc).In.Get(i, j, z),
+					// 	lp.Momentum,
+					// 	(*fc).PreviousIterationWeights.Get(m, n, 0),
+					// 	dw,
+					// )
 					(*fc).PreviousIterationWeights.Set(m, n, 0, dw)
 
 					// w{n,i} = w{n,i} + Δw{n, i}

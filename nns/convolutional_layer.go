@@ -9,11 +9,12 @@ import (
 
 // ConvLayer is convolutional layer structure
 type ConvLayer struct {
-	InputGradientsWeights Tensor
+	DeltaWeightsComponent Tensor
 	In                    Tensor
 	Out                   Tensor
 	Kernels               []Tensor
-	KernelsGradients      []TensorGradient
+	PreviousKernelsDeltas []Tensor
+	LocalDeltas           []TensorGradient
 	Stride                int
 	KernelSize            int
 }
@@ -21,7 +22,7 @@ type ConvLayer struct {
 // NewConvLayer - constructor for new convolutional layer. You need to specify striding step, size (square) of kernel, amount of kernels, input size.
 func NewConvLayer(stride, kernelSize, numberFilters int, inSize TDsize) *LayerStruct {
 	newLayer := &ConvLayer{
-		InputGradientsWeights: NewTensor(inSize.X, inSize.Y, inSize.Z),
+		DeltaWeightsComponent: NewTensor(inSize.X, inSize.Y, inSize.Z),
 		In:         NewTensor(inSize.X, inSize.Y, inSize.Z),
 		Out:        NewTensor((inSize.X-kernelSize)/stride+1, (inSize.Y-kernelSize)/stride+1, numberFilters),
 		Stride:     stride,
@@ -37,9 +38,20 @@ func NewConvLayer(stride, kernelSize, numberFilters int, inSize TDsize) *LayerSt
 			}
 		}
 		newLayer.Kernels = append(newLayer.Kernels, t)
+
+		tt := NewTensor(kernelSize, kernelSize, inSize.Z)
+		for i := 0; i < kernelSize; i++ {
+			for j := 0; j < kernelSize; j++ {
+				for z := 0; z < inSize.Z; z++ {
+					tt.Set(i, j, z, 0)
+				}
+			}
+		}
+		newLayer.PreviousKernelsDeltas = append(newLayer.PreviousKernelsDeltas, tt)
+
 		for i := 0; i < numberFilters; i++ {
 			t := NewTensorGradient(kernelSize, kernelSize, inSize.Z)
-			newLayer.KernelsGradients = append(newLayer.KernelsGradients, t)
+			newLayer.LocalDeltas = append(newLayer.LocalDeltas, t)
 		}
 	}
 	return &LayerStruct{
@@ -80,13 +92,15 @@ func (con *ConvLayer) GetWeights() []Tensor {
 
 // GetGradients - returns convolutional layer's gradients
 func (con *ConvLayer) GetGradients() Tensor {
-	return (*con).InputGradientsWeights
+	return (*con).DeltaWeightsComponent
 }
 
 // FeedForward - feed data to convolutional layer
 func (con *ConvLayer) FeedForward(t *Tensor) {
 	(*con).In = (*t)
 	(*con).DoActivation()
+	// con.PrintWeights()
+	// con.PrintOutput()
 }
 
 // DoActivation - convolutional layer's output activation
@@ -115,16 +129,17 @@ func (con *ConvLayer) DoActivation() {
 
 // CalculateGradients - calculate convolutional layer's gradients
 func (con *ConvLayer) CalculateGradients(nextLayerGrad *Tensor) {
-	for k := 0; k < len((*con).KernelsGradients); k++ {
+	for k := 0; k < len((*con).LocalDeltas); k++ {
 		for i := 0; i < (*con).KernelSize; i++ {
 			for j := 0; j < (*con).KernelSize; j++ {
 				for z := 0; z < (*con).In.Size.Z; z++ {
-					(*con).KernelsGradients[k].SetGrad(i, j, z, 0.0)
+					(*con).LocalDeltas[k].SetGrad(i, j, z, 0.0)
 				}
 			}
 		}
 	}
-
+	// fmt.Println("next grad")
+	// nextLayerGrad.Print()
 	for x := 0; x < (*con).In.Size.X; x++ {
 		for y := 0; y < (*con).In.Size.Y; y++ {
 			rn := con.sameAsOuput(x, y)
@@ -137,14 +152,16 @@ func (con *ConvLayer) CalculateGradients(nextLayerGrad *Tensor) {
 						for k := rn.MinZ; k <= rn.MaxZ; k++ {
 							weightApplied := (*con).Kernels[k].Get(x-minX, y-minY, z)
 							sumError += weightApplied * (*nextLayerGrad).Get(i, j, k)
-							(*con).KernelsGradients[k].AddToGrad(x-minX, y-minY, z, (*con).In.Get(x, y, z)*(*nextLayerGrad).Get(i, j, k))
+							(*con).LocalDeltas[k].AddToGrad(x-minX, y-minY, z, (*con).In.Get(x, y, z)*(*nextLayerGrad).Get(i, j, k))
 						}
 					}
 				}
-				(*con).InputGradientsWeights.Set(x, y, z, sumError)
+				(*con).DeltaWeightsComponent.Set(x, y, z, sumError)
 			}
 		}
 	}
+	// fmt.Println("grads conv")
+	// (*con).LocalDeltas[0].Print()
 }
 
 // UpdateWeights - update convolutional layer's weights
@@ -153,14 +170,34 @@ func (con *ConvLayer) UpdateWeights() {
 		for i := 0; i < (*con).KernelSize; i++ {
 			for j := 0; j < (*con).KernelSize; j++ {
 				for z := 0; z < (*con).In.Size.Z; z++ {
-					w := (*con).Kernels[a].Get(i, j, z)
-					grad := con.KernelsGradients[a].Get(i, j, z)
-					w = UpdateWeight(w, &grad, 1.0)
-					(*con).Kernels[a].Set(i, j, z, w)
-					// con.KernelsGradients[a].Print()
-					UpdateGradient(&grad)
+					grad := con.LocalDeltas[a].Get(i, j, z)
+
+					dw := (*con).Kernels[a].Get(i, j, z)
+					prevDW := (*con).PreviousKernelsDeltas[a].Get(i, j, z)
+
+					// dw = UpdateWeight(dw, &grad, 1.0)
+					// m := grad.Grad + grad.OldGrad*lp.Momentum
+					// dw -= lp.LearningRate*m*1.0 + lp.LearningRate*lp.WeightDecay*dw
+
+					(*con).Kernels[a].Set(i, j, z, dw)
+
+					dw = (1.0-lp.Momentum)*(-1.0*(lp.LearningRate*grad.Grad*1.0)) + lp.Momentum*prevDW
+
+					// fmt.Printf("Debug: (1.0-%v)*(-1.0*(%v*%v*%v)) + %v*%v = %v\n",
+					// 	lp.Momentum,
+					// 	lp.LearningRate,
+					// 	grad.Grad,
+					// 	1.0,
+					// 	lp.Momentum,
+					// 	prevDW,
+					// 	dw,
+					// )
+					(*con).PreviousKernelsDeltas[a].Set(i, j, z, dw)
+					(*con).Kernels[a].SetAdd(i, j, z, dw)
+
+					// UpdateGradient(&grad)
 					// grad.Update()
-					con.KernelsGradients[a].Set(i, j, z, grad)
+					con.LocalDeltas[a].Set(i, j, z, grad)
 				}
 			}
 		}
@@ -185,7 +222,7 @@ func (con *ConvLayer) PrintWeights() {
 // PrintGradients - print convolutional layer's gradients
 func (con *ConvLayer) PrintGradients() {
 	fmt.Println("Printing Convolutional Layer gradients-weights...")
-	(*con).InputGradientsWeights.Print()
+	(*con).DeltaWeightsComponent.Print()
 }
 
 // SetActivationFunc - sets activation function for layer

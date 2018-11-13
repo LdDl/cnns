@@ -38,5 +38,5 @@ func ExampleOne() {
 			net.Layers[i].PrintWeights()
 		}
 	}
-
+	net.PrintOutput()
 }

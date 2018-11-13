@@ -8,8 +8,8 @@ import "github.com/LdDl/cnns/examples"
 */
 
 func main() {
-	examples.ExampleOne()
-	// examples.Conv()
+	// examples.ExampleOne()
+	examples.ExampleConv()
 	// examples.CheckAND()
 	// examples.CheckOR()
 	// examples.CheckXOR()

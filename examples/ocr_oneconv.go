@@ -62,6 +62,8 @@ func CheckOCR() {
 	relu := nns.NewReLULayer(conv.OutSize())
 	maxpool := nns.NewMaxPoolingLayer(2, 2, relu.OutSize())
 	fullyconnected := nns.NewFullConnectedLayer(maxpool.OutSize(), 22)
+	fullyconnected.SetActivationFunc(nns.ActivationSygmoid)
+	fullyconnected.SetActivationDerivativeFunc(nns.ActivationSygmoidDerivative)
 
 	var net nns.WholeNet
 	net.Layers = append(net.Layers, conv)

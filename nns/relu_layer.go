@@ -8,12 +8,12 @@ import (
 /*
 	In - Input data
 	Out - Output data
-	InputGradientsWeights - incoming gradients*weights (backpropagation)
+	LocalDelta - incoming gradients*weights (backpropagation)
 */
 type ReLULayer struct {
-	In                    Tensor
-	Out                   Tensor
-	InputGradientsWeights Tensor
+	In         Tensor
+	Out        Tensor
+	LocalDelta Tensor
 }
 
 // NewReLULayer - Constructor for new ReLU layer. You need to specify input size
@@ -22,9 +22,9 @@ type ReLULayer struct {
 */
 func NewReLULayer(inSize TDsize) *LayerStruct {
 	newLayer := &ReLULayer{
-		InputGradientsWeights: NewTensor(inSize.X, inSize.Y, inSize.Z),
-		In:  NewTensor(inSize.X, inSize.Y, inSize.Z),
-		Out: NewTensor(inSize.X, inSize.Y, inSize.Z),
+		LocalDelta: NewTensor(inSize.X, inSize.Y, inSize.Z),
+		In:         NewTensor(inSize.X, inSize.Y, inSize.Z),
+		Out:        NewTensor(inSize.X, inSize.Y, inSize.Z),
 	}
 	return &LayerStruct{
 		Layer: newLayer,
@@ -59,7 +59,7 @@ func (relu *ReLULayer) GetWeights() []Tensor {
 
 // GetGradients - Return ReLU layer's gradients
 func (relu *ReLULayer) GetGradients() Tensor {
-	return (*relu).InputGradientsWeights
+	return (*relu).LocalDelta
 }
 
 // FeedForward - Feed data to ReLU layer
@@ -90,9 +90,9 @@ func (relu *ReLULayer) CalculateGradients(nextLayerGrad *Tensor) {
 		for j := 0; j < (*relu).In.Size.Y; j++ {
 			for z := 0; z < (*relu).In.Size.Z; z++ {
 				if (*relu).In.Get(i, j, z) < 0 {
-					(*relu).InputGradientsWeights.Set(i, j, z, 0)
+					(*relu).LocalDelta.Set(i, j, z, 0)
 				} else {
-					(*relu).InputGradientsWeights.Set(i, j, z, 1.0*nextLayerGrad.Get(i, j, z))
+					(*relu).LocalDelta.Set(i, j, z, 1.0*nextLayerGrad.Get(i, j, z))
 				}
 			}
 		}
@@ -121,7 +121,7 @@ func (relu *ReLULayer) PrintWeights() {
 // PrintGradients - Print relu layer's local gradients
 func (relu *ReLULayer) PrintGradients() {
 	fmt.Println("Printing ReLU Layer gradients...")
-	(*relu).InputGradientsWeights.Print()
+	(*relu).LocalDelta.Print()
 }
 
 // SetActivationFunc - Set activation function for layer

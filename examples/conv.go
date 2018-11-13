@@ -6,7 +6,7 @@ import (
 	"github.com/LdDl/cnns/nns"
 )
 
-// Conv - Check feedworward and backpropagate operations
+// ExampleConv - Check feedworward and backpropagate operations
 /*
 	Using here 4 layers: convolutional, ReLU, pooling (max) and fc
 		Convolutinal features:
@@ -22,7 +22,7 @@ import (
 			Outputsize: 3 (actually 3x1x1)
 	Using custom weights (for testing purposes) also. You can check "step_by_step_cnss.xlsx" file.
 */
-func Conv() {
+func ExampleConv() {
 	conv := nns.NewConvLayer(1, 3, 1, nns.TDsize{X: 8, Y: 9, Z: 1})
 	relu := nns.NewReLULayer(conv.OutSize())
 	maxpool := nns.NewMaxPoolingLayer(2, 2, relu.OutSize())
@@ -64,23 +64,26 @@ func Conv() {
 	}
 	var image = nns.NewTensor(8, 9, 1)
 	image.SetData3D(matrix)
-	fmt.Println("Image:")
-	image.Print()
+	// fmt.Println("Image:")
+	// image.Print()
 
 	fmt.Println("\nWeights before training:")
 	net.Layers[0].PrintWeights()
 	net.Layers[len(net.Layers)-1].PrintWeights()
 
-	net.FeedForward(&image)
-
 	var desired = nns.NewTensor(3, 1, 1)
-	desired.SetData3D([][][]float64{
-		[][]float64{
-			[]float64{0.32, 0.45, 0.96},
-		},
-	})
+	for e := 0; e < 3; e++ {
+		net.FeedForward(&image)
+		desired.SetData3D([][][]float64{
+			[][]float64{
+				[]float64{0.32, 0.45, 0.96},
+			},
+		})
+		net.Backpropagate(&desired)
+	}
 
-	net.Backpropagate(&desired)
+	net.FeedForward(&image)
+	net.PrintOutput()
 
 	fmt.Println("Weights after training:")
 	net.Layers[0].PrintWeights()

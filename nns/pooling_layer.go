@@ -11,23 +11,23 @@ import (
 // In - Input data
 // Out - Output data
 // Stride - Striding step
-// InputGradientsWeights - Gradients
+// LocalDelta - Gradients
 type MaxPoolingLayer struct {
-	In                    Tensor
-	Out                   Tensor
-	InputGradientsWeights Tensor
-	Stride                int
-	ExtendFilter          int
+	In           Tensor
+	Out          Tensor
+	LocalDelta   Tensor
+	Stride       int
+	ExtendFilter int
 }
 
 // NewMaxPoolingLayer - constructor for new MaxPooling layer.
 func NewMaxPoolingLayer(stride, extendFilter int, inSize TDsize) *LayerStruct {
 	newLayer := &MaxPoolingLayer{
-		In:  NewTensor(inSize.X, inSize.Y, inSize.Z),
-		Out: NewTensor((inSize.X-extendFilter)/stride+1, (inSize.Y-extendFilter)/stride+1, inSize.Z),
-		InputGradientsWeights: NewTensor(inSize.X, inSize.Y, inSize.Z),
-		Stride:                stride,
-		ExtendFilter:          extendFilter,
+		In:           NewTensor(inSize.X, inSize.Y, inSize.Z),
+		Out:          NewTensor((inSize.X-extendFilter)/stride+1, (inSize.Y-extendFilter)/stride+1, inSize.Z),
+		LocalDelta:   NewTensor(inSize.X, inSize.Y, inSize.Z),
+		Stride:       stride,
+		ExtendFilter: extendFilter,
 	}
 	return &LayerStruct{
 		Layer: newLayer,
@@ -62,13 +62,15 @@ func (maxpool *MaxPoolingLayer) GetWeights() []Tensor {
 
 // GetGradients - returns max pooling layer's gradients
 func (maxpool *MaxPoolingLayer) GetGradients() Tensor {
-	return (*maxpool).InputGradientsWeights
+	return (*maxpool).LocalDelta
 }
 
 // FeedForward - feed data to max pooling layer
 func (maxpool *MaxPoolingLayer) FeedForward(t *Tensor) {
 	(*maxpool).In = (*t)
 	(*maxpool).DoActivation()
+	// maxpool.PrintOutput()
+	// maxpool.In.Print()
 }
 
 // DoActivation - max pooling layer's output activation
@@ -95,6 +97,8 @@ func (maxpool *MaxPoolingLayer) DoActivation() {
 
 // CalculateGradients - calculate max pooling layer's gradients
 func (maxpool *MaxPoolingLayer) CalculateGradients(nextLayerGrad *Tensor) {
+	// fmt.Println("poo gr")
+	// nextLayerGrad.Print()
 	for x := 0; x < (*maxpool).In.Size.X; x++ {
 		for y := 0; y < (maxpool).In.Size.Y; y++ {
 			rn := maxpool.sameAsOuput(x, y)
@@ -113,7 +117,7 @@ func (maxpool *MaxPoolingLayer) CalculateGradients(nextLayerGrad *Tensor) {
 						}
 					}
 				}
-				(*maxpool).InputGradientsWeights.Set(x, y, z, sumError)
+				(*maxpool).LocalDelta.Set(x, y, z, sumError)
 			}
 		}
 	}
@@ -141,7 +145,7 @@ func (maxpool *MaxPoolingLayer) PrintWeights() {
 // PrintGradients - print max pooling layer's gradients
 func (maxpool *MaxPoolingLayer) PrintGradients() {
 	fmt.Println("Printing Max Pooling Layer local gradients...")
-	(*maxpool).InputGradientsWeights.Print()
+	(*maxpool).LocalDelta.Print()
 }
 
 // SetActivationFunc - sets activation function for layer

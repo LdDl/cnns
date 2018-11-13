@@ -20,8 +20,8 @@ func CheckXTO() {
 	fullyconnected := nns.NewFullConnectedLayer(maxpool.OutSize(), 3)
 
 	// You can play with activation function for fully connected layer
-	// flayer.SetActivationFunc(ActivationTanh)
-	// flayer.SetActivationDerivativeFunc(ActivationTanhDerivative)
+	// fullyconnected.SetActivationFunc(nns.ActivationSygmoid)
+	// fullyconnected.SetActivationDerivativeFunc(nns.ActivationSygmoidDerivative)
 
 	var net nns.WholeNet
 	net.Layers = append(net.Layers, conv)
@@ -83,7 +83,7 @@ func CheckXTO() {
 	net.Layers[3].PrintWeights()
 
 	// Train
-	for i := 0; i < 10000; i++ {
+	for i := 0; i < 1000; i++ {
 		// 0 - X
 		// 1 - T
 		// 2 - O
