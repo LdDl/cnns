@@ -1,5 +1,7 @@
 package nns
 
+import "errors"
+
 // LearningParams - Parameters for training neural network.
 /*
 	LearningRate
@@ -14,11 +16,29 @@ type LearningParams struct {
 
 var (
 	lp = LearningParams{
-		LearningRate: 0.005, //0.01,
-		Momentum:     0.9,
+		LearningRate: 0.01,
+		Momentum:     0.6,
 		WeightDecay:  0.001,
 	}
 )
+
+// SetEta Set learning rate
+func SetEta(v float64) error {
+	if v <= 0 {
+		return errors.New("η (learning rate) can not be less or equal zero. Setting default value which is 0.01")
+	}
+	lp.LearningRate = v
+	return nil
+}
+
+// SetMomentum Set momentum
+func SetMomentum(v float64) error {
+	if v <= 0 {
+		return errors.New("α (momentum) can not be less or equal zero. Setting default value which is 0.6")
+	}
+	lp.Momentum = v
+	return nil
+}
 
 // UpdateWeight - Update weights with new value.
 func UpdateWeight(w float64, grad *Gradient, multp float64) float64 {
