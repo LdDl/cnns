@@ -95,7 +95,7 @@ func (lrelu *LeakyReLULayer) CalculateGradients(nextLayerGrad *Tensor) {
 		for j := 0; j < (*lrelu).In.Size.Y; j++ {
 			for z := 0; z < (*lrelu).In.Size.Z; z++ {
 				if (*lrelu).In.Get(i, j, z) < 0 {
-					(*lrelu).InputGradientsWeights.Set(i, j, z, 0)
+					(*lrelu).InputGradientsWeights.Set(i, j, z, (*lrelu).alpha)
 				} else {
 					(*lrelu).InputGradientsWeights.Set(i, j, z, 1.0*nextLayerGrad.Get(i, j, z))
 				}
