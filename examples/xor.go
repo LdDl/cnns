@@ -1,6 +1,8 @@
 package examples
 
 import (
+	"fmt"
+	"log"
 	"math/rand"
 	"time"
 
@@ -28,50 +30,79 @@ func CheckXOR() {
 	var net nns.WholeNet
 	net.Layers = append(net.Layers, fullyconnected1)
 	net.Layers = append(net.Layers, fullyconnected2)
-	for i := 0; i < 100000; i++ {
-		firstInt := u.RandomInt(0, 2)
-		secondInt := u.RandomInt(0, 2)
-		firstBool := false
-		secondBool := false
-		if firstInt == 1 {
-			firstBool = true
-		}
-		if secondInt == 1 {
-			secondBool = true
-		}
-		outputBool := (firstBool != secondBool)
-		outputInt := 0
-		if outputBool == true {
-			outputInt = 1
-		}
-		desired := nns.NewTensor(1, 1, 1)
-		desired.SetData3D([][][]float64{[][]float64{[]float64{float64(outputInt)}}})
-		input := nns.NewTensor(2, 1, 1)
-		input.SetData3D([][][]float64{[][]float64{[]float64{float64(firstInt), float64(secondInt)}}})
-		// Forward
-		net.FeedForward(&input)
-		// Backward
-		net.Backpropagate(&desired)
+
+	// Init train and test data
+	inputs, desired := formTrainDataXOR()
+	inputsTests, desiredTests := formTestDataXOR()
+
+	// Start traing process
+	trainErr, testErr, err := net.Train(&inputs, &desired, &inputsTests, &desiredTests)
+	if err != nil {
+		log.Fatalln(err)
 	}
 
-	// 0 * 0
-	inputTest := nns.NewTensor(2, 1, 1)
-	inputTest.SetData3D([][][]float64{[][]float64{[]float64{0, 0}}})
-	net.FeedForward(&inputTest)
-	net.PrintOutput()
+	fmt.Printf("Error on training data: %v\nError on test data: %v\n", trainErr, testErr)
+}
 
-	// 1 * 0
-	inputTest.SetData3D([][][]float64{[][]float64{[]float64{1.0, 0}}})
-	net.FeedForward(&inputTest)
-	net.PrintOutput()
+func formTrainDataXOR() ([]nns.Tensor, []nns.Tensor) {
+	numExamples := 100000
 
-	// 0 * 1
-	inputTest.SetData3D([][][]float64{[][]float64{[]float64{0, 1.0}}})
-	net.FeedForward(&inputTest)
-	net.PrintOutput()
+	inputs := make([]nns.Tensor, numExamples)
+	desired := make([]nns.Tensor, numExamples)
+	for i := 0; i < numExamples; i++ {
+		x := u.RandomInt(0, 2)
+		y := u.RandomInt(0, 2)
 
-	// 1 * 1
-	inputTest.SetData3D([][][]float64{[][]float64{[]float64{1.0, 1.0}}})
-	net.FeedForward(&inputTest)
-	net.PrintOutput()
+		z := u.XorINT(x, y)
+
+		input := nns.NewTensor(2, 1, 1)
+		input.SetData(2, 1, 1, []float64{float64(x), float64(y)})
+
+		target := nns.NewTensor(1, 1, 1)
+		target.SetData(1, 1, 1, []float64{float64(z)})
+
+		inputs[i] = input
+		desired[i] = target
+	}
+	return inputs, desired
+}
+
+func formTestDataXOR() ([]nns.Tensor, []nns.Tensor) {
+	inputs := make([]nns.Tensor, 0, 4)
+	desired := make([]nns.Tensor, 0, 4)
+
+	input := nns.NewTensor(2, 1, 1)
+	target := nns.NewTensor(1, 1, 1)
+
+	// 0 or 0 = 0
+	input.SetData(2, 1, 1, []float64{0, 0})
+	target.SetData(1, 1, 1, []float64{0})
+	inputs = append(inputs, input)
+	desired = append(desired, target)
+
+	// 1 or 0 = 1
+	input = nns.NewTensor(2, 1, 1)
+	input.SetData(2, 1, 1, []float64{1, 0})
+	target = nns.NewTensor(1, 1, 1)
+	target.SetData(1, 1, 1, []float64{1})
+	inputs = append(inputs, input)
+	desired = append(desired, target)
+
+	// 0 or 1 = 1
+	input = nns.NewTensor(2, 1, 1)
+	input.SetData(2, 1, 1, []float64{0, 1})
+	target = nns.NewTensor(1, 1, 1)
+	target.SetData(1, 1, 1, []float64{1})
+	inputs = append(inputs, input)
+	desired = append(desired, target)
+
+	// 1 or 1 = 0
+	input = nns.NewTensor(2, 1, 1)
+	input.SetData(2, 1, 1, []float64{1, 1})
+	target = nns.NewTensor(1, 1, 1)
+	target.SetData(1, 1, 1, []float64{0})
+	inputs = append(inputs, input)
+	desired = append(desired, target)
+
+	return inputs, desired
 }

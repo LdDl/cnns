@@ -175,6 +175,9 @@ func (fc *FullConnectedLayer) UpdateWeights() {
 					dw := (1.0-lp.Momentum)*(-1.0*(lp.LearningRate*grad.Grad*(*fc).In.Get(i, j, z))) +
 						lp.Momentum*(*fc).PreviousIterationWeights.Get(m, n, 0)
 
+					// Decay of weights
+					// decay := (*fc).Weights.Get(m, n, 0) * (1 - lp.WeightDecay)
+
 					(*fc).PreviousIterationWeights.Set(m, n, 0, dw)
 
 					// w{n,i} = w{n,i} + Δw{n, i}

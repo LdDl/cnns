@@ -6,6 +6,60 @@ import (
 	"math/rand"
 )
 
+// AndINT Logical AND for two inputs of type int
+func AndINT(x, y int) int {
+	firstBool := false
+	secondBool := false
+	if x == 1 {
+		firstBool = true
+	}
+	if y == 1 {
+		secondBool = true
+	}
+	outputBool := (firstBool && secondBool)
+	outputInt := 0
+	if outputBool == true {
+		outputInt = 1
+	}
+	return outputInt
+}
+
+// OrINT Logical OR for two inputs of type int
+func OrINT(x, y int) int {
+	firstBool := false
+	secondBool := false
+	if x == 1 {
+		firstBool = true
+	}
+	if y == 1 {
+		secondBool = true
+	}
+	outputBool := (firstBool || secondBool)
+	outputInt := 0
+	if outputBool == true {
+		outputInt = 1
+	}
+	return outputInt
+}
+
+// XorINT Logical XOR for two inputs of type int
+func XorINT(x, y int) int {
+	firstBool := false
+	secondBool := false
+	if x == 1 {
+		firstBool = true
+	}
+	if y == 1 {
+		secondBool = true
+	}
+	outputBool := (firstBool != secondBool)
+	outputInt := 0
+	if outputBool == true {
+		outputInt = 1
+	}
+	return outputInt
+}
+
 // SuffleSlice - randomly shuffles a slice
 func SuffleSlice(data []interface{}) []interface{} {
 	for i := range data {

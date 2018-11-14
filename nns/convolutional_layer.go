@@ -166,12 +166,8 @@ func (con *ConvLayer) UpdateWeights() {
 				for z := 0; z < (*con).In.Size.Z; z++ {
 					grad := con.LocalDeltas[a].Get(i, j, z)
 
-					dw := (*con).Kernels[a].Get(i, j, z)
 					prevDW := (*con).PreviousKernelsDeltas[a].Get(i, j, z)
-
-					(*con).Kernels[a].Set(i, j, z, dw)
-
-					dw = (1.0-lp.Momentum)*(-1.0*(lp.LearningRate*grad.Grad*1.0)) + lp.Momentum*prevDW
+					dw := (1.0-lp.Momentum)*(-1.0*(lp.LearningRate*grad.Grad*1.0)) + lp.Momentum*prevDW
 
 					(*con).PreviousKernelsDeltas[a].Set(i, j, z, dw)
 					(*con).Kernels[a].SetAdd(i, j, z, dw)

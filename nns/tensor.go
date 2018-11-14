@@ -66,6 +66,18 @@ func (t1 *Tensor) Sub(t2 *Tensor) Tensor {
 	return ret
 }
 
+// MSE - Mean square error
+func (t1 *Tensor) MSE(t2 *Tensor) float64 {
+	sum := 0.0
+	var ret = NewTensorCopy(t1)
+	num := (*t2).Size.X * (*t2).Size.Y * (*t2).Size.Z
+	for i := 0; i < num; i++ {
+		ret.Data[i] = math.Pow((ret.Data[i] - t2.Data[i]), 2.0)
+		sum += ret.Data[i]
+	}
+	return sum / float64(num)
+}
+
 // Get - Return [i][j][k]-th element.
 /*
 	x - row;

@@ -15,7 +15,7 @@ import (
 func CheckXTO() {
 	rand.Seed(time.Now().UnixNano())
 	conv := nns.NewConvLayer(1, 3, 2, nns.TDsize{X: 8, Y: 9, Z: 1})
-	relu := nns.NewReLULayer(conv.OutSize())
+	relu := nns.NewLeakyReLULayer(conv.OutSize(), 0.01)
 	maxpool := nns.NewMaxPoolingLayer(2, 2, relu.OutSize())
 	fullyconnected := nns.NewFullConnectedLayer(maxpool.OutSize(), 3)
 

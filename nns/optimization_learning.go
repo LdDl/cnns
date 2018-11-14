@@ -18,7 +18,7 @@ var (
 	lp = LearningParams{
 		LearningRate: 0.01,
 		Momentum:     0.6,
-		WeightDecay:  0.001,
+		WeightDecay:  0.02,
 	}
 )
 
