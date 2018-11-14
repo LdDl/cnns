@@ -99,8 +99,6 @@ func (con *ConvLayer) GetGradients() Tensor {
 func (con *ConvLayer) FeedForward(t *Tensor) {
 	(*con).In = (*t)
 	(*con).DoActivation()
-	// con.PrintWeights()
-	// con.PrintOutput()
 }
 
 // DoActivation - convolutional layer's output activation
@@ -138,8 +136,6 @@ func (con *ConvLayer) CalculateGradients(nextLayerGrad *Tensor) {
 			}
 		}
 	}
-	// fmt.Println("next grad")
-	// nextLayerGrad.Print()
 	for x := 0; x < (*con).In.Size.X; x++ {
 		for y := 0; y < (*con).In.Size.Y; y++ {
 			rn := con.sameAsOuput(x, y)
@@ -160,8 +156,6 @@ func (con *ConvLayer) CalculateGradients(nextLayerGrad *Tensor) {
 			}
 		}
 	}
-	// fmt.Println("grads conv")
-	// (*con).LocalDeltas[0].Print()
 }
 
 // UpdateWeights - update convolutional layer's weights
@@ -175,28 +169,13 @@ func (con *ConvLayer) UpdateWeights() {
 					dw := (*con).Kernels[a].Get(i, j, z)
 					prevDW := (*con).PreviousKernelsDeltas[a].Get(i, j, z)
 
-					// dw = UpdateWeight(dw, &grad, 1.0)
-					// m := grad.Grad + grad.OldGrad*lp.Momentum
-					// dw -= lp.LearningRate*m*1.0 + lp.LearningRate*lp.WeightDecay*dw
-
 					(*con).Kernels[a].Set(i, j, z, dw)
 
 					dw = (1.0-lp.Momentum)*(-1.0*(lp.LearningRate*grad.Grad*1.0)) + lp.Momentum*prevDW
 
-					// fmt.Printf("Debug: (1.0-%v)*(-1.0*(%v*%v*%v)) + %v*%v = %v\n",
-					// 	lp.Momentum,
-					// 	lp.LearningRate,
-					// 	grad.Grad,
-					// 	1.0,
-					// 	lp.Momentum,
-					// 	prevDW,
-					// 	dw,
-					// )
 					(*con).PreviousKernelsDeltas[a].Set(i, j, z, dw)
 					(*con).Kernels[a].SetAdd(i, j, z, dw)
 
-					// UpdateGradient(&grad)
-					// grad.Update()
 					con.LocalDeltas[a].Set(i, j, z, grad)
 				}
 			}
