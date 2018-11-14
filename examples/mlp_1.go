@@ -26,9 +26,6 @@ func ExampleOne() {
 
 	for e := 0; e < 3; e++ {
 		net.FeedForward(&inputData)
-		// obj := net.GetOutput()
-		// log.Println("out")
-		// obj.Print()
 		desired := nns.NewTensor(1, 1, 1)
 		desired.SetData(1, 1, 1, []float64{0.4})
 		net.Backpropagate(&desired)
@@ -38,5 +35,7 @@ func ExampleOne() {
 			net.Layers[i].PrintWeights()
 		}
 	}
-	net.PrintOutput()
+
+	// net.FeedForward(&inputData)
+	// net.PrintOutput()
 }

@@ -78,8 +78,9 @@ func (wh *WholeNet) FeedForward(t *Tensor) {
 
 // Backpropagate - backward pass throught the net (training)
 func (wh *WholeNet) Backpropagate(target *Tensor) {
-	difference := (*wh).Layers[len((*wh).Layers)-1].GetOutput()
-	difference.Sub(target)
+	lastLayer := (*wh).Layers[len((*wh).Layers)-1].GetOutput()
+
+	difference := lastLayer.Sub(target)
 	(*wh).Layers[len((*wh).Layers)-1].CalculateGradients(&difference)
 
 	// target.Sub(&difference)
