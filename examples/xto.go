@@ -29,6 +29,23 @@ func CheckXTO() {
 	net.Layers = append(net.Layers, maxpool)
 	net.Layers = append(net.Layers, fullyconnected)
 
+	// Init train and test data
+	inputs, desired := formTrainDataXTO()
+	inputsTests, desiredTests := formTestDataXTO()
+
+	// Start traing process
+	trainErr, testErr, err := net.Train(&inputs, &desired, &inputsTests, &desiredTests)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	fmt.Printf("Error on training data: %v\nError on test data: %v\n", trainErr, testErr)
+
+}
+
+func formTrainDataXTO() ([]nns.Tensor, []nns.Tensor) {
+	numExamples := 10000
+
 	var xmatrix = [][][]float64{
 		[][]float64{
 			[]float64{0, 0, 0, 0, 0, 0, 0, 0},
@@ -42,7 +59,6 @@ func CheckXTO() {
 			[]float64{0, 1, 0, 0, 0, 1, 0, 0},
 		},
 	}
-
 	var tmatrix = [][][]float64{
 		[][]float64{
 			[]float64{0, 1, 1, 1, 1, 1, 1, 0},
@@ -56,7 +72,6 @@ func CheckXTO() {
 			[]float64{0, 0, 0, 1, 1, 0, 0, 0},
 		},
 	}
-
 	var omatrix = [][][]float64{
 		[][]float64{
 			[]float64{0, 0, 0, 0, 0, 0, 0, 0},
@@ -78,96 +93,96 @@ func CheckXTO() {
 	var oimage = nns.NewTensor(8, 9, 1)
 	oimage.SetData3D(omatrix)
 
-	log.Println("Weights before:")
-	net.Layers[0].PrintWeights()
-	net.Layers[3].PrintWeights()
-
-	// Train
-	for i := 0; i < 1000; i++ {
-		// 0 - X
-		// 1 - T
-		// 2 - O
+	inputs := make([]nns.Tensor, numExamples)
+	desired := make([]nns.Tensor, numExamples)
+	for i := 0; i < numExamples; i++ {
 		var rnd = u.RandomInt(0, 3)
-		var desired = nns.NewTensor(3, 1, 1)
-		desiredMat := [][][]float64{[][]float64{[]float64{0.0, 0.0, 0.0}}}
-		desiredMat[0][0][rnd] = 1.0
-		desired.SetData3D(desiredMat)
-		var train = nns.NewTensor(8, 9, 1)
+
+		input := nns.NewTensor(8, 9, 1)
 		switch rnd {
 		case 0:
-			train = ximage
+			input = ximage
 			break
 		case 1:
-			train = timage
+			input = timage
 			break
 		case 2:
-			train = oimage
+			input = oimage
 			break
 		default:
 			break
 		}
-		// Forward
-		net.FeedForward(&train)
-		// Backward
-		net.Backpropagate(&desired)
-	}
-	log.Println("Weights after:")
-	net.Layers[0].PrintWeights()
-	net.Layers[3].PrintWeights()
 
-	// Test trained network
-	xmatrix = [][][]float64{
-		[][]float64{
-			[]float64{0, 0, 0, 0, 0, 0, 0, 0},
-			[]float64{0, 1, 0, 0, 0, 1, 0, 0},
-			[]float64{0, 0, 1, 0, 1, 0, 0, 0},
-			[]float64{0, 0, 1, 0, 1, 0, 0, 0},
-			[]float64{0, 0, 0, 0.8, 0, 0, 0, 0},
-			[]float64{0, 0, 1, 0, 1, 0, 0, 0},
-			[]float64{0, 0, 1, 0, 0.5, 0, 0, 0},
-			[]float64{0, 0.4, 0, 0, 0, 1, 0, 0},
-			[]float64{0, 1, 0, 0, 0, 1, 0, 0},
-		},
-	}
-	tmatrix = [][][]float64{
-		[][]float64{
-			[]float64{0, 1, 1, 1, 1, 0.7, 0.5, 0},
-			[]float64{0, 1, 1, 1, 1, 1, 1, 0},
-			[]float64{0, 0, 0, 0, 1, 0, 0, 0},
-			[]float64{0, 0, 0, 0, 1, 0, 0, 0},
-			[]float64{0, 0, 0, 1, 1, 0, 0, 0},
-			[]float64{0, 0, 0, 1, 1, 0, 0, 0},
-			[]float64{0, 0, 0, 1, 1, 0, 0, 0},
-			[]float64{0, 0, 0, 1, 0, 0, 0, 0},
-			[]float64{0, 0, 0, 1, 1, 0, 0, 0},
-		},
-	}
-	omatrix = [][][]float64{
-		[][]float64{
-			[]float64{0, 0, 0, 0, 0.6, 0, 0, 0},
-			[]float64{0, 1, 1, 0.5, 1, 1, 1, 0},
-			[]float64{0, 1, 0, 0.5, 0, 0, 1, 0},
-			[]float64{0, 1, 0, 0, 0, 0, 1, 0},
-			[]float64{0, 1, 0, 0, 0, 0, 1, 0},
-			[]float64{0, 1, 0, 0, 0, 0, 1, 0},
-			[]float64{0, 0.9, 0, 0, 0, 0, 1, 0},
-			[]float64{0, 1, 0, 0, 0, 0, 1, 0},
-			[]float64{0, 0, 1, 0.8, 1, 1, 0, 0},
-		},
-	}
-	ximage.SetData3D(xmatrix)
-	timage.SetData3D(tmatrix)
-	oimage.SetData3D(omatrix)
+		desiredMat := [][][]float64{[][]float64{[]float64{0.0, 0.0, 0.0}}}
+		desiredMat[0][0][rnd] = 1.0
 
-	fmt.Println("For X should be: [1, 0, 0], Got:")
-	net.FeedForward(&ximage)
-	net.PrintOutput()
+		target := nns.NewTensor(3, 1, 1)
+		target.SetData3D(desiredMat)
 
-	fmt.Println("For T should be: [0, 1, 0], Got:")
-	net.FeedForward(&timage)
-	net.PrintOutput()
+		inputs[i] = input
+		desired[i] = target
+	}
+	return inputs, desired
+}
 
-	fmt.Println("For O should be: [0, 0, 1], Got:")
-	net.FeedForward(&oimage)
-	net.PrintOutput()
+func formTestDataXTO() ([]nns.Tensor, []nns.Tensor) {
+	inputs := make([]nns.Tensor, 0, 3)
+	desired := make([]nns.Tensor, 0, 3)
+
+	input := nns.NewTensor(8, 9, 1)
+	target := nns.NewTensor(3, 1, 1)
+
+	// X = [1, 0, 0]
+	input.SetData(8, 9, 1, []float64{
+		0, 0, 0, 0, 0, 0, 0, 0,
+		0, 1, 0, 0, 0, 1, 0, 0,
+		0, 0, 1, 0, 1, 0, 0, 0,
+		0, 0, 1, 0, 1, 0, 0, 0,
+		0, 0, 0, 0.8, 0, 0, 0, 0,
+		0, 0, 1, 0, 1, 0, 0, 0,
+		0, 0, 1, 0, 0.5, 0, 0, 0,
+		0, 0.4, 0, 0, 0, 1, 0, 0,
+		0, 1, 0, 0, 0, 1, 0, 0,
+	})
+	target.SetData(3, 1, 1, []float64{1, 0, 0})
+	inputs = append(inputs, input)
+	desired = append(desired, target)
+
+	// T = [0, 1, 0]
+	input = nns.NewTensor(8, 9, 1)
+	input.SetData(8, 9, 1, []float64{
+		0, 1, 1, 1, 1, 1, 1, 0,
+		0, 1, 1, 1, 1, 1, 1, 0,
+		0, 0, 0, 0, 1, 0, 0, 0,
+		0, 0, 0, 0, 1, 0, 0, 0,
+		0, 0, 0, 1, 1, 0, 0, 0,
+		0, 0, 0, 1, 1, 0, 0, 0,
+		0, 0, 0, 1, 1, 0, 0, 0,
+		0, 0, 0, 1, 0, 0, 0, 0,
+		0, 0, 0, 1, 1, 0, 0, 0,
+	})
+	target = nns.NewTensor(3, 1, 1)
+	target.SetData(3, 1, 1, []float64{0, 1, 0})
+	inputs = append(inputs, input)
+	desired = append(desired, target)
+
+	// O = [0, 0, 1]
+	input = nns.NewTensor(8, 9, 1)
+	input.SetData(8, 9, 1, []float64{
+		0, 0, 0, 0, 0.6, 0, 0, 0,
+		0, 1, 1, 0.5, 1, 1, 1, 0,
+		0, 1, 0, 0.5, 0, 0, 1, 0,
+		0, 1, 0, 0, 0, 0, 1, 0,
+		0, 1, 0, 0, 0, 0, 1, 0,
+		0, 1, 0, 0, 0, 0, 1, 0,
+		0, 0.9, 0, 0, 0, 0, 1, 0,
+		0, 1, 0, 0, 0, 0, 1, 0,
+		0, 0, 1, 0.8, 1, 1, 0, 0,
+	})
+	target = nns.NewTensor(3, 1, 1)
+	target.SetData(3, 1, 1, []float64{0, 0, 1})
+	inputs = append(inputs, input)
+	desired = append(desired, target)
+
+	return inputs, desired
 }
