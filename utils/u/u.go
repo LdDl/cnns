@@ -6,7 +6,7 @@ import (
 	"math/rand"
 )
 
-// AndINT Logical AND for two inputs of type int
+// AndINT - Logical AND for two inputs of type int.
 func AndINT(x, y int) int {
 	firstBool := false
 	secondBool := false
@@ -24,7 +24,7 @@ func AndINT(x, y int) int {
 	return outputInt
 }
 
-// OrINT Logical OR for two inputs of type int
+// OrINT - Logical OR for two inputs of type int.
 func OrINT(x, y int) int {
 	firstBool := false
 	secondBool := false
@@ -42,7 +42,7 @@ func OrINT(x, y int) int {
 	return outputInt
 }
 
-// XorINT Logical XOR for two inputs of type int
+// XorINT - Logical XOR for two inputs of type int.
 func XorINT(x, y int) int {
 	firstBool := false
 	secondBool := false
@@ -60,7 +60,7 @@ func XorINT(x, y int) int {
 	return outputInt
 }
 
-// SuffleSlice - randomly shuffles a slice
+// SuffleSlice - Shuffle a slice in random way.
 func SuffleSlice(data []interface{}) []interface{} {
 	for i := range data {
 		j := rand.Intn(i + 1)
@@ -69,12 +69,12 @@ func SuffleSlice(data []interface{}) []interface{} {
 	return data
 }
 
-// RandomInt - random integer
+// RandomInt - Get random integer.
 func RandomInt(min, max int) int {
 	return rand.Intn(max-min) + min
 }
 
-// NormalizeRange - normalizing range
+// NormalizeRange - Normalizing range.
 func NormalizeRange(f float64, max int, limitMin bool) int {
 	if f <= 0 {
 		return 0
@@ -89,6 +89,7 @@ func NormalizeRange(f float64, max int, limitMin bool) int {
 	return int(math.Floor(f))
 }
 
+// Matrix2D @experiments
 type Matrix2D [][]float64
 
 func flatten(f Matrix2D) (r, c int, d []float64, err error) {
