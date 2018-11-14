@@ -49,7 +49,6 @@ func (fc *FullConnectedLayer) SetCustomWeights(t *[]Tensor) {
 	}
 	for i := 0; i < (*fc).Weights.Size.Y; i++ {
 		for h := 0; h < (*fc).Weights.Size.X; h++ {
-			// fmt.Println((*fc).Weights.Get(h, i, 0))
 			(*fc).Weights.Set(h, i, 0, (*t)[0].Get(h, i, 0))
 		}
 	}
@@ -84,7 +83,6 @@ func (fc *FullConnectedLayer) GetGradients() Tensor {
 func (fc *FullConnectedLayer) FeedForward(t *Tensor) {
 	(*fc).In = (*t)
 	(*fc).DoActivation()
-	// fc.PrintWeights()
 }
 
 // DoActivation - fully connected layer's output activation
@@ -135,21 +133,16 @@ func (fc *FullConnectedLayer) CalculateGradients(nextLayerGradients *Tensor) {
 	}
 	for n := 0; n < (*fc).Out.Size.X; n++ {
 		(*fc).LocalDelta[n].Grad = (*nextLayerGradients).Get(n, 0, 0) * (*fc).ActivationDerivative((*fc).Input[n])
-		// fmt.Printf("errs: %v * %v \n", (*nextLayerGradients).Get(n, 0, 0), (*fc).ActivationDerivative((*fc).Input[n]))
 		for i := 0; i < (*fc).In.Size.X; i++ {
 			for j := 0; j < (*fc).In.Size.Y; j++ {
 				for z := 0; z < (*fc).In.Size.Z; z++ {
 					m := fc.mapToInput(i, j, z)
 					v := (*fc).LocalDelta[n].Grad * (*fc).Weights.Get(m, n, 0)
-					// fmt.Printf("Dcomp: %v * %v | ", (*fc).LocalDelta[n].Grad, (*fc).Weights.Get(m, n, 0))
 					(*fc).DeltaComponentForPreviousLayer.SetAdd(i, j, z, v)
 				}
 			}
-			// fmt.Println()
 		}
 	}
-	// fmt.Println("epoch")
-	// (*fc).DeltaComponentForPreviousLayer.Print()
 }
 
 // UpdateWeights - update fully connected layer's weights
@@ -170,7 +163,6 @@ func (fc *FullConnectedLayer) UpdateWeights() {
 			for j := 0; j < (*fc).In.Size.Y; j++ {
 				for z := 0; z < (*fc).In.Size.Z; z++ {
 					m := fc.mapToInput(i, j, z)
-					// fmt.Printf("%v * %v = %v\n", grad.Grad, fc.In.Get(i, j, z), grad.Grad*lp.LearningRate*(*fc).In.Get(i, j, z))
 					/*
 						Without inertia
 					*/
@@ -182,15 +174,7 @@ func (fc *FullConnectedLayer) UpdateWeights() {
 					*/
 					dw := (1.0-lp.Momentum)*(-1.0*(lp.LearningRate*grad.Grad*(*fc).In.Get(i, j, z))) +
 						lp.Momentum*(*fc).PreviousIterationWeights.Get(m, n, 0)
-					// fmt.Printf("Debug fc: (1.0-%v)*(-1.0*(%v*%v*%v)) + %v*%v = %v\n",
-					// 	lp.Momentum,
-					// 	lp.LearningRate,
-					// 	grad.Grad,
-					// 	(*fc).In.Get(i, j, z),
-					// 	lp.Momentum,
-					// 	(*fc).PreviousIterationWeights.Get(m, n, 0),
-					// 	dw,
-					// )
+
 					(*fc).PreviousIterationWeights.Set(m, n, 0, dw)
 
 					// w{n,i} = w{n,i} + Δw{n, i}
@@ -198,8 +182,6 @@ func (fc *FullConnectedLayer) UpdateWeights() {
 				}
 			}
 		}
-		// UpdateGradient(&fc.LocalDelta[n])
-		// (*fc).LocalDelta[n].Update()
 	}
 }
 

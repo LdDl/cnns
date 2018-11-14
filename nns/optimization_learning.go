@@ -14,8 +14,8 @@ type LearningParams struct {
 
 var (
 	lp = LearningParams{
-		LearningRate: 0.01, //0.01,
-		Momentum:     0.6,
+		LearningRate: 0.005, //0.01,
+		Momentum:     0.9,
 		WeightDecay:  0.001,
 	}
 )

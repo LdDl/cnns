@@ -69,8 +69,6 @@ func (maxpool *MaxPoolingLayer) GetGradients() Tensor {
 func (maxpool *MaxPoolingLayer) FeedForward(t *Tensor) {
 	(*maxpool).In = (*t)
 	(*maxpool).DoActivation()
-	// maxpool.PrintOutput()
-	// maxpool.In.Print()
 }
 
 // DoActivation - max pooling layer's output activation
@@ -97,8 +95,6 @@ func (maxpool *MaxPoolingLayer) DoActivation() {
 
 // CalculateGradients - calculate max pooling layer's gradients
 func (maxpool *MaxPoolingLayer) CalculateGradients(nextLayerGrad *Tensor) {
-	// fmt.Println("poo gr")
-	// nextLayerGrad.Print()
 	for x := 0; x < (*maxpool).In.Size.X; x++ {
 		for y := 0; y < (maxpool).In.Size.Y; y++ {
 			rn := maxpool.sameAsOuput(x, y)

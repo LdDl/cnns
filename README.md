@@ -71,7 +71,8 @@ go get github.com/LdDl/cnns
 - ~~Integrate inertia momentum into backpropagation functions for Conv layer;~~
 - Explain examples with usage of [GoCV](https://github.com/hybridgroup/gocv/#gocv) package;
 - Clear code from some debugging stuff;
-- Write tests (as addition to Excel files).
+- Write tests (as addition to Excel files);
+- Bias neuron as option for FC layer.
 
 ## Support
 
