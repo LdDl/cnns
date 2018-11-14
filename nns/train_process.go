@@ -37,7 +37,10 @@ func (n *WholeNet) Train(inputs *[]Tensor, desired *[]Tensor, testData *[]Tensor
 		target := (*testDesired)[i]
 		n.FeedForward(&in)
 		out := n.GetOutput()
+		fmt.Println("\n>>>Out:")
 		out.Print()
+		fmt.Println(">>>Desired:")
+		target.Print()
 		loss := target.MSE(&out)
 		testError += loss
 	}
