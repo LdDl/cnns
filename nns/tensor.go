@@ -58,7 +58,7 @@ func (t1 *Tensor) Add(t2 *Tensor) Tensor {
 }
 
 // Sub - Element-wise substraction.
-func (t1 Tensor) Sub(t2 *Tensor) Tensor {
+func (t1 *Tensor) Sub(t2 *Tensor) Tensor {
 	var ret = NewTensor(t1.Size.X, t1.Size.Y, t1.Size.Z)
 	for i := 0; i < (*t2).Size.X*(*t2).Size.Y*(*t2).Size.Z; i++ {
 		ret.Data[i] = t1.Data[i] - t2.Data[i]
