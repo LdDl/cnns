@@ -32,6 +32,14 @@ func (n *WholeNet) Train(inputs *[]Tensor, desired *[]Tensor, testData *[]Tensor
 	log.Println("Training done in:", time.Since(start))
 
 	fmt.Println("Evaluating errors...")
+	for i := range *inputs {
+		in := (*inputs)[i]
+		target := (*desired)[i]
+		n.FeedForward(&in)
+		out := n.GetOutput()
+		loss := target.MSE(&out)
+		trainError += loss
+	}
 	for i := range *testData {
 		in := (*testData)[i]
 		target := (*testDesired)[i]
@@ -45,14 +53,5 @@ func (n *WholeNet) Train(inputs *[]Tensor, desired *[]Tensor, testData *[]Tensor
 		testError += loss
 	}
 
-	for i := range *inputs {
-		in := (*inputs)[i]
-		target := (*desired)[i]
-		n.FeedForward(&in)
-		out := n.GetOutput()
-		loss := target.MSE(&out)
-		trainError += loss
-	}
-
-	return trainError / float64(len(*inputs)), testError / float64(len(*testData)), err
+	return trainError, testError, err
 }
