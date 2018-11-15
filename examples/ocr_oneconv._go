@@ -47,7 +47,7 @@ var (
 	trainWidth          = 10
 	trainHeight         = 15
 	trainDepth          = 1
-	adjustAmountOfFiles = 10000 // see 246-th line of this code
+	adjustAmountOfFiles = 10000 // see readMatsTrain func
 )
 
 // CheckOCR - solve OCR problem
@@ -65,11 +65,21 @@ func CheckOCR() {
 	fullyconnected.SetActivationFunc(nns.ActivationSygmoid)
 	fullyconnected.SetActivationDerivativeFunc(nns.ActivationSygmoidDerivative)
 
+	fullyconnected2 := nns.NewFullConnectedLayer(fullyconnected.OutSize(), 44)
+	fullyconnected2.SetActivationFunc(nns.ActivationSygmoid)
+	fullyconnected2.SetActivationDerivativeFunc(nns.ActivationSygmoidDerivative)
+
+	fullyconnected3 := nns.NewFullConnectedLayer(fullyconnected2.OutSize(), 22)
+	fullyconnected3.SetActivationFunc(nns.ActivationSygmoid)
+	fullyconnected3.SetActivationDerivativeFunc(nns.ActivationSygmoidDerivative)
+
 	var net nns.WholeNet
 	net.Layers = append(net.Layers, conv)
 	net.Layers = append(net.Layers, relu)
 	net.Layers = append(net.Layers, maxpool)
 	net.Layers = append(net.Layers, fullyconnected)
+	net.Layers = append(net.Layers, fullyconnected2)
+	net.Layers = append(net.Layers, fullyconnected3)
 
 	// Paste your path for training data
 	trainFiles, err := readFileNames("/home/keep/work/src/github.com/LdDl/cnns/datasets/symbols_2/")
