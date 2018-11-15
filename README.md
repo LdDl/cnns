@@ -73,7 +73,8 @@ go get github.com/LdDl/cnns
 - Clear code from some debugging stuff;
 - Write tests (as addition to Excel files);
 - Bias neuron as option for FC layer;
-- Add more activation functions.
+- ~~Add more activation functions.~~ **added arctan, softplus, gaussian**
+
 ## Support
 
 If you have troubles or questions please [open an issue](https://github.com/LdDl/cnns/issues/new).
