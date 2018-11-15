@@ -64,7 +64,7 @@ go get github.com/LdDl/cnns
 - Softmax layer;
 - Optimization for learning;
 - More Excel examples for understanding how feedforward and backpropagate works;
-- Define learning parametrs not in library (they are predefined now). Need to change the way network uses learning parameters for backpropagation;
+- ~~Ability to define learning parametrs not in library (they are predefined now). Need to change the way network uses learning parameters for backpropagation;~~ **added SetEta, SetMomentum functions**
 - Padding for Conv layer;
 - Dropout layer;
 - ~~Integrate inertia momentum into backpropagation functions for FC layer;~~
@@ -72,8 +72,8 @@ go get github.com/LdDl/cnns
 - Explain examples with usage of [GoCV](https://github.com/hybridgroup/gocv/#gocv) package;
 - Clear code from some debugging stuff;
 - Write tests (as addition to Excel files);
-- Bias neuron as option for FC layer.
-
+- Bias neuron as option for FC layer;
+- Add more activation functions.
 ## Support
 
 If you have troubles or questions please [open an issue](https://github.com/LdDl/cnns/issues/new).
