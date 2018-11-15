@@ -62,6 +62,7 @@ go get github.com/LdDl/cnns
 ## ToDo
 
 - Softmax layer;
+- Maxout layer;
 - Optimization for learning;
 - More Excel examples for understanding how feedforward and backpropagate works;
 - ~~Ability to define learning parametrs not in library (they are predefined now). Need to change the way network uses learning parameters for backpropagation;~~ **added SetEta, SetMomentum functions**
