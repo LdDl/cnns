@@ -8,7 +8,16 @@ import (
 )
 
 // Train Train neural network
-func (n *WholeNet) Train(inputs *[]Tensor, desired *[]Tensor, testData *[]Tensor, testDesired *[]Tensor) (float64, float64, error) {
+/*
+	inputs - input data for training
+	desired - target outputs for input
+
+	testData - input data for doing tests
+	testDesired - target outputs for testing
+
+	epochsNum - number of epochs
+*/
+func (n *WholeNet) Train(inputs *[]Tensor, desired *[]Tensor, testData *[]Tensor, testDesired *[]Tensor, epochsNum int) (float64, float64, error) {
 	var err error
 	trainError := 0.0
 	testError := 0.0
@@ -22,14 +31,17 @@ func (n *WholeNet) Train(inputs *[]Tensor, desired *[]Tensor, testData *[]Tensor
 	}
 
 	start := time.Now()
-	for i := range *inputs {
-		in := (*inputs)[i]
-		target := (*desired)[i]
-
-		n.FeedForward(&in)
-		n.Backpropagate(&target)
+	for e := 0; e < epochsNum; e++ {
+		st := time.Now()
+		for i := range *inputs {
+			in := (*inputs)[i]
+			target := (*desired)[i]
+			n.FeedForward(&in)
+			n.Backpropagate(&target)
+		}
+		log.Printf("Epoch #%v done in %v", e, time.Since(st))
 	}
-	log.Println("Training done in:", time.Since(start))
+	log.Printf("Training %v epochs done in %v", epochsNum, time.Since(start))
 
 	fmt.Println("Evaluating errors...")
 	for i := range *inputs {

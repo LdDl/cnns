@@ -36,7 +36,8 @@ func CheckXOR() {
 	inputsTests, desiredTests := formTestDataXOR()
 
 	// Start traing process
-	trainErr, testErr, err := net.Train(&inputs, &desired, &inputsTests, &desiredTests)
+	numOfEpochs := 1
+	trainErr, testErr, err := net.Train(&inputs, &desired, &inputsTests, &desiredTests, numOfEpochs)
 	if err != nil {
 		log.Fatalln(err)
 	}

@@ -47,7 +47,7 @@ var (
 	trainWidth          = 10
 	trainHeight         = 15
 	trainDepth          = 1
-	adjustAmountOfFiles = 10000 // see readMatsTrain func
+	adjustAmountOfFiles = 1000 // see readMatsTrain func
 )
 
 // CheckOCR - solve OCR problem
@@ -126,7 +126,7 @@ func CheckOCR() {
 
 	// log.Println(net.Layers[len(net.Layers)-1].GetWeights())
 
-	err = net.ExportToFile("datasets/ocr_one_conv_2k.json")
+	err = net.ExportToFile("datasets/ocr_one_conv_binary_100epochs.json")
 	if err != nil {
 		log.Println(err)
 		return
@@ -184,13 +184,17 @@ func train(net *nns.WholeNet, data *map[string][]gocv.Mat) error {
 	lentrainer := len(trainers)
 	log.Println("Number of train data", lentrainer)
 
-	for _, t := range trainers {
-		// Feedforward
-		net.FeedForward(&t.Image)
-		// Backward
-		net.Backpropagate(&t.Desired)
+	numEpochs := 100
+	for e := 0; e < numEpochs; e++ {
+		for _, t := range trainers {
+			// Feedforward
+			net.FeedForward(&t.Image)
+			// Backward
+			net.Backpropagate(&t.Desired)
+		}
+		fmt.Printf("Epoch #%v\n", e)
 	}
-	log.Println("Elapsed to train", time.Since(st))
+	log.Println("Elapsed to train:", time.Since(st), "Num of epochs:", numEpochs)
 	return err
 }
 
@@ -239,9 +243,7 @@ func testTrained(net *nns.WholeNet, data *map[string][]gocv.Mat) error {
 	testers = SuffleTrainers(testers)
 	for _, t := range testers {
 		// Feedforward
-		st := time.Now()
 		net.FeedForward(&t.Image)
-		log.Println("Elapsed to detect", time.Since(st))
 		max := -math.MaxFloat64 // net.Layers[len(net.Layers)-1].GetOutput().Data[0]
 		maxidx := -math.MaxInt64
 		for i, value := range net.Layers[len(net.Layers)-1].GetOutput().Data {
@@ -252,9 +254,9 @@ func testTrained(net *nns.WholeNet, data *map[string][]gocv.Mat) error {
 		}
 		log.Println(t.LabelStr, max, maxidx, chars[maxidx])
 		// t.Image.Print()
-		net.PrintOutput()
-		fmt.Println("Should be:")
-		t.Desired.Print()
+		// net.PrintOutput()
+		// fmt.Println("Should be:")
+		// t.Desired.Print()
 	}
 	return err
 }
@@ -294,7 +296,7 @@ func readMatsTrain(data *map[string][]string, adjust int) (map[string][]gocv.Mat
 			temp = gocv.IMRead(j, gocv.IMReadColor)
 			// Binarization
 			gocv.CvtColor(temp, &temp, gocv.ColorRGBAToGray)
-			// gocv.Threshold(temp, &temp, 127.0, 255.0, gocv.ThresholdBinary)
+			gocv.Threshold(temp, &temp, 127.0, 255.0, gocv.ThresholdBinary)
 			// Resize
 			gocv.Resize(temp, &temp, image.Pt(trainWidth, trainHeight), 0.0, 0.0, gocv.InterpolationNearestNeighbor)
 			ret[k] = append(ret[k], temp.Clone())
@@ -327,7 +329,7 @@ func readMatsTests(data *map[string][]string) (map[string][]gocv.Mat, error) {
 			temp = gocv.IMRead(j, gocv.ColorRGBAToGray)
 			// Binarization
 			gocv.CvtColor(temp, &temp, gocv.ColorRGBAToGray)
-			// gocv.Threshold(temp, &temp, 127.0, 255.0, gocv.ThresholdBinary)
+			gocv.Threshold(temp, &temp, 127.0, 255.0, gocv.ThresholdBinary)
 			// gocv.AdaptiveThreshold(temp, &temp, 255.0, gocv.AdaptiveThresholdGaussian, gocv.ThresholdBinary, 7, 5)
 			// Resize
 			gocv.Resize(temp, &temp, image.Pt(trainWidth, trainHeight), 0.0, 0.0, gocv.InterpolationNearestNeighbor)

@@ -6,24 +6,33 @@ import (
 )
 
 // FullConnectedLayer is simple layer structure (so this layer can be used for simple neural networks like XOR problem)
+/*
+	In - O{j}, activated output from previous layer for j-th neuron
+	Out - O{k}, activated output from current layer for k-th node
+	Input - o{k}, non-activated output for k-th node of current layer (in other words: summation input)
+	LocalDelta - δ{k}, delta for current layer for k-th neuron
+	NextDeltaWeightSum - SUM(δ{k}*w{j,k}), summation component for evaluationg δ{j} for previous layer for j-th neuron
+	Weights - w{j,k}, weight from j-th node of previous layer to k-th node of current layer
+	PreviousIterationWeights - Δw{j, k}, delta-weight value for calibrating weight w{j,k}
+*/
 type FullConnectedLayer struct {
-	In                             Tensor
-	Out                            Tensor
-	DeltaComponentForPreviousLayer Tensor
-	Weights                        Tensor
-	PreviousIterationWeights       Tensor
-	LocalDelta                     []Gradient
-	Input                          []float64
-	ActivationFunc                 func(v float64) float64
-	ActivationDerivative           func(v float64) float64
+	In                       Tensor
+	Out                      Tensor
+	NextDeltaWeightSum       Tensor
+	Weights                  Tensor
+	PreviousIterationWeights Tensor
+	LocalDelta               []Gradient
+	Input                    []float64
+	ActivationFunc           func(v float64) float64
+	ActivationDerivative     func(v float64) float64
 }
 
 // NewFullConnectedLayer - constructor for new fully connected layer. You need to specify input size and output size
 func NewFullConnectedLayer(inSize TDsize, outSize int) *LayerStruct {
 	newLayer := &FullConnectedLayer{
-		In:  NewTensor(inSize.X, inSize.Y, inSize.Z),
-		Out: NewTensor(outSize, 1, 1),
-		DeltaComponentForPreviousLayer: NewTensor(inSize.X, inSize.Y, inSize.Z),
+		In:                       NewTensor(inSize.X, inSize.Y, inSize.Z),
+		Out:                      NewTensor(outSize, 1, 1),
+		NextDeltaWeightSum:       NewTensor(inSize.X, inSize.Y, inSize.Z),
 		Weights:                  NewTensor(inSize.X*inSize.Y*inSize.Z, outSize, 1),
 		PreviousIterationWeights: NewTensor(inSize.X*inSize.Y*inSize.Z, outSize, 1),
 		Input:                make([]float64, outSize),
@@ -76,7 +85,7 @@ func (fc *FullConnectedLayer) GetWeights() []Tensor {
 
 // GetGradients - returns SUM(next layer grad * weights) as gradients
 func (fc *FullConnectedLayer) GetGradients() Tensor {
-	return (*fc).DeltaComponentForPreviousLayer
+	return (*fc).NextDeltaWeightSum
 }
 
 // FeedForward - feed data to fully connected layer
@@ -128,8 +137,8 @@ func (fc *FullConnectedLayer) DoActivation() {
 
 */
 func (fc *FullConnectedLayer) CalculateGradients(nextLayerGradients *Tensor) {
-	for i := 0; i < (*fc).DeltaComponentForPreviousLayer.Size.X*(*fc).DeltaComponentForPreviousLayer.Size.Y*(*fc).DeltaComponentForPreviousLayer.Size.Z; i++ {
-		(*fc).DeltaComponentForPreviousLayer.Data[i] = 0.0
+	for i := 0; i < (*fc).NextDeltaWeightSum.Size.X*(*fc).NextDeltaWeightSum.Size.Y*(*fc).NextDeltaWeightSum.Size.Z; i++ {
+		(*fc).NextDeltaWeightSum.Data[i] = 0.0
 	}
 	for n := 0; n < (*fc).Out.Size.X; n++ {
 		(*fc).LocalDelta[n].Grad = (*nextLayerGradients).Get(n, 0, 0) * (*fc).ActivationDerivative((*fc).Input[n])
@@ -138,10 +147,12 @@ func (fc *FullConnectedLayer) CalculateGradients(nextLayerGradients *Tensor) {
 				for z := 0; z < (*fc).In.Size.Z; z++ {
 					m := fc.mapToInput(i, j, z)
 					v := (*fc).LocalDelta[n].Grad * (*fc).Weights.Get(m, n, 0)
-					(*fc).DeltaComponentForPreviousLayer.SetAdd(i, j, z, v)
+					fmt.Println((*fc).LocalDelta[n].Grad, (*fc).Weights.Get(m, n, 0))
+					(*fc).NextDeltaWeightSum.SetAdd(i, j, z, v)
 				}
 			}
 		}
+
 	}
 }
 
@@ -156,6 +167,7 @@ func (fc *FullConnectedLayer) CalculateGradients(nextLayerGradients *Tensor) {
 */
 func (fc *FullConnectedLayer) UpdateWeights() {
 	// (*fc).PreviousIterationWeights.Print()
+	fmt.Println("next")
 	for n := 0; n < (*fc).Out.Size.X; n++ {
 		grad := (*fc).LocalDelta[n]
 		// log.Println("G:", grad)
@@ -203,7 +215,7 @@ func (fc *FullConnectedLayer) PrintWeights() {
 // PrintGradients - print fully connected layer's gradients
 func (fc *FullConnectedLayer) PrintGradients() {
 	fmt.Println("Printing Fully Connected Layer gradients-weights...")
-	(*fc).DeltaComponentForPreviousLayer.Print()
+	(*fc).NextDeltaWeightSum.Print()
 }
 
 // SetActivationFunc sets activation function for fully connected layer. You need to specify function: func(v float64) float64

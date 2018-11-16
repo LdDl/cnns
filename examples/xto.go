@@ -20,8 +20,8 @@ func CheckXTO() {
 	fullyconnected := nns.NewFullConnectedLayer(maxpool.OutSize(), 3)
 
 	// You can play with activation function for fully connected layer
-	// fullyconnected.SetActivationFunc(nns.ActivationSygmoid)
-	// fullyconnected.SetActivationDerivativeFunc(nns.ActivationSygmoidDerivative)
+	fullyconnected.SetActivationFunc(nns.ActivationSygmoid)
+	fullyconnected.SetActivationDerivativeFunc(nns.ActivationSygmoidDerivative)
 
 	var net nns.WholeNet
 	net.Layers = append(net.Layers, conv)
@@ -34,7 +34,8 @@ func CheckXTO() {
 	inputsTests, desiredTests := formTestDataXTO()
 
 	// Start traing process
-	trainErr, testErr, err := net.Train(&inputs, &desired, &inputsTests, &desiredTests)
+	numOfEpochs := 50
+	trainErr, testErr, err := net.Train(&inputs, &desired, &inputsTests, &desiredTests, numOfEpochs)
 	if err != nil {
 		log.Fatalln(err)
 	}

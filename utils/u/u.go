@@ -115,3 +115,18 @@ func unflatten(r, c int, d []float64) Matrix2D {
 	}
 	return m
 }
+
+// Round Round float64 to 0 decimal places
+func Round(v float64) float64 {
+	if v >= 0 {
+		return math.Floor(v + 0.5)
+	} else {
+		return math.Ceil(v - 0.5)
+	}
+}
+
+// RoundPlaces Round float64 to N decimal places
+func RoundPlaces(v float64, places int) float64 {
+	shift := math.Pow(10, float64(places))
+	return Round(v*shift) / shift
+}
