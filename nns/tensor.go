@@ -1,7 +1,6 @@
 package nns
 
 import (
-	"errors"
 	"fmt"
 	"math"
 )
@@ -219,29 +218,64 @@ func (t1 *Tensor) Rot2D270() Tensor {
 	return t1.Rot2D90(3)
 }
 
-func (t1 *Tensor) Conv2D(kernel *Tensor) (*Tensor, error) {
-	if kernel.Size.X%2 != 1 || kernel.Size.Y%2 != 1 {
-		return nil, errors.New("Kernel size has to be odd")
-	}
-	if kernel.Size.X != kernel.Size.Y {
-		return nil, errors.New("W and H have to be same")
-	}
+// func (t1 *Tensor) Conv2D(kernel *Tensor) (*Tensor, error) {
+// 	if kernel.Size.X%2 != 1 || kernel.Size.Y%2 != 1 {
+// 		return nil, errors.New("Kernel size has to be odd")
+// 	}
+// 	if kernel.Size.X != kernel.Size.Y {
+// 		return nil, errors.New("W and H have to be same")
+// 	}
 
-	pad := math.Floor(float64(kernel.Size.X) / 2)
-	out := NewTensor(t1.Size.X+int(pad), t1.Size.Y, t1.Size.Z)
+// 	pad := math.Floor(float64(kernel.Size.X) / 2)
+// 	out := NewTensor(t1.Size.X+int(pad), t1.Size.Y, t1.Size.Z)
 
-	t1.Print()
-	out.Print()
+// 	t1.Print()
+// 	out.Print()
 
-	for i := 0; i < t1.Size.Y; i++ {
-		for j := 0; j < t1.Size.X; j++ {
-			for ki := 0; ki < kernel.Size.Y; ki++ {
-				for kj := 0; kj < kernel.Size.X; kj++ {
-					//  @TODO
-					// out.SetAdd(i, j, 0, out.Get(i+ki, j+kj, 0)*kernel.Get(ki, kj, 0))
+// 	for i := 0; i < t1.Size.Y; i++ {
+// 		for j := 0; j < t1.Size.X; j++ {
+// 			for ki := 0; ki < kernel.Size.Y; ki++ {
+// 				for kj := 0; kj < kernel.Size.X; kj++ {
+// 					//  @TODO
+// 					// out.SetAdd(i, j, 0, out.Get(i+ki, j+kj, 0)*kernel.Get(ki, kj, 0))
+// 				}
+// 			}
+// 		}
+// 	}
+// 	return &out, nil
+// }
+
+func (t1 *Tensor) Conv2D(t2 Tensor, stride [2]int, padding [2]int) Tensor {
+	outputX := ((*t1).Size.X-t2.Size.X+2*padding[0])/stride[0] + 1
+	outputY := ((*t1).Size.Y-t2.Size.Y+2*padding[1])/stride[1] + 1
+	outputData := NewTensor(outputX, outputY, t2.Size.Z)
+	el := 0
+	for i := 0; i < outputY; i = (i + stride[0]) {
+		for j := 0; j < outputX; j = (j + stride[1]) {
+			if i == 0 && j == 0 {
+				el = 0
+			} else {
+				el++
+			}
+			for m := 0; m < t2.Size.X; m++ {
+				for n := 0; n < t2.Size.Y; n++ {
+					ii := i + m
+					jj := j + n
+					if ii >= 0 && ii < (*t1).Size.Y && jj >= 0 && jj < (*t1).Size.X {
+						outputElement := 0.0
+						kernelElement := t2.Data[(m*t2.Size.X + n)]
+						if i == 0 {
+							inputElement := (*t1).Data[((m)*t1.Size.X+n)+j]
+							outputElement = inputElement * kernelElement
+						} else {
+							inputElement := (*t1).Data[ii*(*t1).Size.X+jj]
+							outputElement = inputElement * kernelElement
+						}
+						outputData.Data[el] += outputElement
+					}
 				}
 			}
 		}
 	}
-	return &out, nil
+	return outputData
 }

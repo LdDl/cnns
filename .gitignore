@@ -1,5 +1,8 @@
 /datasets/xto_images
 /datasets/xto_images_test
+/datasets/symbols_2
+/datasets/symbols_test_2
+/datasets/symbols_test_3
 /.vscode
 /python_test
 main
