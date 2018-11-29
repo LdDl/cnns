@@ -3,6 +3,8 @@ package nns
 import (
 	"fmt"
 	"math/rand"
+
+	t "github.com/LdDl/cnns/nns/tensor"
 )
 
 // FullConnectedLayer is simple layer structure (so this layer can be used for simple neural networks like XOR problem)
@@ -16,11 +18,11 @@ import (
 	PreviousIterationWeights - Δw{j, k}, delta-weight value for calibrating weight w{j,k}
 */
 type FullConnectedLayer struct {
-	In                       Tensor
-	Out                      Tensor
-	NextDeltaWeightSum       Tensor
-	Weights                  Tensor
-	PreviousIterationWeights Tensor
+	In                       t.Tensor
+	Out                      t.Tensor
+	NextDeltaWeightSum       t.Tensor
+	Weights                  t.Tensor
+	PreviousIterationWeights t.Tensor
 	LocalDelta               []Gradient
 	Input                    []float64
 	ActivationFunc           func(v float64) float64
@@ -28,13 +30,13 @@ type FullConnectedLayer struct {
 }
 
 // NewFullConnectedLayer - constructor for new fully connected layer. You need to specify input size and output size
-func NewFullConnectedLayer(inSize TDsize, outSize int) *LayerStruct {
+func NewFullConnectedLayer(inSize t.TDsize, outSize int) *LayerStruct {
 	newLayer := &FullConnectedLayer{
-		In:                       NewTensor(inSize.X, inSize.Y, inSize.Z),
-		Out:                      NewTensor(outSize, 1, 1),
-		NextDeltaWeightSum:       NewTensor(inSize.X, inSize.Y, inSize.Z),
-		Weights:                  NewTensor(inSize.X*inSize.Y*inSize.Z, outSize, 1),
-		PreviousIterationWeights: NewTensor(inSize.X*inSize.Y*inSize.Z, outSize, 1),
+		In:                       t.NewTensor(inSize.X, inSize.Y, inSize.Z),
+		Out:                      t.NewTensor(outSize, 1, 1),
+		NextDeltaWeightSum:       t.NewTensor(inSize.X, inSize.Y, inSize.Z),
+		Weights:                  t.NewTensor(inSize.X*inSize.Y*inSize.Z, outSize, 1),
+		PreviousIterationWeights: t.NewTensor(inSize.X*inSize.Y*inSize.Z, outSize, 1),
 		Input:                make([]float64, outSize),
 		LocalDelta:           make([]Gradient, outSize),
 		ActivationFunc:       ActivationTanh,           // Default Activation function is TanH
@@ -51,7 +53,7 @@ func NewFullConnectedLayer(inSize TDsize, outSize int) *LayerStruct {
 }
 
 // SetCustomWeights - set user's weights (make it carefully)
-func (fc *FullConnectedLayer) SetCustomWeights(t *[]Tensor) {
+func (fc *FullConnectedLayer) SetCustomWeights(t *[]t.Tensor) {
 	if len(*t) != 1 {
 		fmt.Println("You can provide array of length 1 only (for fully-connected layer)")
 		return
@@ -64,32 +66,32 @@ func (fc *FullConnectedLayer) SetCustomWeights(t *[]Tensor) {
 }
 
 // OutSize - returns output size (dimensions)
-func (fc *FullConnectedLayer) OutSize() Point {
+func (fc *FullConnectedLayer) OutSize() t.Point {
 	return (*fc).Out.Size
 }
 
 // GetInputSize - returns input size (dimensions)
-func (fc *FullConnectedLayer) GetInputSize() Point {
+func (fc *FullConnectedLayer) GetInputSize() t.Point {
 	return (*fc).In.Size
 }
 
 // GetOutput - returns fully connected layer's output
-func (fc *FullConnectedLayer) GetOutput() Tensor {
+func (fc *FullConnectedLayer) GetOutput() t.Tensor {
 	return (*fc).Out // Here we outputing ACTIVATED values
 }
 
 // GetWeights - returns convolutional layer's weights.
-func (fc *FullConnectedLayer) GetWeights() []Tensor {
-	return []Tensor{(*fc).Weights}
+func (fc *FullConnectedLayer) GetWeights() []t.Tensor {
+	return []t.Tensor{(*fc).Weights}
 }
 
 // GetGradients - returns SUM(next layer grad * weights) as gradients
-func (fc *FullConnectedLayer) GetGradients() Tensor {
+func (fc *FullConnectedLayer) GetGradients() t.Tensor {
 	return (*fc).NextDeltaWeightSum
 }
 
 // FeedForward - feed data to fully connected layer
-func (fc *FullConnectedLayer) FeedForward(t *Tensor) {
+func (fc *FullConnectedLayer) FeedForward(t *t.Tensor) {
 	(*fc).In = (*t)
 	(*fc).DoActivation()
 }
@@ -136,7 +138,7 @@ func (fc *FullConnectedLayer) DoActivation() {
 				= [sum(LocalDelta{n} * w{n, i}), for n=0 to len(num of neurons on k+1 layer))]
 
 */
-func (fc *FullConnectedLayer) CalculateGradients(nextLayerGradients *Tensor) {
+func (fc *FullConnectedLayer) CalculateGradients(nextLayerGradients *t.Tensor) {
 	for i := 0; i < (*fc).NextDeltaWeightSum.Size.X*(*fc).NextDeltaWeightSum.Size.Y*(*fc).NextDeltaWeightSum.Size.Z; i++ {
 		(*fc).NextDeltaWeightSum.Data[i] = 0.0
 	}
@@ -147,7 +149,6 @@ func (fc *FullConnectedLayer) CalculateGradients(nextLayerGradients *Tensor) {
 				for z := 0; z < (*fc).In.Size.Z; z++ {
 					m := fc.mapToInput(i, j, z)
 					v := (*fc).LocalDelta[n].Grad * (*fc).Weights.Get(m, n, 0)
-					fmt.Println((*fc).LocalDelta[n].Grad, (*fc).Weights.Get(m, n, 0))
 					(*fc).NextDeltaWeightSum.SetAdd(i, j, z, v)
 				}
 			}
@@ -166,8 +167,6 @@ func (fc *FullConnectedLayer) CalculateGradients(nextLayerGradients *Tensor) {
 	Δw{n, i} =  -(η * ΔE/Δw{n, i}) = -(η)*δ{i}*input{n}
 */
 func (fc *FullConnectedLayer) UpdateWeights() {
-	// (*fc).PreviousIterationWeights.Print()
-	fmt.Println("next")
 	for n := 0; n < (*fc).Out.Size.X; n++ {
 		grad := (*fc).LocalDelta[n]
 		// log.Println("G:", grad)
@@ -187,7 +186,7 @@ func (fc *FullConnectedLayer) UpdateWeights() {
 					dw := (1.0-lp.Momentum)*(-1.0*(lp.LearningRate*grad.Grad*(*fc).In.Get(i, j, z))) +
 						lp.Momentum*(*fc).PreviousIterationWeights.Get(m, n, 0)
 
-					// Decay of weights
+					// Decay of weights (L2 regularization)
 					// decay := (*fc).Weights.Get(m, n, 0) * (1 - lp.WeightDecay)
 
 					(*fc).PreviousIterationWeights.Set(m, n, 0, dw)
@@ -242,10 +241,6 @@ func (fc *FullConnectedLayer) GetKernelSize() int {
 func (fc *FullConnectedLayer) GetType() string {
 	return "fc"
 }
-
-// func (fc *FullConnectedLayer) mapToInput(d Point) int {
-// 	return d.Z*(*fc).In.Size.X*(fc).In.Size.Y + d.Y*(*fc).In.Size.X + d.X
-// }
 
 func (fc *FullConnectedLayer) mapToInput(i, j, k int) int {
 	return k*(*fc).In.Size.X*(fc).In.Size.Y + j*(*fc).In.Size.X + i

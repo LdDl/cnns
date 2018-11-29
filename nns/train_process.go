@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"time"
+
+	t "github.com/LdDl/cnns/nns/tensor"
 )
 
 // Train Train neural network
@@ -17,7 +19,7 @@ import (
 
 	epochsNum - number of epochs
 */
-func (n *WholeNet) Train(inputs *[]Tensor, desired *[]Tensor, testData *[]Tensor, testDesired *[]Tensor, epochsNum int) (float64, float64, error) {
+func (n *WholeNet) Train(inputs *[]t.Tensor, desired *[]t.Tensor, testData *[]t.Tensor, testDesired *[]t.Tensor, epochsNum int) (float64, float64, error) {
 	var err error
 	trainError := 0.0
 	testError := 0.0

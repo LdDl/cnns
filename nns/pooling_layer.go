@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 
+	t "github.com/LdDl/cnns/nns/tensor"
 	"github.com/LdDl/cnns/utils/u"
 )
 
@@ -13,19 +14,19 @@ import (
 // Stride - Striding step
 // LocalDelta - Gradients
 type MaxPoolingLayer struct {
-	In           Tensor
-	Out          Tensor
-	LocalDelta   Tensor
+	In           t.Tensor
+	Out          t.Tensor
+	LocalDelta   t.Tensor
 	Stride       int
 	ExtendFilter int
 }
 
 // NewMaxPoolingLayer - constructor for new MaxPooling layer.
-func NewMaxPoolingLayer(stride, extendFilter int, inSize TDsize) *LayerStruct {
+func NewMaxPoolingLayer(stride, extendFilter int, inSize t.TDsize) *LayerStruct {
 	newLayer := &MaxPoolingLayer{
-		In:           NewTensor(inSize.X, inSize.Y, inSize.Z),
-		Out:          NewTensor((inSize.X-extendFilter)/stride+1, (inSize.Y-extendFilter)/stride+1, inSize.Z),
-		LocalDelta:   NewTensor(inSize.X, inSize.Y, inSize.Z),
+		In:           t.NewTensor(inSize.X, inSize.Y, inSize.Z),
+		Out:          t.NewTensor((inSize.X-extendFilter)/stride+1, (inSize.Y-extendFilter)/stride+1, inSize.Z),
+		LocalDelta:   t.NewTensor(inSize.X, inSize.Y, inSize.Z),
 		Stride:       stride,
 		ExtendFilter: extendFilter,
 	}
@@ -35,38 +36,38 @@ func NewMaxPoolingLayer(stride, extendFilter int, inSize TDsize) *LayerStruct {
 }
 
 // SetCustomWeights - set user's weights (make it carefully)
-func (maxpool *MaxPoolingLayer) SetCustomWeights(t *[]Tensor) {
+func (maxpool *MaxPoolingLayer) SetCustomWeights(t *[]t.Tensor) {
 	fmt.Println("There are no weights for pooling layer")
 }
 
 // OutSize - returns output size (dimensions)
-func (maxpool *MaxPoolingLayer) OutSize() Point {
+func (maxpool *MaxPoolingLayer) OutSize() t.Point {
 	return (*maxpool).Out.Size
 }
 
 // GetInputSize - returns input size (dimensions)
-func (maxpool *MaxPoolingLayer) GetInputSize() Point {
+func (maxpool *MaxPoolingLayer) GetInputSize() t.Point {
 	return (*maxpool).In.Size
 }
 
 // GetOutput - returns max pooling layer's output
-func (maxpool *MaxPoolingLayer) GetOutput() Tensor {
+func (maxpool *MaxPoolingLayer) GetOutput() t.Tensor {
 	return (*maxpool).Out
 }
 
 // GetWeights - returns pooling layer's weights
-func (maxpool *MaxPoolingLayer) GetWeights() []Tensor {
+func (maxpool *MaxPoolingLayer) GetWeights() []t.Tensor {
 	fmt.Println("There are no weights for pooling layer")
-	return []Tensor{}
+	return []t.Tensor{}
 }
 
 // GetGradients - returns max pooling layer's gradients
-func (maxpool *MaxPoolingLayer) GetGradients() Tensor {
+func (maxpool *MaxPoolingLayer) GetGradients() t.Tensor {
 	return (*maxpool).LocalDelta
 }
 
 // FeedForward - feed data to max pooling layer
-func (maxpool *MaxPoolingLayer) FeedForward(t *Tensor) {
+func (maxpool *MaxPoolingLayer) FeedForward(t *t.Tensor) {
 	(*maxpool).In = (*t)
 	(*maxpool).DoActivation()
 }
@@ -94,7 +95,7 @@ func (maxpool *MaxPoolingLayer) DoActivation() {
 }
 
 // CalculateGradients - calculate max pooling layer's gradients
-func (maxpool *MaxPoolingLayer) CalculateGradients(nextLayerGrad *Tensor) {
+func (maxpool *MaxPoolingLayer) CalculateGradients(nextLayerGrad *t.Tensor) {
 	for x := 0; x < (*maxpool).In.Size.X; x++ {
 		for y := 0; y < (maxpool).In.Size.Y; y++ {
 			rn := maxpool.sameAsOuput(x, y)

@@ -4,42 +4,43 @@ import (
 	"fmt"
 	"math/rand"
 
+	t "github.com/LdDl/cnns/nns/tensor"
 	"github.com/LdDl/cnns/utils/u"
 )
 
 // ConvLayer is convolutional layer structure
 type ConvLayer struct {
-	DeltaWeightsComponent Tensor
-	In                    Tensor
-	Out                   Tensor
-	Kernels               []Tensor
-	PreviousKernelsDeltas []Tensor
+	DeltaWeightsComponent t.Tensor
+	In                    t.Tensor
+	Out                   t.Tensor
+	Kernels               []t.Tensor
+	PreviousKernelsDeltas []t.Tensor
 	LocalDeltas           []TensorGradient
 	Stride                int
 	KernelSize            int
 }
 
 // NewConvLayer - constructor for new convolutional layer. You need to specify striding step, size (square) of kernel, amount of kernels, input size.
-func NewConvLayer(stride, kernelSize, numberFilters int, inSize TDsize) *LayerStruct {
+func NewConvLayer(stride, kernelSize, numberFilters int, inSize t.TDsize) *LayerStruct {
 	newLayer := &ConvLayer{
-		DeltaWeightsComponent: NewTensor(inSize.X, inSize.Y, inSize.Z),
-		In:         NewTensor(inSize.X, inSize.Y, inSize.Z),
-		Out:        NewTensor((inSize.X-kernelSize)/stride+1, (inSize.Y-kernelSize)/stride+1, numberFilters),
+		DeltaWeightsComponent: t.NewTensor(inSize.X, inSize.Y, inSize.Z),
+		In:         t.NewTensor(inSize.X, inSize.Y, inSize.Z),
+		Out:        t.NewTensor((inSize.X-kernelSize)/stride+1, (inSize.Y-kernelSize)/stride+1, numberFilters),
 		Stride:     stride,
 		KernelSize: kernelSize,
 	}
 	for a := 0; a < numberFilters; a++ {
-		t := NewTensor(kernelSize, kernelSize, inSize.Z)
+		tmp := t.NewTensor(kernelSize, kernelSize, inSize.Z)
 		for i := 0; i < kernelSize; i++ {
 			for j := 0; j < kernelSize; j++ {
 				for z := 0; z < inSize.Z; z++ {
-					t.Set(i, j, z, rand.Float64()-0.5)
+					tmp.Set(i, j, z, rand.Float64()-0.5)
 				}
 			}
 		}
-		newLayer.Kernels = append(newLayer.Kernels, t)
+		newLayer.Kernels = append(newLayer.Kernels, tmp)
 
-		tt := NewTensor(kernelSize, kernelSize, inSize.Z)
+		tt := t.NewTensor(kernelSize, kernelSize, inSize.Z)
 		for i := 0; i < kernelSize; i++ {
 			for j := 0; j < kernelSize; j++ {
 				for z := 0; z < inSize.Z; z++ {
@@ -60,7 +61,7 @@ func NewConvLayer(stride, kernelSize, numberFilters int, inSize TDsize) *LayerSt
 }
 
 // SetCustomWeights - set user's weights (make it carefully)
-func (con *ConvLayer) SetCustomWeights(t *[]Tensor) {
+func (con *ConvLayer) SetCustomWeights(t *[]t.Tensor) {
 	if len((*con).Kernels) != len(*t) {
 		fmt.Println("Amount of custom filters has to be equal to layer's amount of filters. Skipping...")
 		return
@@ -71,32 +72,32 @@ func (con *ConvLayer) SetCustomWeights(t *[]Tensor) {
 }
 
 // OutSize - returns output size (dimensions)
-func (con *ConvLayer) OutSize() Point {
+func (con *ConvLayer) OutSize() t.Point {
 	return (*con).Out.Size
 }
 
 // GetInputSize - returns input size (dimensions)
-func (con *ConvLayer) GetInputSize() Point {
+func (con *ConvLayer) GetInputSize() t.Point {
 	return (*con).In.Size
 }
 
 // GetOutput - returns convolutional layer's output
-func (con *ConvLayer) GetOutput() Tensor {
+func (con *ConvLayer) GetOutput() t.Tensor {
 	return (*con).Out
 }
 
 // GetWeights - returns convolutional layer's weights
-func (con *ConvLayer) GetWeights() []Tensor {
+func (con *ConvLayer) GetWeights() []t.Tensor {
 	return (*con).Kernels
 }
 
 // GetGradients - returns convolutional layer's gradients
-func (con *ConvLayer) GetGradients() Tensor {
+func (con *ConvLayer) GetGradients() t.Tensor {
 	return (*con).DeltaWeightsComponent
 }
 
 // FeedForward - feed data to convolutional layer
-func (con *ConvLayer) FeedForward(t *Tensor) {
+func (con *ConvLayer) FeedForward(t *t.Tensor) {
 	(*con).In = (*t)
 	(*con).DoActivation()
 }
@@ -105,6 +106,8 @@ func (con *ConvLayer) FeedForward(t *Tensor) {
 func (con *ConvLayer) DoActivation() {
 	for filter := 0; filter < len((*con).Kernels); filter++ {
 		filterData := (*con).Kernels[filter]
+		// filterData = filterData.Rot2D180()
+		// (*con).Out = (*con).In.Conv2D(filterData, [2]int{1, 1}, [2]int{0, 0})
 		for x := 0; x < (*con).Out.Size.X; x++ {
 			for y := 0; y < (*con).Out.Size.Y; y++ {
 				// mappedX, mappedY, _ := con.mapToInput(x, y, 0)
@@ -126,7 +129,7 @@ func (con *ConvLayer) DoActivation() {
 }
 
 // CalculateGradients - calculate convolutional layer's gradients
-func (con *ConvLayer) CalculateGradients(nextLayerGrad *Tensor) {
+func (con *ConvLayer) CalculateGradients(nextLayerGrad *t.Tensor) {
 	for k := 0; k < len((*con).LocalDeltas); k++ {
 		for i := 0; i < (*con).KernelSize; i++ {
 			for j := 0; j < (*con).KernelSize; j++ {

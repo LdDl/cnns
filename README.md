@@ -33,7 +33,7 @@ CNNS (Convolutional Neural Networks) is a little package for developing simple n
 
 ### Examples
 
-For some peoples it is realy hard to understand algorithms without examples. So we provide some:
+For some peoples it is realy hard to understand algorithms without step-by-step examples. So we provide some:
 
 * Step-by-step feedforward and backpropagation calculations in CNN are made in file of Excel format (xlsx): [step_by_step_cnn(inertia).xlsx](https://github.com/LdDl/cnns/blob/master/step_by_step_cnn(inertia).xlsx). You can check associated example [examples/conv.go](https://github.com/LdDl/cnns/blob/master/examples/conv.go) also. Notice, that CNN in the example uses inertia extension. 
 

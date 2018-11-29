@@ -1,4 +1,4 @@
-package nns
+package tensor
 
 // Point - dimensions
 type Point struct {

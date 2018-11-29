@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/LdDl/cnns/nns"
+	t "github.com/LdDl/cnns/nns/tensor"
 
 	"github.com/LdDl/cnns/utils/u"
 )
@@ -14,7 +15,7 @@ import (
 // CheckXTO - recognition of "X", "T" и "O" symbols represented as matrices
 func CheckXTO() {
 	rand.Seed(time.Now().UnixNano())
-	conv := nns.NewConvLayer(1, 3, 2, nns.TDsize{X: 8, Y: 9, Z: 1})
+	conv := nns.NewConvLayer(1, 3, 2, t.TDsize{X: 8, Y: 9, Z: 1})
 	relu := nns.NewLeakyReLULayer(conv.OutSize(), 0.01)
 	maxpool := nns.NewMaxPoolingLayer(2, 2, relu.OutSize())
 	fullyconnected := nns.NewFullConnectedLayer(maxpool.OutSize(), 3)
@@ -44,7 +45,7 @@ func CheckXTO() {
 
 }
 
-func formTrainDataXTO() ([]nns.Tensor, []nns.Tensor) {
+func formTrainDataXTO() ([]t.Tensor, []t.Tensor) {
 	numExamples := 10000
 
 	var xmatrix = [][][]float64{
@@ -87,19 +88,19 @@ func formTrainDataXTO() ([]nns.Tensor, []nns.Tensor) {
 		},
 	}
 
-	var ximage = nns.NewTensor(8, 9, 1)
+	var ximage = t.NewTensor(8, 9, 1)
 	ximage.SetData3D(xmatrix)
-	var timage = nns.NewTensor(8, 9, 1)
+	var timage = t.NewTensor(8, 9, 1)
 	timage.SetData3D(tmatrix)
-	var oimage = nns.NewTensor(8, 9, 1)
+	var oimage = t.NewTensor(8, 9, 1)
 	oimage.SetData3D(omatrix)
 
-	inputs := make([]nns.Tensor, numExamples)
-	desired := make([]nns.Tensor, numExamples)
+	inputs := make([]t.Tensor, numExamples)
+	desired := make([]t.Tensor, numExamples)
 	for i := 0; i < numExamples; i++ {
 		var rnd = u.RandomInt(0, 3)
 
-		input := nns.NewTensor(8, 9, 1)
+		input := t.NewTensor(8, 9, 1)
 		switch rnd {
 		case 0:
 			input = ximage
@@ -117,7 +118,7 @@ func formTrainDataXTO() ([]nns.Tensor, []nns.Tensor) {
 		desiredMat := [][][]float64{[][]float64{[]float64{0.0, 0.0, 0.0}}}
 		desiredMat[0][0][rnd] = 1.0
 
-		target := nns.NewTensor(3, 1, 1)
+		target := t.NewTensor(3, 1, 1)
 		target.SetData3D(desiredMat)
 
 		inputs[i] = input
@@ -126,12 +127,12 @@ func formTrainDataXTO() ([]nns.Tensor, []nns.Tensor) {
 	return inputs, desired
 }
 
-func formTestDataXTO() ([]nns.Tensor, []nns.Tensor) {
-	inputs := make([]nns.Tensor, 0, 3)
-	desired := make([]nns.Tensor, 0, 3)
+func formTestDataXTO() ([]t.Tensor, []t.Tensor) {
+	inputs := make([]t.Tensor, 0, 3)
+	desired := make([]t.Tensor, 0, 3)
 
-	input := nns.NewTensor(8, 9, 1)
-	target := nns.NewTensor(3, 1, 1)
+	input := t.NewTensor(8, 9, 1)
+	target := t.NewTensor(3, 1, 1)
 
 	// X = [1, 0, 0]
 	input.SetData(8, 9, 1, []float64{
@@ -150,7 +151,7 @@ func formTestDataXTO() ([]nns.Tensor, []nns.Tensor) {
 	desired = append(desired, target)
 
 	// T = [0, 1, 0]
-	input = nns.NewTensor(8, 9, 1)
+	input = t.NewTensor(8, 9, 1)
 	input.SetData(8, 9, 1, []float64{
 		0, 1, 1, 1, 1, 1, 1, 0,
 		0, 1, 1, 1, 1, 1, 1, 0,
@@ -162,13 +163,13 @@ func formTestDataXTO() ([]nns.Tensor, []nns.Tensor) {
 		0, 0, 0, 1, 0, 0, 0, 0,
 		0, 0, 0, 1, 1, 0, 0, 0,
 	})
-	target = nns.NewTensor(3, 1, 1)
+	target = t.NewTensor(3, 1, 1)
 	target.SetData(3, 1, 1, []float64{0, 1, 0})
 	inputs = append(inputs, input)
 	desired = append(desired, target)
 
 	// O = [0, 0, 1]
-	input = nns.NewTensor(8, 9, 1)
+	input = t.NewTensor(8, 9, 1)
 	input.SetData(8, 9, 1, []float64{
 		0, 0, 0, 0, 0.6, 0, 0, 0,
 		0, 1, 1, 0.5, 1, 1, 1, 0,
@@ -180,7 +181,7 @@ func formTestDataXTO() ([]nns.Tensor, []nns.Tensor) {
 		0, 1, 0, 0, 0, 0, 1, 0,
 		0, 0, 1, 0.8, 1, 1, 0, 0,
 	})
-	target = nns.NewTensor(3, 1, 1)
+	target = t.NewTensor(3, 1, 1)
 	target.SetData(3, 1, 1, []float64{0, 0, 1})
 	inputs = append(inputs, input)
 	desired = append(desired, target)

@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+
+	t "github.com/LdDl/cnns/nns/tensor"
 )
 
 // WholeNet - net itself (array of layers)
@@ -16,25 +18,25 @@ type WholeNet struct {
 // Layer - interface for all layer types
 type Layer interface {
 	// OutSize - returns output size (dimensions)
-	OutSize() Point
+	OutSize() t.Point
 
 	// GetInputSize - returns input size (dimensions)
-	GetInputSize() Point
+	GetInputSize() t.Point
 
 	// GetOutput - returns layer's output
-	GetOutput() Tensor
+	GetOutput() t.Tensor
 
 	// GetWeights - returns layer's weights
-	GetWeights() []Tensor
+	GetWeights() []t.Tensor
 
 	// GetGradients - returns layer's gradients
-	GetGradients() Tensor
+	GetGradients() t.Tensor
 
 	// FeedForward - feed data to layer
-	FeedForward(t *Tensor)
+	FeedForward(t *t.Tensor)
 
 	// CalculateGradients - calculate layers' gradients
-	CalculateGradients(nextLayerGradients *Tensor)
+	CalculateGradients(nextLayerGradients *t.Tensor)
 
 	// UpdateWeights - update layer's weights
 	UpdateWeights()
@@ -59,7 +61,7 @@ type Layer interface {
 
 	SetActivationFunc(f func(v float64) float64)
 	SetActivationDerivativeFunc(f func(v float64) float64)
-	SetCustomWeights(t *[]Tensor)
+	SetCustomWeights(t *[]t.Tensor)
 }
 
 // LayerStruct - struct wraps layer interface
@@ -68,7 +70,7 @@ type LayerStruct struct {
 }
 
 // FeedForward - forward pass throught the net
-func (wh *WholeNet) FeedForward(t *Tensor) {
+func (wh *WholeNet) FeedForward(t *t.Tensor) {
 	(*wh).Layers[0].FeedForward(t)
 	for l := 1; l < len((*wh).Layers); l++ {
 		out := (*wh).Layers[l-1].GetOutput()
@@ -77,14 +79,12 @@ func (wh *WholeNet) FeedForward(t *Tensor) {
 }
 
 // Backpropagate - backward pass throught the net (training)
-func (wh *WholeNet) Backpropagate(target *Tensor) {
+func (wh *WholeNet) Backpropagate(target *t.Tensor) {
 	lastLayer := (*wh).Layers[len((*wh).Layers)-1].GetOutput()
 
 	difference := lastLayer.Sub(target)
 	(*wh).Layers[len((*wh).Layers)-1].CalculateGradients(&difference)
 
-	// target.Sub(&difference)
-	// (*wh).Layers[len((*wh).Layers)-1].CalculateGradients(target)
 	for i := len((*wh).Layers) - 2; i >= 0; i-- {
 		grad := (*wh).Layers[i+1].GetGradients()
 		(*wh).Layers[i].CalculateGradients(&grad)
@@ -100,7 +100,7 @@ func (wh *WholeNet) PrintOutput() {
 }
 
 // GetOutput - returns net's output (last layer output)
-func (wh *WholeNet) GetOutput() Tensor {
+func (wh *WholeNet) GetOutput() t.Tensor {
 	return (*wh).Layers[len((*wh).Layers)-1].GetOutput()
 }
 
@@ -131,11 +131,11 @@ func (wh *WholeNet) ImportFromFile(fname string, randomWeights bool) error {
 			x := data.Network.Layers[i].InputSize.X
 			y := data.Network.Layers[i].InputSize.Y
 			z := data.Network.Layers[i].InputSize.Z
-			conv := NewConvLayer(stride, kernelSize, numOfFilters, TDsize{X: x, Y: y, Z: z})
+			conv := NewConvLayer(stride, kernelSize, numOfFilters, t.TDsize{X: x, Y: y, Z: z})
 			if randomWeights == false {
-				var weights = make([]Tensor, numOfFilters)
+				var weights = make([]t.Tensor, numOfFilters)
 				for w := 0; w < numOfFilters; w++ {
-					weights[w] = NewTensor(kernelSize, kernelSize, 1)
+					weights[w] = t.NewTensor(kernelSize, kernelSize, 1)
 					weights[w].SetData3D(data.Network.Layers[i].Weights[w].Data)
 				}
 				conv.SetCustomWeights(&weights)
@@ -146,7 +146,7 @@ func (wh *WholeNet) ImportFromFile(fname string, randomWeights bool) error {
 			x := data.Network.Layers[i].InputSize.X
 			y := data.Network.Layers[i].InputSize.Y
 			z := data.Network.Layers[i].InputSize.Z
-			relu := NewReLULayer(TDsize{X: x, Y: y, Z: z})
+			relu := NewReLULayer(t.TDsize{X: x, Y: y, Z: z})
 			(*wh).Layers = append((*wh).Layers, relu)
 			break
 		case "pool":
@@ -155,7 +155,7 @@ func (wh *WholeNet) ImportFromFile(fname string, randomWeights bool) error {
 			x := data.Network.Layers[i].InputSize.X
 			y := data.Network.Layers[i].InputSize.Y
 			z := data.Network.Layers[i].InputSize.Z
-			pool := NewMaxPoolingLayer(stride, kernelSize, TDsize{X: x, Y: y, Z: z})
+			pool := NewMaxPoolingLayer(stride, kernelSize, t.TDsize{X: x, Y: y, Z: z})
 			(*wh).Layers = append((*wh).Layers, pool)
 			break
 		case "fc":
@@ -163,12 +163,12 @@ func (wh *WholeNet) ImportFromFile(fname string, randomWeights bool) error {
 			y := data.Network.Layers[i].InputSize.Y
 			z := data.Network.Layers[i].InputSize.Z
 			outSize := data.Network.Layers[i].OutputSize.X
-			fullyconnected := NewFullConnectedLayer(TDsize{X: x, Y: y, Z: z}, outSize)
+			fullyconnected := NewFullConnectedLayer(t.TDsize{X: x, Y: y, Z: z}, outSize)
 			if randomWeights == false {
-				var weights Tensor
-				weights = NewTensor(x*y*z, outSize, 1)
+				var weights t.Tensor
+				weights = t.NewTensor(x*y*z, outSize, 1)
 				weights.SetData3D(data.Network.Layers[i].Weights[0].Data)
-				fullyconnected.SetCustomWeights(&[]Tensor{weights})
+				fullyconnected.SetCustomWeights(&[]t.Tensor{weights})
 			}
 			(*wh).Layers = append((*wh).Layers, fullyconnected)
 			break
@@ -267,7 +267,7 @@ type NetJSON struct {
 
 // TensorJSON ...
 type TensorJSON struct {
-	TDSize TDsize        `json:"TDSize"`
+	TDSize t.TDsize      `json:"TDSize"`
 	Data   [][][]float64 `json:"Data"`
 }
 
@@ -280,12 +280,12 @@ type LayerParamsJSON struct {
 // NetLayerJSON ...
 type NetLayerJSON struct {
 	LayerType  string          `json:"LayerType"`
-	InputSize  TDsize          `json:"InputSize"`
+	InputSize  t.TDsize        `json:"InputSize"`
 	Parameters LayerParamsJSON `json:"Parameters,omitempty"`
 	Weights    []TensorJSON    `json:"Weights,omitempty"`
 	// Actually "OutputSize" parameter is usefull for fully connected layer only
 	// There are automatic calculation of output size for other layers' types
-	OutputSize TDsize `json:"OutputSize,omitempty"`
+	OutputSize t.TDsize `json:"OutputSize,omitempty"`
 }
 
 // NetworkJSON ...

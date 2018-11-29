@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/LdDl/cnns/nns"
+	t "github.com/LdDl/cnns/nns/tensor"
 )
 
 // ExampleOne - Example of MLP
@@ -21,12 +22,12 @@ func ExampleOne() {
 		net.Layers[i].PrintWeights()
 	}
 
-	inputData := nns.NewTensor(2, 1, 1)
+	inputData := t.NewTensor(2, 1, 1)
 	inputData.SetData(2, 1, 1, []float64{0.2, 0.5})
 
 	for e := 0; e < 3; e++ {
 		net.FeedForward(&inputData)
-		desired := nns.NewTensor(1, 1, 1)
+		desired := t.NewTensor(1, 1, 1)
 		desired.SetData(1, 1, 1, []float64{0.4})
 		net.Backpropagate(&desired)
 		fmt.Printf("Layers (after):\n")
@@ -59,12 +60,12 @@ func ExampleTwo() {
 	net.Layers[0].SetActivationDerivativeFunc(nns.ActivationSygmoidDerivative)
 	net.Layers[1].SetActivationDerivativeFunc(nns.ActivationSygmoidDerivative)
 
-	inputData := nns.NewTensor(2, 1, 1)
+	inputData := t.NewTensor(2, 1, 1)
 	inputData.SetData(2, 1, 1, []float64{0.2, 0.5})
 
 	for e := 0; e < 3; e++ {
 		net.FeedForward(&inputData)
-		desired := nns.NewTensor(1, 1, 1)
+		desired := t.NewTensor(1, 1, 1)
 		desired.SetData(1, 1, 1, []float64{0.4})
 		net.Backpropagate(&desired)
 		fmt.Printf("Layers (after):\n")

@@ -1,6 +1,10 @@
 package nns
 
-import "fmt"
+import (
+	"fmt"
+
+	t "github.com/LdDl/cnns/nns/tensor"
+)
 
 // Gradient - Gradient.
 /*
@@ -28,14 +32,14 @@ func (grad *Gradient) Update() {
 // TensorGradient - Tensor for gradient.
 type TensorGradient struct {
 	Data []Gradient
-	Size TDsize
+	Size t.TDsize
 }
 
 // NewTensorGradient - Constructor for tensor of gradients.
 func NewTensorGradient(x, y, z int) TensorGradient {
 	return TensorGradient{
 		Data: make([]Gradient, x*y*z),
-		Size: TDsize{
+		Size: t.TDsize{
 			X: x,
 			Y: y,
 			Z: z,
@@ -45,25 +49,21 @@ func NewTensorGradient(x, y, z int) TensorGradient {
 
 // Get - Return (i,j,k)-th gradient from tensor.
 func (t1 *TensorGradient) Get(x, y, z int) Gradient {
-	// return (*t1).Data[x+(y+z*(*t1).Size.Z)*(*t1).Size.X]
 	return (*t1).Data[z*(*t1).Size.X*(*t1).Size.Y+y*(*t1).Size.X+x]
 }
 
 // Set - Set (i,j,k)-th gradient with new gradient value
 func (t1 *TensorGradient) Set(x, y, z int, val Gradient) {
-	// (*t1).Data[x+(y+z*(*t1).Size.Z)*(*t1).Size.X] = val
 	(*t1).Data[z*(*t1).Size.X*(*t1).Size.Y+y*(*t1).Size.X+x] = val
 }
 
 // SetGrad - Set (i,j,k)-th gradient's current value with new one.
 func (t1 *TensorGradient) SetGrad(x, y, z int, val float64) {
-	// (*t1).Data[x+(y+z*(*t1).Size.Z)*(*t1).Size.X].Grad = val
 	(*t1).Data[z*(*t1).Size.X*(*t1).Size.Y+y*(*t1).Size.X+x].Grad = val
 }
 
 // AddToGrad - Add float64 to (i,j,k)-th gradient's current value.
 func (t1 *TensorGradient) AddToGrad(x, y, z int, val float64) {
-	// (*t1).Data[x+(y+z*(*t1).Size.Z)*(*t1).Size.X].Grad += val
 	(*t1).Data[z*(*t1).Size.X*(*t1).Size.Y+y*(*t1).Size.X+x].Grad += val
 }
 

@@ -4,9 +4,9 @@ import "errors"
 
 // LearningParams - Parameters for training neural network.
 /*
-	LearningRate
-	Momentum
-	WeightDecay
+	LearningRate - η
+	Momentum - α
+	WeightDecay - λ (L2 regularization)
 */
 type LearningParams struct {
 	LearningRate float64 `json:"LearningRate"`
@@ -18,7 +18,7 @@ var (
 	lp = LearningParams{
 		LearningRate: 0.01,
 		Momentum:     0.6,
-		WeightDecay:  0.02,
+		WeightDecay:  0.005,
 	}
 )
 
@@ -40,14 +40,11 @@ func SetMomentum(v float64) error {
 	return nil
 }
 
-// UpdateWeight - Update weights with new value.
-func UpdateWeight(w float64, grad *Gradient, multp float64) float64 {
-	m := (*grad).Grad + (*grad).OldGrad*lp.Momentum
-	w -= lp.LearningRate*m*multp + lp.LearningRate*lp.WeightDecay*w
-	return w
-}
-
-// UpdateGradient - Update gradient with new values (based on gradient from previous training iteration).
-func UpdateGradient(grad *Gradient) {
-	(*grad).OldGrad = (*grad).Grad + (*grad).OldGrad*lp.Momentum
+// SetL2Decay Set weight's decay
+func SetL2Decay(v float64) error {
+	if v <= 0 {
+		return errors.New("λ (momentum) can not be less or equal zero. Setting default value which is 0.005")
+	}
+	lp.Momentum = v
+	return nil
 }

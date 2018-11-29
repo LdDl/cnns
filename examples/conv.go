@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/LdDl/cnns/nns"
+	t "github.com/LdDl/cnns/nns/tensor"
 )
 
 // ExampleConv - Check feedworward and backpropagate operations
@@ -23,26 +24,26 @@ import (
 	Using custom weights (for testing purposes) also. You can check "step_by_step_cnss.xlsx" file.
 */
 func ExampleConv() {
-	conv := nns.NewConvLayer(1, 3, 1, nns.TDsize{X: 8, Y: 9, Z: 1})
+	conv := nns.NewConvLayer(1, 3, 1, t.TDsize{X: 8, Y: 9, Z: 1})
 	relu := nns.NewReLULayer(conv.OutSize())
 	maxpool := nns.NewMaxPoolingLayer(2, 2, relu.OutSize())
 	fullyconnected := nns.NewFullConnectedLayer(maxpool.OutSize(), 3)
 
-	convCustomWeights := nns.NewTensor(3, 3, 1)
+	convCustomWeights := t.NewTensor(3, 3, 1)
 	convCustomWeights.SetData(3, 3, 1, []float64{
 		0.10466029, -0.06228581, -0.43436298,
 		0.44050909, -0.07536250, -0.34348075,
 		0.16456005, 0.18682307, -0.40303048,
 	})
-	conv.SetCustomWeights(&[]nns.Tensor{convCustomWeights})
+	conv.SetCustomWeights(&[]t.Tensor{convCustomWeights})
 
-	fcCustomWeights := nns.NewTensor(maxpool.OutSize().X*maxpool.OutSize().Y*maxpool.OutSize().Z, 3, 1)
+	fcCustomWeights := t.NewTensor(maxpool.OutSize().X*maxpool.OutSize().Y*maxpool.OutSize().Z, 3, 1)
 	fcCustomWeights.SetData(maxpool.OutSize().X*maxpool.OutSize().Y*maxpool.OutSize().Z, 3, 1, []float64{
 		-0.19908814, 0.01521263, 0.31363996, -0.28573613, -0.11934281, -0.18194183, -0.03111016, -0.21696585, -0.20689814,
 		0.17908468, -0.28144695, -0.29681312, -0.13912858, 0.07067328, 0.36249144, -0.20688576, -0.20291744, 0.25257304,
 		-0.29341734, 0.36533501, 0.19671917, 0.02382031, -0.47169692, -0.34167172, 0.10725344, 0.47524162, -0.42054638,
 	})
-	fullyconnected.SetCustomWeights(&[]nns.Tensor{fcCustomWeights})
+	fullyconnected.SetCustomWeights(&[]t.Tensor{fcCustomWeights})
 
 	var net nns.WholeNet
 	net.Layers = append(net.Layers, conv)
@@ -62,7 +63,7 @@ func ExampleConv() {
 			[]float64{-0.65, 0.66, 0.67, 0.68, 0.69, 0.70, 0.71, 0.72},
 		},
 	}
-	var image = nns.NewTensor(8, 9, 1)
+	var image = t.NewTensor(8, 9, 1)
 	image.SetData3D(matrix)
 	// fmt.Println("Image:")
 	// image.Print()
@@ -71,7 +72,7 @@ func ExampleConv() {
 	net.Layers[0].PrintWeights()
 	net.Layers[len(net.Layers)-1].PrintWeights()
 
-	var desired = nns.NewTensor(3, 1, 1)
+	var desired = t.NewTensor(3, 1, 1)
 	for e := 0; e < 3; e++ {
 		net.FeedForward(&image)
 		desired.SetData3D([][][]float64{

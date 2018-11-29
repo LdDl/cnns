@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/LdDl/cnns/nns"
+	t "github.com/LdDl/cnns/nns/tensor"
 )
 
 // ImportExportNet - example of how ImportFromFile(fname string, randomWeights bool) and ExportToFile(fname string) works
@@ -35,7 +36,7 @@ func ImportExportNet() {
 			[]float64{-0.65, 0.66, 0.67, 0.68, 0.69, 0.70, 0.71, 0.72},
 		},
 	}
-	var image = nns.NewTensor(8, 9, 1)
+	var image = t.NewTensor(8, 9, 1)
 	image.SetData3D(matrix)
 	fmt.Println("Image:")
 	image.Print()
@@ -43,7 +44,7 @@ func ImportExportNet() {
 	net.Layers[0].PrintWeights()
 	net.Layers[len(net.Layers)-1].PrintWeights()
 	net.FeedForward(&image)
-	var desired = nns.NewTensor(3, 1, 1)
+	var desired = t.NewTensor(3, 1, 1)
 	desired.SetData3D([][][]float64{
 		[][]float64{
 			[]float64{0.32, 0.45, 0.96},
