@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"math/rand"
 	"time"
 
 	t "github.com/LdDl/cnns/nns/tensor"
@@ -32,14 +33,22 @@ func (n *WholeNet) Train(inputs *[]t.Tensor, desired *[]t.Tensor, testData *[]t.
 		return trainError, testError, errors.New("number of inputs for test not equal to number of desired for test")
 	}
 
+	// Initial shuffling of input data
+	rand.Seed(time.Now().UTC().UnixNano())
+	for i := range *inputs {
+		j := rand.Intn(i + 1)
+		(*inputs)[i], (*inputs)[j] = (*inputs)[j], (*inputs)[i]
+		(*desired)[i], (*desired)[j] = (*desired)[j], (*desired)[i]
+	}
+
 	start := time.Now()
 	for e := 0; e < epochsNum; e++ {
 		// Shuffle training data every epoch
-		// for i := range *inputs {
-		// 	j := rand.Intn(i + 1)
-		// 	(*inputs)[i], (*inputs)[j] = (*inputs)[j], (*inputs)[i]
-		// 	(*desired)[i], (*desired)[j] = (*desired)[j], (*desired)[i]
-		// }
+		for i := range *inputs {
+			j := rand.Intn(i + 1)
+			(*inputs)[i], (*inputs)[j] = (*inputs)[j], (*inputs)[i]
+			(*desired)[i], (*desired)[j] = (*desired)[j], (*desired)[i]
+		}
 
 		st := time.Now()
 		for i := range *inputs {
