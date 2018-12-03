@@ -70,7 +70,7 @@ go get github.com/LdDl/cnns
 - Dropout layer;
 - ~~Integrate inertia momentum into backpropagation functions for FC layer;~~
 - ~~Integrate inertia momentum into backpropagation functions for Conv layer;~~
-- Explain examples with usage of [GoCV](https://github.com/hybridgroup/gocv/#gocv) package;
+- ~~Explain examples with usage of [GoCV](https://github.com/hybridgroup/gocv/#gocv) package;~~ **we've replaced every GoCV usage with "image" and "nfnt/resize" to reduce complexity of dependencies. May be bring GoCV back later**
 - Clear code from some debugging stuff;
 - Write tests (as addition to Excel files);
 - Bias neuron as option for FC layer;

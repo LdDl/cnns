@@ -75,7 +75,6 @@ func (t1 *Tensor) GetPtr(x, y, z int) *float64 {
 	value - value of float64.
 */
 func (t1 *Tensor) Set(x, y, z int, val float64) {
-	// (*t1).Data[x+(y+z*(*t1).Size.Z)*(*t1).Size.X] = val
 	(*t1).Data[z*(*t1).Size.X*(*t1).Size.Y+y*(*t1).Size.X+x] = val
 }
 
@@ -87,7 +86,6 @@ func (t1 *Tensor) Set(x, y, z int, val float64) {
 	value - value of float64.
 */
 func (t1 *Tensor) SetAdd(x, y, z int, val float64) {
-	// (*t1).Data[x+(y+z*(*t1).Size.Z)*(*t1).Size.X] += val
 	(*t1).Data[z*(*t1).Size.X*(*t1).Size.Y+y*(*t1).Size.X+x] += val
 }
 

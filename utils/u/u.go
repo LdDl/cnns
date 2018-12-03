@@ -2,8 +2,14 @@ package u
 
 import (
 	"errors"
+	"image"
+	"image/jpeg"
+	"image/png"
 	"math"
 	"math/rand"
+	"os"
+
+	"golang.org/x/image/bmp"
 )
 
 // AndINT - Logical AND for two inputs of type int.
@@ -89,7 +95,55 @@ func NormalizeRange(f float64, max int, limitMin bool) int {
 	return int(math.Floor(f))
 }
 
-// Matrix2D @experiments
+//ReadImage - wrapper function for reading png/jpeg/jpg or bmp images
+/*
+	It can determine type of image and use proper decoder for it
+*/
+func ReadImage(fname string) (image.Image, error) {
+	var err error
+
+	reader, err := os.Open(fname)
+	if err != nil {
+		return nil, err
+	}
+
+	var im image.Image
+	var imType string
+
+	// Try to decode
+	_, imType, err = image.Decode(reader)
+	if err != nil {
+		// NOTHING
+		// NEED TO DO SEEK(0,0) and use proper decoder
+	}
+
+	reader.Seek(0, 0)
+	switch imType {
+	case "png":
+		im, err = png.Decode(reader)
+		if err != nil {
+			return nil, err
+		}
+	case "jpeg", "jpg":
+		im, err = jpeg.Decode(reader)
+		if err != nil {
+			return nil, err
+		}
+	case "bmp":
+		im, err = bmp.Decode(reader)
+		if err != nil {
+			return nil, err
+		}
+	default:
+		return nil, errors.New(err.Error() + ": Please use only png/jpeg/jpg or bmp")
+	}
+
+	reader.Close()
+
+	return im, nil
+}
+
+// Matrix2D @experimental
 type Matrix2D [][]float64
 
 func flatten(f Matrix2D) (r, c int, d []float64, err error) {

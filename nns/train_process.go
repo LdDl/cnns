@@ -34,6 +34,13 @@ func (n *WholeNet) Train(inputs *[]t.Tensor, desired *[]t.Tensor, testData *[]t.
 
 	start := time.Now()
 	for e := 0; e < epochsNum; e++ {
+		// Shuffle training data every epoch
+		// for i := range *inputs {
+		// 	j := rand.Intn(i + 1)
+		// 	(*inputs)[i], (*inputs)[j] = (*inputs)[j], (*inputs)[i]
+		// 	(*desired)[i], (*desired)[j] = (*desired)[j], (*desired)[i]
+		// }
+
 		st := time.Now()
 		for i := range *inputs {
 			in := (*inputs)[i]
@@ -54,18 +61,56 @@ func (n *WholeNet) Train(inputs *[]t.Tensor, desired *[]t.Tensor, testData *[]t.
 		loss := target.MSE(&out)
 		trainError += loss
 	}
+
 	for i := range *testData {
 		in := (*testData)[i]
-		target := (*testDesired)[i]
+		in.Print()
+
 		n.FeedForward(&in)
 		out := n.GetOutput()
-		fmt.Println("\n>>>Out:")
-		out.Print()
-		fmt.Println(">>>Desired:")
-		target.Print()
-		loss := target.MSE(&out)
-		testError += loss
+
+		log.Println("Corr value:", maxIdx(&out))
+		break
+		// max := 0.0
+		// maxIdx := 0
+		// target := (*testDesired)[i]
+		// n.FeedForward(&in)
+		// // in.Print()
+		// out := n.GetOutput()
+		// fmt.Println("\n>>>Out:")
+		// for m := range out.Data {
+		// 	if max < out.Data[m] {
+		// 		max = out.Data[m]
+		// 		maxIdx = m
+		// 	}
+		// }
+		// in.Print()
+		// log.Println("max idx need", maxIdx)
+		// out.Print()
+		// fmt.Println(">>>Desired:")
+		// target.Print()
+		// for m := range target.Data {
+		// 	if max < target.Data[m] {
+		// 		max = target.Data[m]
+		// 		maxIdx = m
+		// 	}
+		// }
+		// log.Println("max idx got", maxIdx)
+
+		// loss := target.MSE(&out)
+		// testError += loss
 	}
 
 	return trainError, testError, err
+}
+
+func maxIdx(tt *t.Tensor) (max int) {
+	maxF := 0.0
+	for i := range (*tt).Data {
+		if maxF < (*tt).Data[i] {
+			maxF = (*tt).Data[i]
+			max = i
+		}
+	}
+	return max
 }
