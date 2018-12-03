@@ -65,40 +65,15 @@ func (n *WholeNet) Train(inputs *[]t.Tensor, desired *[]t.Tensor, testData *[]t.
 	for i := range *testData {
 		in := (*testData)[i]
 		in.Print()
-
+		target := (*testDesired)[i]
 		n.FeedForward(&in)
 		out := n.GetOutput()
-
-		log.Println("Corr value:", maxIdx(&out))
-		break
-		// max := 0.0
-		// maxIdx := 0
-		// target := (*testDesired)[i]
-		// n.FeedForward(&in)
-		// // in.Print()
-		// out := n.GetOutput()
-		// fmt.Println("\n>>>Out:")
-		// for m := range out.Data {
-		// 	if max < out.Data[m] {
-		// 		max = out.Data[m]
-		// 		maxIdx = m
-		// 	}
-		// }
-		// in.Print()
-		// log.Println("max idx need", maxIdx)
-		// out.Print()
-		// fmt.Println(">>>Desired:")
-		// target.Print()
-		// for m := range target.Data {
-		// 	if max < target.Data[m] {
-		// 		max = target.Data[m]
-		// 		maxIdx = m
-		// 	}
-		// }
-		// log.Println("max idx got", maxIdx)
-
-		// loss := target.MSE(&out)
-		// testError += loss
+		fmt.Println("\n>>>Out:")
+		out.Print()
+		fmt.Println(">>>Desired:")
+		target.Print()
+		loss := target.MSE(&out)
+		testError += loss
 	}
 
 	return trainError, testError, err
