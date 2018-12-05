@@ -34,7 +34,7 @@ func (n *WholeNet) Train(inputs *[]t.Tensor, desired *[]t.Tensor, testData *[]t.
 	}
 
 	// Initial shuffling of input data
-	rand.Seed(time.Now().UTC().UnixNano())
+	// rand.Seed(time.Now().UTC().UnixNano())
 	for i := range *inputs {
 		j := rand.Intn(i + 1)
 		(*inputs)[i], (*inputs)[j] = (*inputs)[j], (*inputs)[i]
@@ -73,7 +73,7 @@ func (n *WholeNet) Train(inputs *[]t.Tensor, desired *[]t.Tensor, testData *[]t.
 
 	for i := range *testData {
 		in := (*testData)[i]
-		in.Print()
+		// in.Print()
 		target := (*testDesired)[i]
 		n.FeedForward(&in)
 		out := n.GetOutput()
