@@ -17,6 +17,7 @@ import (
 	Weights - w{j,k}, weight from j-th node of previous layer to k-th node of current layer
 	PreviousIterationWeights - Δw{j, k}, delta-weight value for calibrating weight w{j,k}
 */
+
 type FullConnectedLayer struct {
 	In                       t.Tensor
 	Out                      t.Tensor
@@ -37,10 +38,10 @@ func NewFullConnectedLayer(inSize t.TDsize, outSize int) *LayerStruct {
 		NextDeltaWeightSum:       t.NewTensor(inSize.X, inSize.Y, inSize.Z),
 		Weights:                  t.NewTensor(inSize.X*inSize.Y*inSize.Z, outSize, 1),
 		PreviousIterationWeights: t.NewTensor(inSize.X*inSize.Y*inSize.Z, outSize, 1),
-		Input:                make([]float64, outSize),
-		LocalDelta:           make([]Gradient, outSize),
-		ActivationFunc:       ActivationTanh,           // Default Activation function is TanH
-		ActivationDerivative: ActivationTanhDerivative, // Default derivative of activation function is 1 - TanH(x)*TanH(x)
+		Input:                    make([]float64, outSize),
+		LocalDelta:               make([]Gradient, outSize),
+		ActivationFunc:           ActivationTanh,           // Default Activation function is TanH
+		ActivationDerivative:     ActivationTanhDerivative, // Default derivative of activation function is 1 - TanH(x)*TanH(x)
 	}
 	for i := 0; i < outSize; i++ {
 		for h := 0; h < inSize.X*inSize.Y*inSize.Z; h++ {

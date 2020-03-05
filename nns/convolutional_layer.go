@@ -24,10 +24,10 @@ type ConvLayer struct {
 func NewConvLayer(stride, kernelSize, numberFilters int, inSize t.TDsize) *LayerStruct {
 	newLayer := &ConvLayer{
 		DeltaWeightsComponent: t.NewTensor(inSize.X, inSize.Y, inSize.Z),
-		In:         t.NewTensor(inSize.X, inSize.Y, inSize.Z),
-		Out:        t.NewTensor((inSize.X-kernelSize)/stride+1, (inSize.Y-kernelSize)/stride+1, numberFilters),
-		Stride:     stride,
-		KernelSize: kernelSize,
+		In:                    t.NewTensor(inSize.X, inSize.Y, inSize.Z),
+		Out:                   t.NewTensor((inSize.X-kernelSize)/stride+1, (inSize.Y-kernelSize)/stride+1, numberFilters),
+		Stride:                stride,
+		KernelSize:            kernelSize,
 	}
 	for a := 0; a < numberFilters; a++ {
 		tmp := t.NewTensor(kernelSize, kernelSize, inSize.Z)

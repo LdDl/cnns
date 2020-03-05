@@ -18,6 +18,7 @@ func CheckAND() {
 	// Fully connected layer with 3 output neurons
 	fullyconnected1 := nns.NewFullConnectedLayer(t.TDsize{X: 2, Y: 1, Z: 1}, 2)
 	// There is 2 lines of reduntan code below, but it shows how to set definied activation function
+
 	fullyconnected1.SetActivationFunc(nns.ActivationTanh)
 	fullyconnected1.SetActivationDerivativeFunc(nns.ActivationTanhDerivative)
 
