@@ -52,9 +52,8 @@ func NewTensorCopy(t *Tensor) Tensor {
 	y - col;
 	z - depth.
 */
-func (t1 *Tensor) Get(x, y, z int) float64 {
-	// return (*t1).Data[x+(y+z*(*t1).Size.Z)*(*t1).Size.X]
-	return (*t1).Data[z*(*t1).Size.X*(*t1).Size.Y+y*(*t1).Size.X+x]
+func (t *Tensor) Get(x, y, z int) float64 {
+	return t.Data[z*t.Size.X*t.Size.Y+y*t.Size.X+x]
 }
 
 // GetPtr - Return [i][j][k]-th element (as pointer)
@@ -63,8 +62,8 @@ func (t1 *Tensor) Get(x, y, z int) float64 {
 	y - col;
 	z - depth.
 */
-func (t1 *Tensor) GetPtr(x, y, z int) *float64 {
-	return &t1.Data[z*t1.Size.X*t1.Size.Y+y*t1.Size.X+x]
+func (t *Tensor) GetPtr(x, y, z int) *float64 {
+	return &t.Data[z*t.Size.X*t.Size.Y+y*t.Size.X+x]
 }
 
 // Set - Set [i][j][k]-th element with value.
@@ -74,8 +73,8 @@ func (t1 *Tensor) GetPtr(x, y, z int) *float64 {
 	z - depth;
 	value - value of float64.
 */
-func (t1 *Tensor) Set(x, y, z int, val float64) {
-	(*t1).Data[z*(*t1).Size.X*(*t1).Size.Y+y*(*t1).Size.X+x] = val
+func (t *Tensor) Set(x, y, z int, val float64) {
+	t.Data[z*t.Size.X*t.Size.Y+y*t.Size.X+x] = val
 }
 
 // SetAdd - Add value to [i][j][k]-th element
@@ -85,22 +84,22 @@ func (t1 *Tensor) Set(x, y, z int, val float64) {
 	z - depth;
 	value - value of float64.
 */
-func (t1 *Tensor) SetAdd(x, y, z int, val float64) {
-	(*t1).Data[z*(*t1).Size.X*(*t1).Size.Y+y*(*t1).Size.X+x] += val
+func (t *Tensor) SetAdd(x, y, z int, val float64) {
+	t.Data[z*t.Size.X*t.Size.Y+y*t.Size.X+x] += val
 }
 
 // SetData3D - Set data for *Tensor (as 3-d array)
 /*
 	data - 3-D array of float64.
 */
-func (t1 *Tensor) SetData3D(data [][][]float64) {
+func (t *Tensor) SetData3D(data [][][]float64) {
 	z := len(data)       // depth
 	y := len(data[0])    // height (number of rows)
 	x := len(data[0][0]) // width (number of columns)
 	for i := 0; i < x; i++ {
 		for j := 0; j < y; j++ {
 			for k := 0; k < z; k++ {
-				(*t1).Set(i, j, k, data[k][j][i])
+				t.Set(i, j, k, data[k][j][i])
 			}
 		}
 	}
@@ -113,26 +112,26 @@ func (t1 *Tensor) SetData3D(data [][][]float64) {
 	d - depth;
 	data - 1-D array of float64.
 */
-func (t1 *Tensor) SetData(c, r, d int, data []float64) {
+func (t *Tensor) SetData(c, r, d int, data []float64) {
 	for i := 0; i < c; i++ {
 		for j := 0; j < r; j++ {
 			for k := 0; k < d; k++ {
-				(*t1).Set(i, j, k, data[k*c*d+j*c+i])
+				t.Set(i, j, k, data[k*c*d+j*c+i])
 			}
 		}
 	}
 }
 
 // Print - Pretty print for *Tensor (10 decimal places)
-func (t1 *Tensor) Print() {
-	mx := (*t1).Size.X
-	my := (*t1).Size.Y
-	mz := (*t1).Size.Z
+func (t *Tensor) Print() {
+	mx := t.Size.X
+	my := t.Size.Y
+	mz := t.Size.Z
 	for z := 0; z < mz; z++ {
 		fmt.Printf("Dim: %v\n", z)
 		for y := 0; y < my; y++ {
 			for x := 0; x < mx; x++ {
-				fmt.Printf("%.10f\t", (*t1).Get(x, y, z))
+				fmt.Printf("%.10f\t", t.Get(x, y, z))
 			}
 			fmt.Println()
 		}
@@ -140,17 +139,17 @@ func (t1 *Tensor) Print() {
 }
 
 // GetData3D - Return *Tensor as 3-D array
-func (t1 *Tensor) GetData3D() [][][]float64 {
-	mx := (*t1).Size.X
-	my := (*t1).Size.Y
-	mz := (*t1).Size.Z
+func (t *Tensor) GetData3D() [][][]float64 {
+	mx := t.Size.X
+	my := t.Size.Y
+	mz := t.Size.Z
 	ret := make([][][]float64, mz)
 	for z := 0; z < mz; z++ {
 		ret[z] = make([][]float64, my)
 		for y := 0; y < my; y++ {
 			ret[z][y] = make([]float64, mx)
 			for x := 0; x < mx; x++ {
-				ret[z][y][x] = (*t1).Get(x, y, z)
+				ret[z][y][x] = t.Get(x, y, z)
 			}
 		}
 	}
