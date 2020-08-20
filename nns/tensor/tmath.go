@@ -52,7 +52,7 @@ func (t1 *Tensor) Transpose() Tensor {
 	return ret
 }
 
-// Product - Product Tensor  by Tensor (by X and Y axis, 2D)
+// Product - Product Tensor by Tensor (by X and Y axis, 2D)
 func (t1 *Tensor) Product(t2 *Tensor) (Tensor, error) {
 	ret := NewTensor(t2.Size.X, t1.Size.Y, t1.Size.Z)
 	if t1.Size.Z != t2.Size.Z || t1.Size.X != t2.Size.Y {

@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-// Tensor - Structure for storing data of float64.
+// Tensor - Structure for storing data of float64. Actually we can't call this Tensor in terms of math: this one just implements 3 dimmensions
 /*
 	Data - one-dimensional array of float64;
 	Size - tensor's data size (see "TDsize" structure).
