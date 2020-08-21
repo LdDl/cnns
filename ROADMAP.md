@@ -12,5 +12,6 @@
 7. Test cases for most of math functions
 8. Padding for convolutional layer
 9. Write theoretical documents on most of functions (on every would be even better)
+10. New struct of examples folder (split it on different types of tasks for neural networks)
 
 Updated at: 2020-08-21
