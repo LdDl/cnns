@@ -30,7 +30,7 @@ go get github.com/LdDl/cnns
 
 ## Usage
 
-Just look into [main.go](main.go) and [examples folder](examples)
+Just look into [examples folder](examples)
 
 For some peoples it is realy hard to understand algorithms without step-by-step examples. So we provide some:
 
