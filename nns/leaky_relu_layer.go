@@ -29,9 +29,9 @@ type LeakyReLULayer struct {
 func NewLeakyReLULayer(inSize t.TDsize, alpha float64) *LayerStruct {
 	newLayer := &LeakyReLULayer{
 		InputGradientsWeights: t.NewTensor(inSize.X, inSize.Y, inSize.Z),
-		In:    t.NewTensor(inSize.X, inSize.Y, inSize.Z),
-		Out:   t.NewTensor(inSize.X, inSize.Y, inSize.Z),
-		alpha: alpha,
+		In:                    t.NewTensor(inSize.X, inSize.Y, inSize.Z),
+		Out:                   t.NewTensor(inSize.X, inSize.Y, inSize.Z),
+		alpha:                 alpha,
 	}
 	return &LayerStruct{
 		Layer: newLayer,
@@ -44,12 +44,12 @@ func (lrelu *LeakyReLULayer) SetCustomWeights(t *[]t.Tensor) {
 }
 
 // OutSize - Return output size (dimensions)
-func (lrelu *LeakyReLULayer) OutSize() t.Point {
+func (lrelu *LeakyReLULayer) OutSize() t.TDsize {
 	return (*lrelu).Out.Size
 }
 
 // GetInputSize - Return input size (dimensions)
-func (lrelu *LeakyReLULayer) GetInputSize() t.Point {
+func (lrelu *LeakyReLULayer) GetInputSize() t.TDsize {
 	return (*lrelu).In.Size
 }
 

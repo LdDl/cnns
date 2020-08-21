@@ -41,12 +41,12 @@ func (maxpool *MaxPoolingLayer) SetCustomWeights(t *[]t.Tensor) {
 }
 
 // OutSize - returns output size (dimensions)
-func (maxpool *MaxPoolingLayer) OutSize() t.Point {
+func (maxpool *MaxPoolingLayer) OutSize() t.TDsize {
 	return (*maxpool).Out.Size
 }
 
 // GetInputSize - returns input size (dimensions)
-func (maxpool *MaxPoolingLayer) GetInputSize() t.Point {
+func (maxpool *MaxPoolingLayer) GetInputSize() t.TDsize {
 	return (*maxpool).In.Size
 }
 

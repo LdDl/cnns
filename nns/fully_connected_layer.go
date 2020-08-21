@@ -67,12 +67,12 @@ func (fc *FullConnectedLayer) SetCustomWeights(t *[]t.Tensor) {
 }
 
 // OutSize - returns output size (dimensions)
-func (fc *FullConnectedLayer) OutSize() t.Point {
+func (fc *FullConnectedLayer) OutSize() t.TDsize {
 	return (*fc).Out.Size
 }
 
 // GetInputSize - returns input size (dimensions)
-func (fc *FullConnectedLayer) GetInputSize() t.Point {
+func (fc *FullConnectedLayer) GetInputSize() t.TDsize {
 	return (*fc).In.Size
 }
 

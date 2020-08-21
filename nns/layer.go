@@ -18,10 +18,10 @@ type WholeNet struct {
 // Layer - interface for all layer types
 type Layer interface {
 	// OutSize - returns output size (dimensions)
-	OutSize() t.Point
+	OutSize() t.TDsize
 
 	// GetInputSize - returns input size (dimensions)
-	GetInputSize() t.Point
+	GetInputSize() t.TDsize
 
 	// GetOutput - returns layer's output
 	GetOutput() t.Tensor

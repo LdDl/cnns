@@ -39,12 +39,12 @@ func (relu *ReLULayer) SetCustomWeights(t *[]t.Tensor) {
 }
 
 // OutSize - Return output size (dimensions)
-func (relu *ReLULayer) OutSize() t.Point {
+func (relu *ReLULayer) OutSize() t.TDsize {
 	return (*relu).Out.Size
 }
 
 // GetInputSize - Return input size (dimensions)
-func (relu *ReLULayer) GetInputSize() t.Point {
+func (relu *ReLULayer) GetInputSize() t.TDsize {
 	return (*relu).In.Size
 }
 
