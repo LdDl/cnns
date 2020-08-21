@@ -12,13 +12,8 @@ CNNS (Convolutional Neural Networks) is a little package for developing simple n
 ## Table of Contents
 
 - [Features](#features)
-- [Theoretical](#theoretical)
-    - [MLP](#mlp)
-    - [CNN](#cnn)
-    - [Examples](#examples)
 - [Installation](#installation)
 - [Usage](#usage)
-- [ToDo](#todo)
 - [Support](#support)
 
 ## Features
@@ -26,14 +21,16 @@ CNNS (Convolutional Neural Networks) is a little package for developing simple n
 - CNN (convolutional neural network)
 - MLP (multilayer perceptron)
 
-## Theoretical
+## Installation
 
-### MLP
-@todo
-### CNN
-@todo
+Installation is pretty simple:
+```go
+go get github.com/LdDl/cnns
+```
 
-### Examples
+## Usage
+
+Just look into [main.go](main.go) and [examples folder](examples)
 
 For some peoples it is realy hard to understand algorithms without step-by-step examples. So we provide some:
 
@@ -49,34 +46,6 @@ For some peoples it is realy hard to understand algorithms without step-by-step 
         and associated example [examples/mlp_1.go](https://github.com/LdDl/cnns/blob/master/examples/mlp_1.go)
 
 There are 3 epochs provided (see tabs: Step_1, Step_2, Step_3)) for each net also.
-
-## Installation
-
-Installation is pretty simple:
-```go
-go get github.com/LdDl/cnns
-```
-
-## Usage
-
-@todo
-
-## ToDo
-
-- Softmax layer;
-- Maxout layer;
-- Optimization for learning;
-- More Excel examples for understanding how feedforward and backpropagate works;
-- ~~Ability to define learning parametrs not in library (they are predefined now). Need to change the way network uses learning parameters for backpropagation;~~ **added SetEta, SetMomentum functions**
-- Padding for Conv layer;
-- Dropout layer;
-- ~~Integrate inertia momentum into backpropagation functions for FC layer;~~
-- ~~Integrate inertia momentum into backpropagation functions for Conv layer;~~
-- ~~Explain examples with usage of [GoCV](https://github.com/hybridgroup/gocv/#gocv) package;~~ **we've replaced every GoCV usage with "image" and "nfnt/resize" to reduce complexity of dependencies. May be bring GoCV back later**
-- Clear code from some debugging stuff;
-- Write tests (as addition to Excel files);
-- Bias neuron as option for FC layer;
-- ~~Add more activation functions.~~ **added arctan, softplus, gaussian**
 
 ## Support
 
