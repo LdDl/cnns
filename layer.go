@@ -18,10 +18,10 @@ type WholeNet struct {
 // Layer - interface for all layer types
 type Layer interface {
 	// OutSize - returns output size (dimensions)
-	OutSize() t.TDsize
+	OutSize() *t.TDsize
 
 	// GetInputSize - returns input size (dimensions)
-	GetInputSize() t.TDsize
+	GetInputSize() *t.TDsize
 
 	// GetOutput - returns layer's output
 	GetOutput() t.Tensor
@@ -146,7 +146,7 @@ func (wh *WholeNet) ImportFromFile(fname string, randomWeights bool) error {
 			x := data.Network.Layers[i].InputSize.X
 			y := data.Network.Layers[i].InputSize.Y
 			z := data.Network.Layers[i].InputSize.Z
-			relu := NewReLULayer(t.TDsize{X: x, Y: y, Z: z})
+			relu := NewReLULayer(&t.TDsize{X: x, Y: y, Z: z})
 			wh.Layers = append(wh.Layers, relu)
 			break
 		case "pool":
@@ -155,7 +155,7 @@ func (wh *WholeNet) ImportFromFile(fname string, randomWeights bool) error {
 			x := data.Network.Layers[i].InputSize.X
 			y := data.Network.Layers[i].InputSize.Y
 			z := data.Network.Layers[i].InputSize.Z
-			pool := NewMaxPoolingLayer(stride, kernelSize, t.TDsize{X: x, Y: y, Z: z})
+			pool := NewMaxPoolingLayer(stride, kernelSize, &t.TDsize{X: x, Y: y, Z: z})
 			wh.Layers = append(wh.Layers, pool)
 			break
 		case "fc":
@@ -163,7 +163,7 @@ func (wh *WholeNet) ImportFromFile(fname string, randomWeights bool) error {
 			y := data.Network.Layers[i].InputSize.Y
 			z := data.Network.Layers[i].InputSize.Z
 			outSize := data.Network.Layers[i].OutputSize.X
-			fullyconnected := NewFullyConnectedLayer(t.TDsize{X: x, Y: y, Z: z}, outSize)
+			fullyconnected := NewFullyConnectedLayer(&t.TDsize{X: x, Y: y, Z: z}, outSize)
 			if randomWeights == false {
 				var weights t.Tensor
 				weights = t.NewTensor(x*y*z, outSize, 1)
@@ -267,7 +267,7 @@ type NetJSON struct {
 
 // TensorJSON ...
 type TensorJSON struct {
-	TDSize t.TDsize      `json:"TDSize"`
+	TDSize *t.TDsize     `json:"TDSize"`
 	Data   [][][]float64 `json:"Data"`
 }
 
@@ -280,12 +280,12 @@ type LayerParamsJSON struct {
 // NetLayerJSON ...
 type NetLayerJSON struct {
 	LayerType  string          `json:"LayerType"`
-	InputSize  t.TDsize        `json:"InputSize"`
+	InputSize  *t.TDsize       `json:"InputSize"`
 	Parameters LayerParamsJSON `json:"Parameters,omitempty"`
 	Weights    []TensorJSON    `json:"Weights,omitempty"`
 	// Actually "OutputSize" parameter is usefull for fully connected layer only
 	// There are automatic calculation of output size for other layers' types
-	OutputSize t.TDsize `json:"OutputSize,omitempty"`
+	OutputSize *t.TDsize `json:"OutputSize,omitempty"`
 }
 
 // NetworkJSON ...

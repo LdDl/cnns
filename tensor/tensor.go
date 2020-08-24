@@ -11,7 +11,7 @@ import (
 */
 type Tensor struct {
 	Data []float64
-	Size TDsize
+	Size *TDsize
 }
 
 // NewTensor - Constructor for Tensor type.
@@ -23,7 +23,7 @@ type Tensor struct {
 func NewTensor(x, y, z int) Tensor {
 	return Tensor{
 		Data: make([]float64, x*y*z),
-		Size: TDsize{
+		Size: &TDsize{
 			X: x,
 			Y: y,
 			Z: z,
@@ -38,7 +38,7 @@ func NewTensor(x, y, z int) Tensor {
 func NewTensorCopy(t *Tensor) Tensor {
 	return Tensor{
 		Data: (*t).Data,
-		Size: TDsize{
+		Size: &TDsize{
 			X: (*t).Size.X,
 			Y: (*t).Size.Y,
 			Z: (*t).Size.Z,

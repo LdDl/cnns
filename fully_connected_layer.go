@@ -31,7 +31,7 @@ type FullyConnectedLayer struct {
 }
 
 // NewFullyConnectedLayer - constructor for new fully connected layer. You need to specify input size and output size
-func NewFullyConnectedLayer(inSize t.TDsize, outSize int) *LayerStruct {
+func NewFullyConnectedLayer(inSize *t.TDsize, outSize int) *LayerStruct {
 	newLayer := &FullyConnectedLayer{
 		In:                       t.NewTensor(inSize.X, inSize.Y, inSize.Z),
 		Out:                      t.NewTensor(outSize, 1, 1),
@@ -67,12 +67,12 @@ func (fc *FullyConnectedLayer) SetCustomWeights(t *[]t.Tensor) {
 }
 
 // OutSize - returns output size (dimensions)
-func (fc *FullyConnectedLayer) OutSize() t.TDsize {
+func (fc *FullyConnectedLayer) OutSize() *t.TDsize {
 	return fc.Out.Size
 }
 
 // GetInputSize - returns input size (dimensions)
-func (fc *FullyConnectedLayer) GetInputSize() t.TDsize {
+func (fc *FullyConnectedLayer) GetInputSize() *t.TDsize {
 	return fc.In.Size
 }
 

@@ -22,7 +22,7 @@ type MaxPoolingLayer struct {
 }
 
 // NewMaxPoolingLayer - constructor for new MaxPooling layer.
-func NewMaxPoolingLayer(stride, extendFilter int, inSize t.TDsize) *LayerStruct {
+func NewMaxPoolingLayer(stride, extendFilter int, inSize *t.TDsize) *LayerStruct {
 	newLayer := &MaxPoolingLayer{
 		In:           t.NewTensor(inSize.X, inSize.Y, inSize.Z),
 		Out:          t.NewTensor((inSize.X-extendFilter)/stride+1, (inSize.Y-extendFilter)/stride+1, inSize.Z),
@@ -41,12 +41,12 @@ func (maxpool *MaxPoolingLayer) SetCustomWeights(t *[]t.Tensor) {
 }
 
 // OutSize - returns output size (dimensions)
-func (maxpool *MaxPoolingLayer) OutSize() t.TDsize {
+func (maxpool *MaxPoolingLayer) OutSize() *t.TDsize {
 	return maxpool.Out.Size
 }
 
 // GetInputSize - returns input size (dimensions)
-func (maxpool *MaxPoolingLayer) GetInputSize() t.TDsize {
+func (maxpool *MaxPoolingLayer) GetInputSize() *t.TDsize {
 	return maxpool.In.Size
 }
 
