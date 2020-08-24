@@ -36,5 +36,6 @@
 - [ ] Consider float32 as extension
 - [ ] Improve README's **continuous work**
 - [ ] Graphviz pretty print.
+- [ ] Add CI on https://travis-ci.com
 
 Updated at: 2020-08-24
