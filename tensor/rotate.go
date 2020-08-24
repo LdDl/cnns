@@ -1,7 +1,7 @@
 package tensor
 
 // Rot2D90 Rotate tensor (2d component) by 90 degrees. Returns new instance of Tensor
-func (t1 *Tensor) Rot2D90(times ...int) Tensor {
+func (t1 *Tensor) Rot2D90(times ...int) *Tensor {
 	ret := NewTensor(t1.Size.Y, t1.Size.X, t1.Size.Z)
 	for z := 0; z < ret.Size.Z; z++ {
 		for y := 0; y < ret.Size.Y; y++ {
@@ -19,11 +19,11 @@ func (t1 *Tensor) Rot2D90(times ...int) Tensor {
 }
 
 // Rot2D180 Rotate tensor (2d component) by 180 degrees. Returns new instance of Tensor
-func (t1 *Tensor) Rot2D180() Tensor {
+func (t1 *Tensor) Rot2D180() *Tensor {
 	return t1.Rot2D90(2)
 }
 
 // Rot2D270 Rotate tensor (2d component) by 270 degrees. Returns new instance of Tensor
-func (t1 *Tensor) Rot2D270() Tensor {
+func (t1 *Tensor) Rot2D270() *Tensor {
 	return t1.Rot2D90(3)
 }

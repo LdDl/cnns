@@ -24,13 +24,13 @@ type Layer interface {
 	GetInputSize() *t.TDsize
 
 	// GetOutput - returns layer's output
-	GetOutput() t.Tensor
+	GetOutput() *t.Tensor
 
 	// GetWeights - returns layer's weights
-	GetWeights() []t.Tensor
+	GetWeights() []*t.Tensor
 
 	// GetGradients - returns layer's gradients
-	GetGradients() t.Tensor
+	GetGradients() *t.Tensor
 
 	// FeedForward - feed data to layer
 	FeedForward(t *t.Tensor)
@@ -61,7 +61,7 @@ type Layer interface {
 
 	SetActivationFunc(f func(v float64) float64)
 	SetActivationDerivativeFunc(f func(v float64) float64)
-	SetCustomWeights(t *[]t.Tensor)
+	SetCustomWeights(t []*t.Tensor)
 }
 
 // LayerStruct - struct wraps layer interface
@@ -74,7 +74,7 @@ func (wh *WholeNet) FeedForward(t *t.Tensor) {
 	wh.Layers[0].FeedForward(t)
 	for l := 1; l < len(wh.Layers); l++ {
 		out := wh.Layers[l-1].GetOutput()
-		wh.Layers[l].FeedForward(&out)
+		wh.Layers[l].FeedForward(out)
 	}
 }
 
@@ -83,11 +83,11 @@ func (wh *WholeNet) Backpropagate(target *t.Tensor) {
 	lastLayer := wh.Layers[len(wh.Layers)-1].GetOutput()
 
 	difference := lastLayer.Sub(target)
-	wh.Layers[len(wh.Layers)-1].CalculateGradients(&difference)
+	wh.Layers[len(wh.Layers)-1].CalculateGradients(difference)
 
 	for i := len(wh.Layers) - 2; i >= 0; i-- {
 		grad := wh.Layers[i+1].GetGradients()
-		wh.Layers[i].CalculateGradients(&grad)
+		wh.Layers[i].CalculateGradients(grad)
 	}
 	for i := range wh.Layers {
 		wh.Layers[i].UpdateWeights()
@@ -100,7 +100,7 @@ func (wh *WholeNet) PrintOutput() {
 }
 
 // GetOutput - returns net's output (last layer output)
-func (wh *WholeNet) GetOutput() t.Tensor {
+func (wh *WholeNet) GetOutput() *t.Tensor {
 	return wh.Layers[len(wh.Layers)-1].GetOutput()
 }
 
@@ -133,12 +133,12 @@ func (wh *WholeNet) ImportFromFile(fname string, randomWeights bool) error {
 			z := data.Network.Layers[i].InputSize.Z
 			conv := NewConvLayer(stride, kernelSize, numOfFilters, t.TDsize{X: x, Y: y, Z: z})
 			if randomWeights == false {
-				var weights = make([]t.Tensor, numOfFilters)
+				var weights = make([]*t.Tensor, numOfFilters)
 				for w := 0; w < numOfFilters; w++ {
 					weights[w] = t.NewTensor(kernelSize, kernelSize, 1)
 					weights[w].SetData3D(data.Network.Layers[i].Weights[w].Data)
 				}
-				conv.SetCustomWeights(&weights)
+				conv.SetCustomWeights(weights)
 			}
 			wh.Layers = append(wh.Layers, conv)
 			break
@@ -165,10 +165,10 @@ func (wh *WholeNet) ImportFromFile(fname string, randomWeights bool) error {
 			outSize := data.Network.Layers[i].OutputSize.X
 			fullyconnected := NewFullyConnectedLayer(&t.TDsize{X: x, Y: y, Z: z}, outSize)
 			if randomWeights == false {
-				var weights t.Tensor
+				var weights *t.Tensor
 				weights = t.NewTensor(x*y*z, outSize, 1)
 				weights.SetData3D(data.Network.Layers[i].Weights[0].Data)
-				fullyconnected.SetCustomWeights(&[]t.Tensor{weights})
+				fullyconnected.SetCustomWeights([]*t.Tensor{weights})
 			}
 			wh.Layers = append(wh.Layers, fullyconnected)
 			break

@@ -15,9 +15,9 @@ import (
 	but in Leaky ReLU it is: f(x) = alpha*x (for x < 0) and f(x) = x (for x >= 0).
 */
 type LeakyReLULayer struct {
-	In                    t.Tensor
-	Out                   t.Tensor
-	InputGradientsWeights t.Tensor
+	In                    *t.Tensor
+	Out                   *t.Tensor
+	InputGradientsWeights *t.Tensor
 	alpha                 float64
 }
 
@@ -39,7 +39,7 @@ func NewLeakyReLULayer(inSize *t.TDsize, alpha float64) *LayerStruct {
 }
 
 // SetCustomWeights - Set user's weights (make it carefully)
-func (lrelu *LeakyReLULayer) SetCustomWeights(t *[]t.Tensor) {
+func (lrelu *LeakyReLULayer) SetCustomWeights(t []*t.Tensor) {
 	fmt.Println("There are no weights for ReLU layer")
 }
 
@@ -54,24 +54,24 @@ func (lrelu *LeakyReLULayer) GetInputSize() *t.TDsize {
 }
 
 // GetOutput - Return Leaky ReLU layer's output
-func (lrelu *LeakyReLULayer) GetOutput() t.Tensor {
+func (lrelu *LeakyReLULayer) GetOutput() *t.Tensor {
 	return lrelu.Out
 }
 
 // GetWeights - Return Leaky ReLU layer's weights
-func (lrelu *LeakyReLULayer) GetWeights() []t.Tensor {
+func (lrelu *LeakyReLULayer) GetWeights() []*t.Tensor {
 	fmt.Println("There are no weights for ReLU layer")
-	return []t.Tensor{}
+	return []*t.Tensor{}
 }
 
 // GetGradients - Return Leaky ReLU layer's gradients
-func (lrelu *LeakyReLULayer) GetGradients() t.Tensor {
+func (lrelu *LeakyReLULayer) GetGradients() *t.Tensor {
 	return lrelu.InputGradientsWeights
 }
 
 // FeedForward - Feed data to Leaky ReLU layer
 func (lrelu *LeakyReLULayer) FeedForward(t *t.Tensor) {
-	lrelu.In = (*t)
+	lrelu.In = t
 	lrelu.DoActivation()
 }
 

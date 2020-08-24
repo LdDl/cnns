@@ -40,7 +40,7 @@ func CheckXTO() {
 
 	// Start traing process
 	numOfEpochs := 50
-	trainErr, testErr, err := net.Train(&inputs, &desired, &inputsTests, &desiredTests, numOfEpochs)
+	trainErr, testErr, err := net.Train(inputs, desired, inputsTests, desiredTests, numOfEpochs)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -49,7 +49,7 @@ func CheckXTO() {
 
 }
 
-func formTrainDataXTO() ([]t.Tensor, []t.Tensor) {
+func formTrainDataXTO() ([]*t.Tensor, []*t.Tensor) {
 	numExamples := 10000
 
 	var xmatrix = [][][]float64{
@@ -99,8 +99,8 @@ func formTrainDataXTO() ([]t.Tensor, []t.Tensor) {
 	var oimage = t.NewTensor(8, 9, 1)
 	oimage.SetData3D(omatrix)
 
-	inputs := make([]t.Tensor, numExamples)
-	desired := make([]t.Tensor, numExamples)
+	inputs := make([]*t.Tensor, numExamples)
+	desired := make([]*t.Tensor, numExamples)
 	for i := 0; i < numExamples; i++ {
 		var rnd = u.RandomInt(0, 3)
 
@@ -131,9 +131,9 @@ func formTrainDataXTO() ([]t.Tensor, []t.Tensor) {
 	return inputs, desired
 }
 
-func formTestDataXTO() ([]t.Tensor, []t.Tensor) {
-	inputs := make([]t.Tensor, 0, 3)
-	desired := make([]t.Tensor, 0, 3)
+func formTestDataXTO() ([]*t.Tensor, []*t.Tensor) {
+	inputs := make([]*t.Tensor, 0, 3)
+	desired := make([]*t.Tensor, 0, 3)
 
 	input := t.NewTensor(8, 9, 1)
 	target := t.NewTensor(3, 1, 1)

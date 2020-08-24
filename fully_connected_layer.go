@@ -18,11 +18,11 @@ import (
 	PreviousIterationWeights - Δw{j, k}, delta-weight value for calibrating weight w{j,k}
 */
 type FullyConnectedLayer struct {
-	In                       t.Tensor
-	Out                      t.Tensor
-	NextDeltaWeightSum       t.Tensor
-	Weights                  t.Tensor
-	PreviousIterationWeights t.Tensor
+	In                       *t.Tensor
+	Out                      *t.Tensor
+	NextDeltaWeightSum       *t.Tensor
+	Weights                  *t.Tensor
+	PreviousIterationWeights *t.Tensor
 	LocalDelta               []Gradient
 	Input                    []float64
 	ActivationFunc           func(v float64) float64
@@ -53,14 +53,14 @@ func NewFullyConnectedLayer(inSize *t.TDsize, outSize int) *LayerStruct {
 }
 
 // SetCustomWeights - set user's weights (make it carefully)
-func (fc *FullyConnectedLayer) SetCustomWeights(t *[]t.Tensor) {
-	if len(*t) != 1 {
+func (fc *FullyConnectedLayer) SetCustomWeights(t []*t.Tensor) {
+	if len(t) != 1 {
 		fmt.Println("You can provide array of length 1 only (for fully-connected layer)")
 		return
 	}
 	for i := 0; i < fc.Weights.Size.Y; i++ {
 		for h := 0; h < fc.Weights.Size.X; h++ {
-			fc.Weights.Set(h, i, 0, (*t)[0].Get(h, i, 0))
+			fc.Weights.Set(h, i, 0, t[0].Get(h, i, 0))
 		}
 	}
 }
@@ -76,23 +76,23 @@ func (fc *FullyConnectedLayer) GetInputSize() *t.TDsize {
 }
 
 // GetOutput - returns fully connected layer's output
-func (fc *FullyConnectedLayer) GetOutput() t.Tensor {
+func (fc *FullyConnectedLayer) GetOutput() *t.Tensor {
 	return fc.Out // Here we outputing ACTIVATED values
 }
 
 // GetWeights - returns convolutional layer's weights.
-func (fc *FullyConnectedLayer) GetWeights() []t.Tensor {
-	return []t.Tensor{fc.Weights}
+func (fc *FullyConnectedLayer) GetWeights() []*t.Tensor {
+	return []*t.Tensor{fc.Weights}
 }
 
 // GetGradients - returns SUM(next layer grad * weights) as gradients
-func (fc *FullyConnectedLayer) GetGradients() t.Tensor {
+func (fc *FullyConnectedLayer) GetGradients() *t.Tensor {
 	return fc.NextDeltaWeightSum
 }
 
 // FeedForward - feed data to fully connected layer
 func (fc *FullyConnectedLayer) FeedForward(t *t.Tensor) {
-	fc.In = (*t)
+	fc.In = t
 	fc.DoActivation()
 }
 

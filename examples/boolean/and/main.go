@@ -43,7 +43,7 @@ func CheckAND() {
 
 	// Start traing process
 	numOfEpochs := 1
-	trainErr, testErr, err := net.Train(&inputs, &desired, &inputsTests, &desiredTests, numOfEpochs)
+	trainErr, testErr, err := net.Train(inputs, desired, inputsTests, desiredTests, numOfEpochs)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -51,11 +51,11 @@ func CheckAND() {
 	fmt.Printf("Error on training data: %v\nError on test data: %v\n", trainErr, testErr)
 }
 
-func formTrainDataAND() ([]t.Tensor, []t.Tensor) {
+func formTrainDataAND() ([]*t.Tensor, []*t.Tensor) {
 	numExamples := 100000
 
-	inputs := make([]t.Tensor, numExamples)
-	desired := make([]t.Tensor, numExamples)
+	inputs := make([]*t.Tensor, numExamples)
+	desired := make([]*t.Tensor, numExamples)
 	for i := 0; i < numExamples; i++ {
 		x := u.RandomInt(0, 2)
 		y := u.RandomInt(0, 2)
@@ -75,9 +75,9 @@ func formTrainDataAND() ([]t.Tensor, []t.Tensor) {
 	return inputs, desired
 }
 
-func formTestDataAND() ([]t.Tensor, []t.Tensor) {
-	inputs := make([]t.Tensor, 0, 4)
-	desired := make([]t.Tensor, 0, 4)
+func formTestDataAND() ([]*t.Tensor, []*t.Tensor) {
+	inputs := make([]*t.Tensor, 0, 4)
+	desired := make([]*t.Tensor, 0, 4)
 
 	input := t.NewTensor(2, 1, 1)
 	target := t.NewTensor(1, 1, 1)

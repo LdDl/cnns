@@ -13,9 +13,9 @@ import (
 	LocalDelta - incoming gradients*weights (backpropagation)
 */
 type ReLULayer struct {
-	In         t.Tensor
-	Out        t.Tensor
-	LocalDelta t.Tensor
+	In         *t.Tensor
+	Out        *t.Tensor
+	LocalDelta *t.Tensor
 }
 
 // NewReLULayer - Constructor for new ReLU layer. You need to specify input size
@@ -34,7 +34,7 @@ func NewReLULayer(inSize *t.TDsize) *LayerStruct {
 }
 
 // SetCustomWeights - Set user's weights (make it carefully)
-func (relu *ReLULayer) SetCustomWeights(t *[]t.Tensor) {
+func (relu *ReLULayer) SetCustomWeights(t []*t.Tensor) {
 	fmt.Println("There are no weights for ReLU layer")
 }
 
@@ -49,24 +49,24 @@ func (relu *ReLULayer) GetInputSize() *t.TDsize {
 }
 
 // GetOutput - Return ReLU layer's output
-func (relu *ReLULayer) GetOutput() t.Tensor {
+func (relu *ReLULayer) GetOutput() *t.Tensor {
 	return relu.Out
 }
 
 // GetWeights - Return ReLU layer's weights
-func (relu *ReLULayer) GetWeights() []t.Tensor {
+func (relu *ReLULayer) GetWeights() []*t.Tensor {
 	fmt.Println("There are no weights for ReLU layer")
-	return []t.Tensor{}
+	return []*t.Tensor{}
 }
 
 // GetGradients - Return ReLU layer's gradients
-func (relu *ReLULayer) GetGradients() t.Tensor {
+func (relu *ReLULayer) GetGradients() *t.Tensor {
 	return relu.LocalDelta
 }
 
 // FeedForward - Feed data to ReLU layer
 func (relu *ReLULayer) FeedForward(t *t.Tensor) {
-	relu.In = (*t)
+	relu.In = t
 	relu.DoActivation()
 }
 

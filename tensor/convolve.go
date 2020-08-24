@@ -1,7 +1,7 @@
 package tensor
 
 // Conv2D - @experimental Convolve tensor with respect only to X and Y axis (2D)
-func (t1 *Tensor) Conv2D(t2 Tensor, stride [2]int, padding [2]int) Tensor {
+func (t1 *Tensor) Conv2D(t2 Tensor, stride [2]int, padding [2]int) *Tensor {
 	outputX := (t1.Size.X-t2.Size.X+2*padding[0])/stride[0] + 1
 	outputY := (t1.Size.Y-t2.Size.Y+2*padding[1])/stride[1] + 1
 	outputData := NewTensor(outputX, outputY, t2.Size.Z)

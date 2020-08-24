@@ -20,8 +20,8 @@ type Tensor struct {
 	y - number of rows (height);
 	z - depth.
 */
-func NewTensor(x, y, z int) Tensor {
-	return Tensor{
+func NewTensor(x, y, z int) *Tensor {
+	return &Tensor{
 		Data: make([]float64, x*y*z),
 		Size: &TDsize{
 			X: x,
@@ -35,8 +35,8 @@ func NewTensor(x, y, z int) Tensor {
 /*
 	t - *Tensor which you want to copy.
 */
-func NewTensorCopy(t *Tensor) Tensor {
-	return Tensor{
+func NewTensorCopy(t *Tensor) *Tensor {
+	return &Tensor{
 		Data: (*t).Data,
 		Size: &TDsize{
 			X: (*t).Size.X,

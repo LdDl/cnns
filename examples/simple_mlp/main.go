@@ -31,10 +31,10 @@ func ExampleOne() {
 	inputData.SetData(2, 1, 1, []float64{0.2, 0.5})
 
 	for e := 0; e < 3; e++ {
-		net.FeedForward(&inputData)
+		net.FeedForward(inputData)
 		desired := t.NewTensor(1, 1, 1)
 		desired.SetData(1, 1, 1, []float64{0.4})
-		net.Backpropagate(&desired)
+		net.Backpropagate(desired)
 		fmt.Printf("Layers (after):\n")
 		for i := range net.Layers {
 			fmt.Printf("%v weights:\n", net.Layers[i].GetType())
@@ -69,10 +69,10 @@ func ExampleTwo() {
 	inputData.SetData(2, 1, 1, []float64{0.2, 0.5})
 
 	for e := 0; e < 3; e++ {
-		net.FeedForward(&inputData)
+		net.FeedForward(inputData)
 		desired := t.NewTensor(1, 1, 1)
 		desired.SetData(1, 1, 1, []float64{0.4})
-		net.Backpropagate(&desired)
+		net.Backpropagate(desired)
 		fmt.Printf("Layers (after):\n")
 		for i := range net.Layers {
 			fmt.Printf("%v weights:\n", net.Layers[i].GetType())
@@ -80,6 +80,6 @@ func ExampleTwo() {
 		}
 	}
 
-	net.FeedForward(&inputData)
+	net.FeedForward(inputData)
 	net.PrintOutput()
 }

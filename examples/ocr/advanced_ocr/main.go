@@ -113,12 +113,12 @@ func CheckOCR() {
 		log.Panicln(err)
 	}
 
-	train(&net, &trainMats)
-	testTrained(&net, &testMats)
+	train(&net, trainMats)
+	testTrained(&net, testMats)
 
 }
 
-func formTrainDataOCR() ([]t.Tensor, []t.Tensor) {
+func formTrainDataOCR() ([]*t.Tensor, []*t.Tensor) {
 	fileNames, err := readFileNames(trainImagesPath)
 	if err != nil {
 		log.Panicln(err)
@@ -127,12 +127,12 @@ func formTrainDataOCR() ([]t.Tensor, []t.Tensor) {
 	for _, v := range fileNames {
 		numExamples += len(v)
 	}
-	var inputs []t.Tensor
-	var desired []t.Tensor
-	tensorFiles := make(map[string][]t.Tensor)
+	var inputs []*t.Tensor
+	var desired []*t.Tensor
+	tensorFiles := make(map[string][]*t.Tensor)
 	for k, v := range fileNames {
 		if _, ok := tensorFiles[k]; !ok {
-			tensorFiles[k] = []t.Tensor{}
+			tensorFiles[k] = []*t.Tensor{}
 		}
 		for _, j := range v {
 			img, err := u.ReadImage(j)
@@ -185,7 +185,7 @@ func formTrainDataOCR() ([]t.Tensor, []t.Tensor) {
 	return inputs, desired
 }
 
-func formTestDataOCR() ([]t.Tensor, []t.Tensor) {
+func formTestDataOCR() ([]*t.Tensor, []*t.Tensor) {
 
 	fileNames, err := readFileNames(testImagesPath)
 	if err != nil {
@@ -196,13 +196,13 @@ func formTestDataOCR() ([]t.Tensor, []t.Tensor) {
 		numExamples += len(v)
 	}
 
-	var inputs []t.Tensor
-	var desired []t.Tensor
+	var inputs []*t.Tensor
+	var desired []*t.Tensor
 
-	tensorFiles := make(map[string][]t.Tensor)
+	tensorFiles := make(map[string][]*t.Tensor)
 	for k, v := range fileNames {
 		if _, ok := tensorFiles[k]; !ok {
-			tensorFiles[k] = []t.Tensor{}
+			tensorFiles[k] = []*t.Tensor{}
 		}
 		for _, j := range v {
 			img, err := u.ReadImage(j)
@@ -270,12 +270,12 @@ func readFileNames(dir string) (map[string][]string, error) {
 }
 
 // train - train network
-func train(net *cnns.WholeNet, data *map[string][]t.Tensor) error {
+func train(net *cnns.WholeNet, data map[string][]*t.Tensor) error {
 	st := time.Now()
 	var err error
 	rand.Seed(time.Now().UnixNano())
 	var trainers []Trainer
-	for k, v := range *data {
+	for k, v := range data {
 		intK, err := strconv.Atoi(k)
 		if err != nil {
 			return err
@@ -306,9 +306,9 @@ func train(net *cnns.WholeNet, data *map[string][]t.Tensor) error {
 		trainers = SuffleTrainers(trainers)
 		for _, t := range trainers {
 			// Feedforward
-			net.FeedForward(&t.Image)
+			net.FeedForward(t.Image)
 			// Backward
-			net.Backpropagate(&t.Desired)
+			net.Backpropagate(t.Desired)
 		}
 		fmt.Printf("Epoch #%v in %v\n", e, time.Since(st))
 	}
@@ -317,10 +317,10 @@ func train(net *cnns.WholeNet, data *map[string][]t.Tensor) error {
 }
 
 // testTrained - test network
-func testTrained(net *cnns.WholeNet, data *map[string][]t.Tensor) error {
+func testTrained(net *cnns.WholeNet, data map[string][]*t.Tensor) error {
 	var err error
 	var testers []Trainer
-	for k, v := range *data {
+	for k, v := range data {
 		intK, err := strconv.Atoi(k)
 		if err != nil {
 			return err
@@ -342,7 +342,7 @@ func testTrained(net *cnns.WholeNet, data *map[string][]t.Tensor) error {
 	testers = SuffleTrainers(testers)
 	for _, t := range testers {
 		// Feedforward
-		net.FeedForward(&t.Image)
+		net.FeedForward(t.Image)
 		max := -math.MaxFloat64 // net.Layers[len(net.Layers)-1].GetOutput().Data[0]
 		maxidx := -math.MaxInt64
 		for i, value := range net.Layers[len(net.Layers)-1].GetOutput().Data {
@@ -362,8 +362,8 @@ func testTrained(net *cnns.WholeNet, data *map[string][]t.Tensor) error {
 
 // Trainer - struct for training. Contains Image, Desired output
 type Trainer struct {
-	Image    t.Tensor
-	Desired  t.Tensor
+	Image    *t.Tensor
+	Desired  *t.Tensor
 	LabelStr string
 	LabelInt int
 }
@@ -380,13 +380,13 @@ func SuffleTrainers(data []Trainer) []Trainer {
 // readMatsTrain - fill map[string][]t.Tensor with data (for training)
 // adjust - parameter to fill data with same amount of images for each label (needed if you have a few amount of images for some label)
 // but, for a good training you have to provide a lot of unique data (not randomly repeated)
-func readMatsTrain(data *map[string][]string, adjust int, doAdjust bool) (map[string][]t.Tensor, error) {
+func readMatsTrain(data *map[string][]string, adjust int, doAdjust bool) (map[string][]*t.Tensor, error) {
 	var err error
-	var ret map[string][]t.Tensor
-	ret = make(map[string][]t.Tensor)
+	var ret map[string][]*t.Tensor
+	ret = make(map[string][]*t.Tensor)
 	for k, v := range *data {
 		if _, ok := ret[k]; !ok {
-			ret[k] = []t.Tensor{}
+			ret[k] = []*t.Tensor{}
 		}
 		for _, j := range v {
 			img, err := u.ReadImage(j)
@@ -422,13 +422,13 @@ func readMatsTrain(data *map[string][]string, adjust int, doAdjust bool) (map[st
 }
 
 // readMatsTests - fill map[string][]t.Tensor with data (for testing)
-func readMatsTests(data *map[string][]string) (map[string][]t.Tensor, error) {
+func readMatsTests(data *map[string][]string) (map[string][]*t.Tensor, error) {
 	var err error
-	var ret map[string][]t.Tensor
-	ret = make(map[string][]t.Tensor)
+	var ret map[string][]*t.Tensor
+	ret = make(map[string][]*t.Tensor)
 	for k, v := range *data {
 		if _, ok := ret[k]; !ok {
-			ret[k] = []t.Tensor{}
+			ret[k] = []*t.Tensor{}
 		}
 		for _, j := range v {
 			img, err := u.ReadImage(j)

@@ -10,12 +10,12 @@ import (
 
 // ConvLayer is convolutional layer structure
 type ConvLayer struct {
-	DeltaWeightsComponent t.Tensor
-	In                    t.Tensor
-	Out                   t.Tensor
-	Kernels               []t.Tensor
-	PreviousKernelsDeltas []t.Tensor
-	LocalDeltas           []TensorGradient
+	DeltaWeightsComponent *t.Tensor
+	In                    *t.Tensor
+	Out                   *t.Tensor
+	Kernels               []*t.Tensor
+	PreviousKernelsDeltas []*t.Tensor
+	LocalDeltas           []*TensorGradient
 	Stride                int
 	KernelSize            int
 }
@@ -61,13 +61,13 @@ func NewConvLayer(stride, kernelSize, numberFilters int, inSize t.TDsize) *Layer
 }
 
 // SetCustomWeights - set user's weights (make it carefully)
-func (con *ConvLayer) SetCustomWeights(t *[]t.Tensor) {
-	if len(con.Kernels) != len(*t) {
+func (con *ConvLayer) SetCustomWeights(t []*t.Tensor) {
+	if len(con.Kernels) != len(t) {
 		fmt.Println("Amount of custom filters has to be equal to layer's amount of filters. Skipping...")
 		return
 	}
 	for i := range con.Kernels {
-		con.Kernels[i] = (*t)[i]
+		con.Kernels[i] = t[i]
 	}
 }
 
@@ -82,23 +82,23 @@ func (con *ConvLayer) GetInputSize() *t.TDsize {
 }
 
 // GetOutput - returns convolutional layer's output
-func (con *ConvLayer) GetOutput() t.Tensor {
+func (con *ConvLayer) GetOutput() *t.Tensor {
 	return con.Out
 }
 
 // GetWeights - returns convolutional layer's weights
-func (con *ConvLayer) GetWeights() []t.Tensor {
+func (con *ConvLayer) GetWeights() []*t.Tensor {
 	return con.Kernels
 }
 
 // GetGradients - returns convolutional layer's gradients
-func (con *ConvLayer) GetGradients() t.Tensor {
+func (con *ConvLayer) GetGradients() *t.Tensor {
 	return con.DeltaWeightsComponent
 }
 
 // FeedForward - feed data to convolutional layer
 func (con *ConvLayer) FeedForward(t *t.Tensor) {
-	con.In = (*t)
+	con.In = t
 	con.DoActivation()
 }
 

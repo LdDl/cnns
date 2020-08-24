@@ -35,7 +35,7 @@ func ExampleConv() {
 		0.44050909, -0.07536250, -0.34348075,
 		0.16456005, 0.18682307, -0.40303048,
 	})
-	conv.SetCustomWeights(&[]t.Tensor{convCustomWeights})
+	conv.SetCustomWeights([]*t.Tensor{convCustomWeights})
 
 	fcCustomWeights := t.NewTensor(maxpool.GetOutputSize().X*maxpool.GetOutputSize().Y*maxpool.GetOutputSize().Z, 3, 1)
 	fcCustomWeights.SetData(maxpool.GetOutputSize().X*maxpool.GetOutputSize().Y*maxpool.GetOutputSize().Z, 3, 1, []float64{
@@ -43,7 +43,7 @@ func ExampleConv() {
 		0.17908468, -0.28144695, -0.29681312, -0.13912858, 0.07067328, 0.36249144, -0.20688576, -0.20291744, 0.25257304,
 		-0.29341734, 0.36533501, 0.19671917, 0.02382031, -0.47169692, -0.34167172, 0.10725344, 0.47524162, -0.42054638,
 	})
-	fullyconnected.SetCustomWeights(&[]t.Tensor{fcCustomWeights})
+	fullyconnected.SetCustomWeights([]*t.Tensor{fcCustomWeights})
 
 	var net cnns.WholeNet
 	net.Layers = append(net.Layers, conv)
@@ -74,16 +74,16 @@ func ExampleConv() {
 
 	var desired = t.NewTensor(3, 1, 1)
 	for e := 0; e < 3; e++ {
-		net.FeedForward(&image)
+		net.FeedForward(image)
 		desired.SetData3D([][][]float64{
 			[][]float64{
 				[]float64{0.32, 0.45, 0.96},
 			},
 		})
-		net.Backpropagate(&desired)
+		net.Backpropagate(desired)
 	}
 
-	net.FeedForward(&image)
+	net.FeedForward(image)
 	net.PrintOutput()
 
 	fmt.Println("Weights after training:")

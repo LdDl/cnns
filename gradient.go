@@ -17,8 +17,8 @@ type Gradient struct {
 }
 
 // NewGradient - Constructor for Gradient.
-func NewGradient() Gradient {
-	return Gradient{
+func NewGradient() *Gradient {
+	return &Gradient{
 		Grad:    0.0,
 		OldGrad: 0.0,
 	}
@@ -36,8 +36,8 @@ type TensorGradient struct {
 }
 
 // NewTensorGradient - Constructor for tensor of gradients.
-func NewTensorGradient(x, y, z int) TensorGradient {
-	return TensorGradient{
+func NewTensorGradient(x, y, z int) *TensorGradient {
+	return &TensorGradient{
 		Data: make([]Gradient, x*y*z),
 		Size: &t.TDsize{
 			X: x,

@@ -43,14 +43,14 @@ func ImportExportNet() {
 	fmt.Println("Weights before training:")
 	net.Layers[0].PrintWeights()
 	net.Layers[len(net.Layers)-1].PrintWeights()
-	net.FeedForward(&image)
+	net.FeedForward(image)
 	var desired = t.NewTensor(3, 1, 1)
 	desired.SetData3D([][][]float64{
 		[][]float64{
 			[]float64{0.32, 0.45, 0.96},
 		},
 	})
-	net.Backpropagate(&desired)
+	net.Backpropagate(desired)
 	fmt.Println("Weights after training:")
 	net.Layers[0].PrintWeights()
 	net.Layers[len(net.Layers)-1].PrintWeights()

@@ -10,7 +10,7 @@ import (
 */
 
 // Add - Element-wise summation.
-func (t1 *Tensor) Add(t2 *Tensor) Tensor {
+func (t1 *Tensor) Add(t2 *Tensor) *Tensor {
 	var ret = NewTensor(t1.Size.X, t1.Size.Y, t1.Size.Z)
 	for i := 0; i < t2.Size.Total(); i++ {
 		ret.Data[i] = t1.Data[i] + t2.Data[i]
@@ -19,7 +19,7 @@ func (t1 *Tensor) Add(t2 *Tensor) Tensor {
 }
 
 // Sub - Element-wise substraction.
-func (t1 *Tensor) Sub(t2 *Tensor) Tensor {
+func (t1 *Tensor) Sub(t2 *Tensor) *Tensor {
 	var ret = NewTensor(t1.Size.X, t1.Size.Y, t1.Size.Z)
 	for i := 0; i < t2.Size.Total(); i++ {
 		ret.Data[i] = t1.Data[i] - t2.Data[i]
@@ -40,7 +40,7 @@ func (t1 *Tensor) MSE(t2 *Tensor) float64 {
 }
 
 // Transpose - Transponse tensor by X and Y axis (2D)
-func (t1 *Tensor) Transpose() Tensor {
+func (t1 *Tensor) Transpose() *Tensor {
 	ret := NewTensor(t1.Size.Y, t1.Size.X, t1.Size.Z)
 	for z := 0; z < t1.Size.Z; z++ {
 		for y := 0; y < t1.Size.Y; y++ {
@@ -53,7 +53,7 @@ func (t1 *Tensor) Transpose() Tensor {
 }
 
 // Product - Product Tensor by Tensor (by X and Y axis, 2D)
-func (t1 *Tensor) Product(t2 *Tensor) (Tensor, error) {
+func (t1 *Tensor) Product(t2 *Tensor) (*Tensor, error) {
 	ret := NewTensor(t2.Size.X, t1.Size.Y, t1.Size.Z)
 	if t1.Size.Z != t2.Size.Z || t1.Size.X != t2.Size.Y {
 		return ret, errors.New("Invalid sizes")
@@ -73,7 +73,7 @@ func (t1 *Tensor) Product(t2 *Tensor) (Tensor, error) {
 }
 
 // HadamardProduct - Element-wise product
-func HadamardProduct(t1, t2 *Tensor) (Tensor, error) {
+func HadamardProduct(t1, t2 *Tensor) (*Tensor, error) {
 	ret := NewTensor(t1.Size.X, t1.Size.Y, t1.Size.Z)
 	if t1.Size.Z != t2.Size.Z || t1.Size.Y != t2.Size.Y || t1.Size.X != t2.Size.X {
 		return ret, errors.New("Invalid dimension sizes")
