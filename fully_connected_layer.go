@@ -243,5 +243,5 @@ func (fc *FullyConnectedLayer) GetType() string {
 }
 
 func (fc *FullyConnectedLayer) mapToInput(i, j, k int) int {
-	return k*fc.In.Size.X*(fc).In.Size.Y + j*fc.In.Size.X + i
+	return k*fc.In.Size.X*fc.In.Size.Y + j*fc.In.Size.X + i
 }

@@ -26,20 +26,20 @@ func NewGradient() Gradient {
 
 // Update - Update gradient with new values (based on gradient from previous training iteration).
 func (grad *Gradient) Update() {
-	(*grad).OldGrad = (*grad).Grad //+ (*grad).OldGrad*lp.Momentum
+	grad.OldGrad = grad.Grad //+ (*grad).OldGrad*lp.Momentum
 }
 
 // TensorGradient - Tensor for gradient.
 type TensorGradient struct {
 	Data []Gradient
-	Size t.TDsize
+	Size *t.TDsize
 }
 
 // NewTensorGradient - Constructor for tensor of gradients.
 func NewTensorGradient(x, y, z int) TensorGradient {
 	return TensorGradient{
 		Data: make([]Gradient, x*y*z),
-		Size: t.TDsize{
+		Size: &t.TDsize{
 			X: x,
 			Y: y,
 			Z: z,
