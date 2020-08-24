@@ -40,17 +40,17 @@ func (relu *ReLULayer) SetCustomWeights(t *[]t.Tensor) {
 
 // OutSize - Return output size (dimensions)
 func (relu *ReLULayer) OutSize() t.TDsize {
-	return (*relu).Out.Size
+	return relu.Out.Size
 }
 
 // GetInputSize - Return input size (dimensions)
 func (relu *ReLULayer) GetInputSize() t.TDsize {
-	return (*relu).In.Size
+	return relu.In.Size
 }
 
 // GetOutput - Return ReLU layer's output
 func (relu *ReLULayer) GetOutput() t.Tensor {
-	return (*relu).Out
+	return relu.Out
 }
 
 // GetWeights - Return ReLU layer's weights
@@ -61,25 +61,25 @@ func (relu *ReLULayer) GetWeights() []t.Tensor {
 
 // GetGradients - Return ReLU layer's gradients
 func (relu *ReLULayer) GetGradients() t.Tensor {
-	return (*relu).LocalDelta
+	return relu.LocalDelta
 }
 
 // FeedForward - Feed data to ReLU layer
 func (relu *ReLULayer) FeedForward(t *t.Tensor) {
-	(*relu).In = (*t)
-	(*relu).DoActivation()
+	relu.In = (*t)
+	relu.DoActivation()
 }
 
 // DoActivation - ReLU layer's output activation
 func (relu *ReLULayer) DoActivation() {
-	for i := 0; i < (*relu).In.Size.X; i++ {
-		for j := 0; j < (*relu).In.Size.Y; j++ {
-			for z := 0; z < (*relu).In.Size.Z; z++ {
-				v := (*relu).In.Get(i, j, z)
+	for i := 0; i < relu.In.Size.X; i++ {
+		for j := 0; j < relu.In.Size.Y; j++ {
+			for z := 0; z < relu.In.Size.Z; z++ {
+				v := relu.In.Get(i, j, z)
 				if v < 0 {
 					v = 0
 				}
-				(*relu).Out.Set(i, j, z, v)
+				relu.Out.Set(i, j, z, v)
 			}
 		}
 	}
@@ -87,13 +87,13 @@ func (relu *ReLULayer) DoActivation() {
 
 // CalculateGradients - Calculate ReLU layer's gradients
 func (relu *ReLULayer) CalculateGradients(nextLayerGrad *t.Tensor) {
-	for i := 0; i < (*relu).In.Size.X; i++ {
-		for j := 0; j < (*relu).In.Size.Y; j++ {
-			for z := 0; z < (*relu).In.Size.Z; z++ {
-				if (*relu).In.Get(i, j, z) < 0 {
-					(*relu).LocalDelta.Set(i, j, z, 0)
+	for i := 0; i < relu.In.Size.X; i++ {
+		for j := 0; j < relu.In.Size.Y; j++ {
+			for z := 0; z < relu.In.Size.Z; z++ {
+				if relu.In.Get(i, j, z) < 0 {
+					relu.LocalDelta.Set(i, j, z, 0)
 				} else {
-					(*relu).LocalDelta.Set(i, j, z, 1.0*nextLayerGrad.Get(i, j, z))
+					relu.LocalDelta.Set(i, j, z, 1.0*nextLayerGrad.Get(i, j, z))
 				}
 			}
 		}
@@ -111,7 +111,7 @@ func (relu *ReLULayer) UpdateWeights() {
 // PrintOutput - Pretty print ReLU layer's output
 func (relu *ReLULayer) PrintOutput() {
 	fmt.Println("Printing ReLU Layer output...")
-	(*relu).Out.Print()
+	relu.Out.Print()
 }
 
 // PrintWeights - Just to point, that ReLU layer has not weights
@@ -122,7 +122,7 @@ func (relu *ReLULayer) PrintWeights() {
 // PrintGradients - Print relu layer's local gradients
 func (relu *ReLULayer) PrintGradients() {
 	fmt.Println("Printing ReLU Layer gradients...")
-	(*relu).LocalDelta.Print()
+	relu.LocalDelta.Print()
 }
 
 // SetActivationFunc - Set activation function for layer

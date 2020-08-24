@@ -10,7 +10,7 @@ type Point struct {
 // TDsize - alias to Point
 type TDsize = Point
 
-// Size Returns total number of elements
-func (td *TDsize) Size() int {
+// Total Returns total number of elements
+func (td *TDsize) Total() int {
 	return td.X * td.Y * td.Z
 }

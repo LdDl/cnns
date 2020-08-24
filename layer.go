@@ -71,37 +71,37 @@ type LayerStruct struct {
 
 // FeedForward - forward pass throught the net
 func (wh *WholeNet) FeedForward(t *t.Tensor) {
-	(*wh).Layers[0].FeedForward(t)
-	for l := 1; l < len((*wh).Layers); l++ {
-		out := (*wh).Layers[l-1].GetOutput()
-		(*wh).Layers[l].FeedForward(&out)
+	wh.Layers[0].FeedForward(t)
+	for l := 1; l < len(wh.Layers); l++ {
+		out := wh.Layers[l-1].GetOutput()
+		wh.Layers[l].FeedForward(&out)
 	}
 }
 
 // Backpropagate - backward pass throught the net (training)
 func (wh *WholeNet) Backpropagate(target *t.Tensor) {
-	lastLayer := (*wh).Layers[len((*wh).Layers)-1].GetOutput()
+	lastLayer := wh.Layers[len(wh.Layers)-1].GetOutput()
 
 	difference := lastLayer.Sub(target)
-	(*wh).Layers[len((*wh).Layers)-1].CalculateGradients(&difference)
+	wh.Layers[len(wh.Layers)-1].CalculateGradients(&difference)
 
-	for i := len((*wh).Layers) - 2; i >= 0; i-- {
-		grad := (*wh).Layers[i+1].GetGradients()
-		(*wh).Layers[i].CalculateGradients(&grad)
+	for i := len(wh.Layers) - 2; i >= 0; i-- {
+		grad := wh.Layers[i+1].GetGradients()
+		wh.Layers[i].CalculateGradients(&grad)
 	}
-	for i := range (*wh).Layers {
-		(*wh).Layers[i].UpdateWeights()
+	for i := range wh.Layers {
+		wh.Layers[i].UpdateWeights()
 	}
 }
 
 // PrintOutput - prints net's output (last layer output)
 func (wh *WholeNet) PrintOutput() {
-	(*wh).Layers[len((*wh).Layers)-1].PrintOutput()
+	wh.Layers[len(wh.Layers)-1].PrintOutput()
 }
 
 // GetOutput - returns net's output (last layer output)
 func (wh *WholeNet) GetOutput() t.Tensor {
-	return (*wh).Layers[len((*wh).Layers)-1].GetOutput()
+	return wh.Layers[len(wh.Layers)-1].GetOutput()
 }
 
 // ImportFromFile load network to file
@@ -140,14 +140,14 @@ func (wh *WholeNet) ImportFromFile(fname string, randomWeights bool) error {
 				}
 				conv.SetCustomWeights(&weights)
 			}
-			(*wh).Layers = append((*wh).Layers, conv)
+			wh.Layers = append(wh.Layers, conv)
 			break
 		case "relu":
 			x := data.Network.Layers[i].InputSize.X
 			y := data.Network.Layers[i].InputSize.Y
 			z := data.Network.Layers[i].InputSize.Z
 			relu := NewReLULayer(t.TDsize{X: x, Y: y, Z: z})
-			(*wh).Layers = append((*wh).Layers, relu)
+			wh.Layers = append(wh.Layers, relu)
 			break
 		case "pool":
 			stride := data.Network.Layers[i].Parameters.Stride
@@ -156,7 +156,7 @@ func (wh *WholeNet) ImportFromFile(fname string, randomWeights bool) error {
 			y := data.Network.Layers[i].InputSize.Y
 			z := data.Network.Layers[i].InputSize.Z
 			pool := NewMaxPoolingLayer(stride, kernelSize, t.TDsize{X: x, Y: y, Z: z})
-			(*wh).Layers = append((*wh).Layers, pool)
+			wh.Layers = append(wh.Layers, pool)
 			break
 		case "fc":
 			x := data.Network.Layers[i].InputSize.X
@@ -170,7 +170,7 @@ func (wh *WholeNet) ImportFromFile(fname string, randomWeights bool) error {
 				weights.SetData3D(data.Network.Layers[i].Weights[0].Data)
 				fullyconnected.SetCustomWeights(&[]t.Tensor{weights})
 			}
-			(*wh).Layers = append((*wh).Layers, fullyconnected)
+			wh.Layers = append(wh.Layers, fullyconnected)
 			break
 		default:
 			err = errors.New("Unrecognized layer type: " + data.Network.Layers[i].LayerType)
@@ -178,9 +178,9 @@ func (wh *WholeNet) ImportFromFile(fname string, randomWeights bool) error {
 		}
 	}
 
-	(*wh).LP.LearningRate = data.Parameters.LearningRate
-	(*wh).LP.Momentum = data.Parameters.Momentum
-	(*wh).LP.WeightDecay = data.Parameters.WeightDecay
+	wh.LP.LearningRate = data.Parameters.LearningRate
+	wh.LP.Momentum = data.Parameters.Momentum
+	wh.LP.WeightDecay = data.Parameters.WeightDecay
 	return err
 }
 

@@ -36,15 +36,15 @@ func NewFullConnectedLayer(inSize t.TDsize, outSize int) *LayerStruct {
 		In:                       t.NewTensor(inSize.X, inSize.Y, inSize.Z),
 		Out:                      t.NewTensor(outSize, 1, 1),
 		NextDeltaWeightSum:       t.NewTensor(inSize.X, inSize.Y, inSize.Z),
-		Weights:                  t.NewTensor(inSize.X*inSize.Y*inSize.Z, outSize, 1),
-		PreviousIterationWeights: t.NewTensor(inSize.X*inSize.Y*inSize.Z, outSize, 1),
+		Weights:                  t.NewTensor(inSize.Total(), outSize, 1),
+		PreviousIterationWeights: t.NewTensor(inSize.Total(), outSize, 1),
 		Input:                    make([]float64, outSize),
 		LocalDelta:               make([]Gradient, outSize),
 		ActivationFunc:           ActivationTanh,           // Default Activation function is TanH
 		ActivationDerivative:     ActivationTanhDerivative, // Default derivative of activation function is 1 - TanH(x)*TanH(x)
 	}
 	for i := 0; i < outSize; i++ {
-		for h := 0; h < inSize.X*inSize.Y*inSize.Z; h++ {
+		for h := 0; h < inSize.Total(); h++ {
 			newLayer.Weights.Set(h, i, 0, rand.Float64()-0.5)
 		}
 	}
@@ -59,58 +59,58 @@ func (fc *FullConnectedLayer) SetCustomWeights(t *[]t.Tensor) {
 		fmt.Println("You can provide array of length 1 only (for fully-connected layer)")
 		return
 	}
-	for i := 0; i < (*fc).Weights.Size.Y; i++ {
-		for h := 0; h < (*fc).Weights.Size.X; h++ {
-			(*fc).Weights.Set(h, i, 0, (*t)[0].Get(h, i, 0))
+	for i := 0; i < fc.Weights.Size.Y; i++ {
+		for h := 0; h < fc.Weights.Size.X; h++ {
+			fc.Weights.Set(h, i, 0, (*t)[0].Get(h, i, 0))
 		}
 	}
 }
 
 // OutSize - returns output size (dimensions)
 func (fc *FullConnectedLayer) OutSize() t.TDsize {
-	return (*fc).Out.Size
+	return fc.Out.Size
 }
 
 // GetInputSize - returns input size (dimensions)
 func (fc *FullConnectedLayer) GetInputSize() t.TDsize {
-	return (*fc).In.Size
+	return fc.In.Size
 }
 
 // GetOutput - returns fully connected layer's output
 func (fc *FullConnectedLayer) GetOutput() t.Tensor {
-	return (*fc).Out // Here we outputing ACTIVATED values
+	return fc.Out // Here we outputing ACTIVATED values
 }
 
 // GetWeights - returns convolutional layer's weights.
 func (fc *FullConnectedLayer) GetWeights() []t.Tensor {
-	return []t.Tensor{(*fc).Weights}
+	return []t.Tensor{fc.Weights}
 }
 
 // GetGradients - returns SUM(next layer grad * weights) as gradients
 func (fc *FullConnectedLayer) GetGradients() t.Tensor {
-	return (*fc).NextDeltaWeightSum
+	return fc.NextDeltaWeightSum
 }
 
 // FeedForward - feed data to fully connected layer
 func (fc *FullConnectedLayer) FeedForward(t *t.Tensor) {
-	(*fc).In = (*t)
-	(*fc).DoActivation()
+	fc.In = (*t)
+	fc.DoActivation()
 }
 
 // DoActivation - fully connected layer's output activation
 func (fc *FullConnectedLayer) DoActivation() {
-	for n := 0; n < (*fc).Out.Size.X; n++ {
+	for n := 0; n < fc.Out.Size.X; n++ {
 		inputv := 0.0
-		for i := 0; i < (*fc).In.Size.X; i++ {
-			for j := 0; j < (*fc).In.Size.Y; j++ {
-				for z := 0; z < (*fc).In.Size.Z; z++ {
+		for i := 0; i < fc.In.Size.X; i++ {
+			for j := 0; j < fc.In.Size.Y; j++ {
+				for z := 0; z < fc.In.Size.Z; z++ {
 					m := fc.mapToInput(i, j, z)
-					inputv += (*fc).In.Get(i, j, z) * (*fc).Weights.Get(m, n, 0)
+					inputv += fc.In.Get(i, j, z) * fc.Weights.Get(m, n, 0)
 				}
 			}
 		}
-		(*fc).Input[n] = inputv
-		(*fc).Out.Set(n, 0, 0, (*fc).ActivationFunc(inputv))
+		fc.Input[n] = inputv
+		fc.Out.Set(n, 0, 0, fc.ActivationFunc(inputv))
 	}
 }
 
@@ -140,17 +140,17 @@ func (fc *FullConnectedLayer) DoActivation() {
 
 */
 func (fc *FullConnectedLayer) CalculateGradients(nextLayerGradients *t.Tensor) {
-	for i := 0; i < (*fc).NextDeltaWeightSum.Size.X*(*fc).NextDeltaWeightSum.Size.Y*(*fc).NextDeltaWeightSum.Size.Z; i++ {
-		(*fc).NextDeltaWeightSum.Data[i] = 0.0
+	for i := 0; i < fc.NextDeltaWeightSum.Size.Total(); i++ {
+		fc.NextDeltaWeightSum.Data[i] = 0.0
 	}
-	for n := 0; n < (*fc).Out.Size.X; n++ {
-		(*fc).LocalDelta[n].Grad = (*nextLayerGradients).Get(n, 0, 0) * (*fc).ActivationDerivative((*fc).Input[n])
-		for i := 0; i < (*fc).In.Size.X; i++ {
-			for j := 0; j < (*fc).In.Size.Y; j++ {
-				for z := 0; z < (*fc).In.Size.Z; z++ {
+	for n := 0; n < fc.Out.Size.X; n++ {
+		fc.LocalDelta[n].Grad = (*nextLayerGradients).Get(n, 0, 0) * fc.ActivationDerivative(fc.Input[n])
+		for i := 0; i < fc.In.Size.X; i++ {
+			for j := 0; j < fc.In.Size.Y; j++ {
+				for z := 0; z < fc.In.Size.Z; z++ {
 					m := fc.mapToInput(i, j, z)
-					v := (*fc).LocalDelta[n].Grad * (*fc).Weights.Get(m, n, 0)
-					(*fc).NextDeltaWeightSum.SetAdd(i, j, z, v)
+					v := fc.LocalDelta[n].Grad * fc.Weights.Get(m, n, 0)
+					fc.NextDeltaWeightSum.SetAdd(i, j, z, v)
 				}
 			}
 		}
@@ -168,32 +168,32 @@ func (fc *FullConnectedLayer) CalculateGradients(nextLayerGradients *t.Tensor) {
 	Δw{n, i} =  -(η * ΔE/Δw{n, i}) = -(η)*δ{i}*input{n}
 */
 func (fc *FullConnectedLayer) UpdateWeights() {
-	for n := 0; n < (*fc).Out.Size.X; n++ {
-		grad := (*fc).LocalDelta[n]
+	for n := 0; n < fc.Out.Size.X; n++ {
+		grad := fc.LocalDelta[n]
 		// log.Println("G:", grad)
-		for i := 0; i < (*fc).In.Size.X; i++ {
-			for j := 0; j < (*fc).In.Size.Y; j++ {
-				for z := 0; z < (*fc).In.Size.Z; z++ {
+		for i := 0; i < fc.In.Size.X; i++ {
+			for j := 0; j < fc.In.Size.Y; j++ {
+				for z := 0; z < fc.In.Size.Z; z++ {
 					m := fc.mapToInput(i, j, z)
 					/*
 						Without inertia
 					*/
-					// dw := -1.0 * (lp.LearningRate * grad.Grad * (*fc).In.Get(i, j, z)) // delta-Weight
+					// dw := -1.0 * (lp.LearningRate * grad.Grad * fc.In.Get(i, j, z)) // delta-Weight
 
 					/*
 						With inertia (notice, that η has to be < 0 and we are multiplying η by -1.0)
 						See reference: https://en.wikipedia.org/wiki/Backpropagation#Inertia
 					*/
-					dw := (1.0-lp.Momentum)*(-1.0*(lp.LearningRate*grad.Grad*(*fc).In.Get(i, j, z))) +
-						lp.Momentum*(*fc).PreviousIterationWeights.Get(m, n, 0)
+					dw := (1.0-lp.Momentum)*(-1.0*(lp.LearningRate*grad.Grad*fc.In.Get(i, j, z))) +
+						lp.Momentum*fc.PreviousIterationWeights.Get(m, n, 0)
 
 					// Decay of weights (L2 regularization)
-					// decay := (*fc).Weights.Get(m, n, 0) * (1 - lp.WeightDecay)
+					// decay := fc.Weights.Get(m, n, 0) * (1 - lp.WeightDecay)
 
-					(*fc).PreviousIterationWeights.Set(m, n, 0, dw)
+					fc.PreviousIterationWeights.Set(m, n, 0, dw)
 
 					// w{n,i} = w{n,i} + Δw{n, i}
-					(*fc).Weights.SetAdd(m, n, 0, dw)
+					fc.Weights.SetAdd(m, n, 0, dw)
 				}
 			}
 		}
@@ -203,29 +203,29 @@ func (fc *FullConnectedLayer) UpdateWeights() {
 // PrintOutput - print fully connected layer's output
 func (fc *FullConnectedLayer) PrintOutput() {
 	fmt.Println("Printing Fully Connected Layer output...")
-	(*fc).Out.Print()
+	fc.Out.Print()
 }
 
 // PrintWeights - print fully connected layer's weights
 func (fc *FullConnectedLayer) PrintWeights() {
 	fmt.Println("Printing Fully Connected Layer weights...")
-	(*fc).Weights.Print()
+	fc.Weights.Print()
 }
 
 // PrintGradients - print fully connected layer's gradients
 func (fc *FullConnectedLayer) PrintGradients() {
 	fmt.Println("Printing Fully Connected Layer gradients-weights...")
-	(*fc).NextDeltaWeightSum.Print()
+	fc.NextDeltaWeightSum.Print()
 }
 
 // SetActivationFunc sets activation function for fully connected layer. You need to specify function: func(v float64) float64
 func (fc *FullConnectedLayer) SetActivationFunc(f func(v float64) float64) {
-	(*fc).ActivationFunc = f
+	fc.ActivationFunc = f
 }
 
 // SetActivationDerivativeFunc sets derivative of activation function for fully connected layer. You need to specify function: func(v float64) float64
 func (fc *FullConnectedLayer) SetActivationDerivativeFunc(f func(v float64) float64) {
-	(*fc).ActivationDerivative = f
+	fc.ActivationDerivative = f
 }
 
 // GetStride - get stride of layer
@@ -244,5 +244,5 @@ func (fc *FullConnectedLayer) GetType() string {
 }
 
 func (fc *FullConnectedLayer) mapToInput(i, j, k int) int {
-	return k*(*fc).In.Size.X*(fc).In.Size.Y + j*(*fc).In.Size.X + i
+	return k*fc.In.Size.X*(fc).In.Size.Y + j*fc.In.Size.X + i
 }
