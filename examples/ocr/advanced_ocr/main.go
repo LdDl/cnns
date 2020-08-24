@@ -61,15 +61,15 @@ func CheckOCR() {
 	conv := cnns.NewConvLayer(1, 5, 4, t.TDsize{X: trainWidth, Y: trainHeight, Z: 1}) //
 	relu := cnns.NewReLULayer(conv.OutSize())
 	maxpool := cnns.NewMaxPoolingLayer(2, 2, relu.OutSize())
-	fullyconnected := cnns.NewFullConnectedLayer(maxpool.OutSize(), 22)
+	fullyconnected := cnns.NewFullyConnectedLayer(maxpool.OutSize(), 22)
 	fullyconnected.SetActivationFunc(cnns.ActivationSygmoid)
 	fullyconnected.SetActivationDerivativeFunc(cnns.ActivationSygmoidDerivative)
 
-	fullyconnected2 := cnns.NewFullConnectedLayer(fullyconnected.OutSize(), 44)
+	fullyconnected2 := cnns.NewFullyConnectedLayer(fullyconnected.OutSize(), 44)
 	fullyconnected2.SetActivationFunc(cnns.ActivationSygmoid)
 	fullyconnected2.SetActivationDerivativeFunc(cnns.ActivationSygmoidDerivative)
 
-	fullyconnected3 := cnns.NewFullConnectedLayer(fullyconnected2.OutSize(), 22)
+	fullyconnected3 := cnns.NewFullyConnectedLayer(fullyconnected2.OutSize(), 22)
 	fullyconnected3.SetActivationFunc(cnns.ActivationSygmoid)
 	fullyconnected3.SetActivationDerivativeFunc(cnns.ActivationSygmoidDerivative)
 

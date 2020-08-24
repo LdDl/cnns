@@ -163,7 +163,7 @@ func (wh *WholeNet) ImportFromFile(fname string, randomWeights bool) error {
 			y := data.Network.Layers[i].InputSize.Y
 			z := data.Network.Layers[i].InputSize.Z
 			outSize := data.Network.Layers[i].OutputSize.X
-			fullyconnected := NewFullConnectedLayer(t.TDsize{X: x, Y: y, Z: z}, outSize)
+			fullyconnected := NewFullyConnectedLayer(t.TDsize{X: x, Y: y, Z: z}, outSize)
 			if randomWeights == false {
 				var weights t.Tensor
 				weights = t.NewTensor(x*y*z, outSize, 1)

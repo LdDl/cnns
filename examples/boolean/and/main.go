@@ -20,7 +20,7 @@ func main() {
 func CheckAND() {
 	rand.Seed(time.Now().UnixNano())
 	// Fully connected layer with 3 output neurons
-	fullyconnected1 := cnns.NewFullConnectedLayer(t.TDsize{X: 2, Y: 1, Z: 1}, 2)
+	fullyconnected1 := cnns.NewFullyConnectedLayer(t.TDsize{X: 2, Y: 1, Z: 1}, 2)
 	// There is 2 lines of reduntan code below, but it shows how to set definied activation function
 
 	fullyconnected1.SetActivationFunc(cnns.ActivationTanh)
@@ -28,7 +28,7 @@ func CheckAND() {
 
 	// Fully connected layer with 1 output neurons
 	// There is 2 lines of reduntan code below, but it shows how to set definied activation function
-	fullyconnected2 := cnns.NewFullConnectedLayer(fullyconnected1.OutSize(), 1)
+	fullyconnected2 := cnns.NewFullyConnectedLayer(fullyconnected1.OutSize(), 1)
 	fullyconnected2.SetActivationFunc(cnns.ActivationTanh)
 	fullyconnected2.SetActivationDerivativeFunc(cnns.ActivationTanhDerivative)
 

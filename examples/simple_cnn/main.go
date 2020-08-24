@@ -27,7 +27,7 @@ func ExampleConv() {
 	conv := cnns.NewConvLayer(1, 3, 1, t.TDsize{X: 8, Y: 9, Z: 1})
 	relu := cnns.NewReLULayer(conv.OutSize())
 	maxpool := cnns.NewMaxPoolingLayer(2, 2, relu.OutSize())
-	fullyconnected := cnns.NewFullConnectedLayer(maxpool.OutSize(), 3)
+	fullyconnected := cnns.NewFullyConnectedLayer(maxpool.OutSize(), 3)
 
 	convCustomWeights := t.NewTensor(3, 3, 1)
 	convCustomWeights.SetData(3, 3, 1, []float64{

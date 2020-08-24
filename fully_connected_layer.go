@@ -7,7 +7,7 @@ import (
 	t "github.com/LdDl/cnns/tensor"
 )
 
-// FullConnectedLayer is simple layer structure (so this layer can be used for simple neural networks like XOR problem)
+// FullyConnectedLayer is simple layer structure (so this layer can be used for simple neural networks like XOR problem)
 /*
 	In - O{j}, activated output from previous layer for j-th neuron
 	Out - O{k}, activated output from current layer for k-th node
@@ -18,7 +18,7 @@ import (
 	PreviousIterationWeights - Δw{j, k}, delta-weight value for calibrating weight w{j,k}
 */
 
-type FullConnectedLayer struct {
+type FullyConnectedLayer struct {
 	In                       t.Tensor
 	Out                      t.Tensor
 	NextDeltaWeightSum       t.Tensor
@@ -30,9 +30,9 @@ type FullConnectedLayer struct {
 	ActivationDerivative     func(v float64) float64
 }
 
-// NewFullConnectedLayer - constructor for new fully connected layer. You need to specify input size and output size
-func NewFullConnectedLayer(inSize t.TDsize, outSize int) *LayerStruct {
-	newLayer := &FullConnectedLayer{
+// NewFullyConnectedLayer - constructor for new fully connected layer. You need to specify input size and output size
+func NewFullyConnectedLayer(inSize t.TDsize, outSize int) *LayerStruct {
+	newLayer := &FullyConnectedLayer{
 		In:                       t.NewTensor(inSize.X, inSize.Y, inSize.Z),
 		Out:                      t.NewTensor(outSize, 1, 1),
 		NextDeltaWeightSum:       t.NewTensor(inSize.X, inSize.Y, inSize.Z),
@@ -54,7 +54,7 @@ func NewFullConnectedLayer(inSize t.TDsize, outSize int) *LayerStruct {
 }
 
 // SetCustomWeights - set user's weights (make it carefully)
-func (fc *FullConnectedLayer) SetCustomWeights(t *[]t.Tensor) {
+func (fc *FullyConnectedLayer) SetCustomWeights(t *[]t.Tensor) {
 	if len(*t) != 1 {
 		fmt.Println("You can provide array of length 1 only (for fully-connected layer)")
 		return
@@ -67,38 +67,38 @@ func (fc *FullConnectedLayer) SetCustomWeights(t *[]t.Tensor) {
 }
 
 // OutSize - returns output size (dimensions)
-func (fc *FullConnectedLayer) OutSize() t.TDsize {
+func (fc *FullyConnectedLayer) OutSize() t.TDsize {
 	return fc.Out.Size
 }
 
 // GetInputSize - returns input size (dimensions)
-func (fc *FullConnectedLayer) GetInputSize() t.TDsize {
+func (fc *FullyConnectedLayer) GetInputSize() t.TDsize {
 	return fc.In.Size
 }
 
 // GetOutput - returns fully connected layer's output
-func (fc *FullConnectedLayer) GetOutput() t.Tensor {
+func (fc *FullyConnectedLayer) GetOutput() t.Tensor {
 	return fc.Out // Here we outputing ACTIVATED values
 }
 
 // GetWeights - returns convolutional layer's weights.
-func (fc *FullConnectedLayer) GetWeights() []t.Tensor {
+func (fc *FullyConnectedLayer) GetWeights() []t.Tensor {
 	return []t.Tensor{fc.Weights}
 }
 
 // GetGradients - returns SUM(next layer grad * weights) as gradients
-func (fc *FullConnectedLayer) GetGradients() t.Tensor {
+func (fc *FullyConnectedLayer) GetGradients() t.Tensor {
 	return fc.NextDeltaWeightSum
 }
 
 // FeedForward - feed data to fully connected layer
-func (fc *FullConnectedLayer) FeedForward(t *t.Tensor) {
+func (fc *FullyConnectedLayer) FeedForward(t *t.Tensor) {
 	fc.In = (*t)
 	fc.DoActivation()
 }
 
 // DoActivation - fully connected layer's output activation
-func (fc *FullConnectedLayer) DoActivation() {
+func (fc *FullyConnectedLayer) DoActivation() {
 	for n := 0; n < fc.Out.Size.X; n++ {
 		inputv := 0.0
 		for i := 0; i < fc.In.Size.X; i++ {
@@ -139,7 +139,7 @@ func (fc *FullConnectedLayer) DoActivation() {
 				= [sum(LocalDelta{n} * w{n, i}), for n=0 to len(num of neurons on k+1 layer))]
 
 */
-func (fc *FullConnectedLayer) CalculateGradients(nextLayerGradients *t.Tensor) {
+func (fc *FullyConnectedLayer) CalculateGradients(nextLayerGradients *t.Tensor) {
 	for i := 0; i < fc.NextDeltaWeightSum.Size.Total(); i++ {
 		fc.NextDeltaWeightSum.Data[i] = 0.0
 	}
@@ -167,7 +167,7 @@ func (fc *FullConnectedLayer) CalculateGradients(nextLayerGradients *t.Tensor) {
 
 	Δw{n, i} =  -(η * ΔE/Δw{n, i}) = -(η)*δ{i}*input{n}
 */
-func (fc *FullConnectedLayer) UpdateWeights() {
+func (fc *FullyConnectedLayer) UpdateWeights() {
 	for n := 0; n < fc.Out.Size.X; n++ {
 		grad := fc.LocalDelta[n]
 		// log.Println("G:", grad)
@@ -201,48 +201,48 @@ func (fc *FullConnectedLayer) UpdateWeights() {
 }
 
 // PrintOutput - print fully connected layer's output
-func (fc *FullConnectedLayer) PrintOutput() {
+func (fc *FullyConnectedLayer) PrintOutput() {
 	fmt.Println("Printing Fully Connected Layer output...")
 	fc.Out.Print()
 }
 
 // PrintWeights - print fully connected layer's weights
-func (fc *FullConnectedLayer) PrintWeights() {
+func (fc *FullyConnectedLayer) PrintWeights() {
 	fmt.Println("Printing Fully Connected Layer weights...")
 	fc.Weights.Print()
 }
 
 // PrintGradients - print fully connected layer's gradients
-func (fc *FullConnectedLayer) PrintGradients() {
+func (fc *FullyConnectedLayer) PrintGradients() {
 	fmt.Println("Printing Fully Connected Layer gradients-weights...")
 	fc.NextDeltaWeightSum.Print()
 }
 
 // SetActivationFunc sets activation function for fully connected layer. You need to specify function: func(v float64) float64
-func (fc *FullConnectedLayer) SetActivationFunc(f func(v float64) float64) {
+func (fc *FullyConnectedLayer) SetActivationFunc(f func(v float64) float64) {
 	fc.ActivationFunc = f
 }
 
 // SetActivationDerivativeFunc sets derivative of activation function for fully connected layer. You need to specify function: func(v float64) float64
-func (fc *FullConnectedLayer) SetActivationDerivativeFunc(f func(v float64) float64) {
+func (fc *FullyConnectedLayer) SetActivationDerivativeFunc(f func(v float64) float64) {
 	fc.ActivationDerivative = f
 }
 
 // GetStride - get stride of layer
-func (fc *FullConnectedLayer) GetStride() int {
+func (fc *FullyConnectedLayer) GetStride() int {
 	return 0
 }
 
 // GetKernelSize - return "conv" as layer's type
-func (fc *FullConnectedLayer) GetKernelSize() int {
+func (fc *FullyConnectedLayer) GetKernelSize() int {
 	return 0
 }
 
 // GetType - return "fc" as layer's type
-func (fc *FullConnectedLayer) GetType() string {
+func (fc *FullyConnectedLayer) GetType() string {
 	return "fc"
 }
 
-func (fc *FullConnectedLayer) mapToInput(i, j, k int) int {
+func (fc *FullyConnectedLayer) mapToInput(i, j, k int) int {
 	return k*fc.In.Size.X*(fc).In.Size.Y + j*fc.In.Size.X + i
 }
