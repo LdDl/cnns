@@ -34,5 +34,6 @@
 - [x] New struct of examples folder (split it on different types of tasks for neural networks)
 - [ ] Consider float32 as extension
 - [ ] Improve README's **continuous work**
+- [ ] Graphviz pretty print.
 
 Updated at: 2020-08-24
