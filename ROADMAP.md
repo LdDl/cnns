@@ -25,10 +25,11 @@
     - [x] ActivationGaussianDerivative
     - [ ] Add
     - [ ] Sub
-    - [ ] Transpose
+    - [x] Transpose
     - [ ] Product
     - [ ] HadamardProduct
     - [ ] MSE
+- [ ] Benchmarks. Do we really need it since this is just library for studying purposes?
 - [ ] Padding for convolutional layer
 - [ ] Write theoretical documents on most of functions (on every would be even better)
 - [x] New struct of examples folder (split it on different types of tasks for neural networks)
