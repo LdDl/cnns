@@ -69,7 +69,7 @@ type LayerStruct struct {
 	Layer
 }
 
-// FeedForward - forward pass throught the net
+// FeedForward - forward pass through the net
 func (wh *WholeNet) FeedForward(t *t.Tensor) {
 	wh.Layers[0].FeedForward(t)
 	for l := 1; l < len(wh.Layers); l++ {
@@ -78,7 +78,7 @@ func (wh *WholeNet) FeedForward(t *t.Tensor) {
 	}
 }
 
-// Backpropagate - backward pass throught the net (training)
+// Backpropagate - backward pass through the net (training)
 func (wh *WholeNet) Backpropagate(target *t.Tensor) {
 	lastLayer := wh.Layers[len(wh.Layers)-1].GetOutput()
 
@@ -283,7 +283,7 @@ type NetLayerJSON struct {
 	InputSize  *t.TDsize       `json:"InputSize"`
 	Parameters LayerParamsJSON `json:"Parameters,omitempty"`
 	Weights    []TensorJSON    `json:"Weights,omitempty"`
-	// Actually "OutputSize" parameter is usefull for fully connected layer only
+	// Actually "OutputSize" parameter is useful for fully connected layer only
 	// There are automatic calculation of output size for other layers' types
 	OutputSize *t.TDsize `json:"OutputSize,omitempty"`
 }

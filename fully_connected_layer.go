@@ -13,7 +13,7 @@ import (
 	Out - O{k}, activated output from current layer for k-th node
 	Input - o{k}, non-activated output for k-th node of current layer (in other words: summation input)
 	LocalDelta - δ{k}, delta for current layer for k-th neuron
-	NextDeltaWeightSum - SUM(δ{k}*w{j,k}), summation component for evaluationg δ{j} for previous layer for j-th neuron
+	NextDeltaWeightSum - SUM(δ{k}*w{j,k}), summation component for evaluating δ{j} for previous layer for j-th neuron
 	Weights - w{j,k}, weight from j-th node of previous layer to k-th node of current layer
 	PreviousIterationWeights - Δw{j, k}, delta-weight value for calibrating weight w{j,k}
 */

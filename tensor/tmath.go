@@ -18,7 +18,7 @@ func (t1 *Tensor) Add(t2 *Tensor) *Tensor {
 	return ret
 }
 
-// Sub - Element-wise substraction.
+// Sub - Element-wise subtraction.
 func (t1 *Tensor) Sub(t2 *Tensor) *Tensor {
 	var ret = NewTensor(t1.Size.X, t1.Size.Y, t1.Size.Z)
 	for i := 0; i < t2.Size.Total(); i++ {
