@@ -10,6 +10,25 @@
 - [ ] Remove some legacy and experemintal code to other branches
 - [ ] Error types and wrapping them
 - [ ] Test cases for most of math functions
+    - [x] ActivationTanh
+    - [x] ActivationTanhDerivative
+    - [x] ActivationSygmoid
+    - [x] ActivationSygmoidDerivative
+    - [ ] Rot2D90
+    - [ ] Rot2D180
+    - [ ] Rot2D270
+    - [x] ActivationArcTan
+    - [x] ActivationArcTanDerivative
+    - [x] ActivationSoftPlus
+    - [x] ActivationSoftPlusDerivative
+    - [x] ActivationGaussian
+    - [x] ActivationGaussianDerivative
+    - [ ] Add
+    - [ ] Sub
+    - [ ] Transpose
+    - [ ] Product
+    - [ ] HadamardProduct
+    - [ ] MSE
 - [ ] Padding for convolutional layer
 - [ ] Write theoretical documents on most of functions (on every would be even better)
 - [x] New struct of examples folder (split it on different types of tasks for neural networks)
