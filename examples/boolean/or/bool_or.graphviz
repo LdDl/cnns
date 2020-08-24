@@ -1,0 +1,10 @@
+digraph G {
+  input1 -> fc11
+  input2 -> fc12
+  fc11 -> fc21 [ label = <w<SUP>2</SUP><SUB>1,1</SUB>> ]
+  fc11 -> fc22 [ label = <w<SUP>2</SUP><SUB>1,2</SUB>> ]
+  fc12 -> fc21 [ label = <w<SUP>2</SUP><SUB>2,1</SUB>> ]
+  fc12 -> fc22 [ label = <w<SUP>2</SUP><SUB>2,2</SUB>> ]
+  fc21 -> OR [ label = <w<SUP>3</SUP><SUB>1,1</SUB>> ]
+  fc22 -> OR [ label = <w<SUP>3</SUP><SUB>2,1</SUB>> ]
+}

@@ -33,6 +33,6 @@
 - [ ] Write theoretical documents on most of functions (on every would be even better)
 - [x] New struct of examples folder (split it on different types of tasks for neural networks)
 - [ ] Consider float32 as extension
-
+- [ ] Improve README's **continuous work**
 
 Updated at: 2020-08-24
