@@ -5,7 +5,7 @@
 # CNNs #
 CNNS (Convolutional Neural Networks) is a little package for developing simple neural networks, such as CNN (you don't say?) and MLP.
 
-## It's have been made only for studying purposes. Do not use it in production!
+## It has been made only for studying purposes. Do not use it in production!
 ## Any PR's (new layers, learning optimizators, Excel-examples, bug-fixes) to improve this library will be appreciated.
 **Currently I have not that much time to work on this (but this project _NOT_ abandoned)**
 
