@@ -43,8 +43,8 @@ func (lrelu *LeakyReLULayer) SetCustomWeights(t *[]t.Tensor) {
 	fmt.Println("There are no weights for ReLU layer")
 }
 
-// OutSize - Return output size (dimensions)
-func (lrelu *LeakyReLULayer) OutSize() *t.TDsize {
+// GetOutputSize - Return output size (dimensions)
+func (lrelu *LeakyReLULayer) GetOutputSize() *t.TDsize {
 	return lrelu.Out.Size
 }
 

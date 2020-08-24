@@ -17,7 +17,6 @@ import (
 	Weights - w{j,k}, weight from j-th node of previous layer to k-th node of current layer
 	PreviousIterationWeights - Δw{j, k}, delta-weight value for calibrating weight w{j,k}
 */
-
 type FullyConnectedLayer struct {
 	In                       t.Tensor
 	Out                      t.Tensor
@@ -66,8 +65,8 @@ func (fc *FullyConnectedLayer) SetCustomWeights(t *[]t.Tensor) {
 	}
 }
 
-// OutSize - returns output size (dimensions)
-func (fc *FullyConnectedLayer) OutSize() *t.TDsize {
+// GetOutputSize - returns output size (dimensions)
+func (fc *FullyConnectedLayer) GetOutputSize() *t.TDsize {
 	return fc.Out.Size
 }
 

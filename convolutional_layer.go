@@ -71,8 +71,8 @@ func (con *ConvLayer) SetCustomWeights(t *[]t.Tensor) {
 	}
 }
 
-// OutSize - returns output size (dimensions)
-func (con *ConvLayer) OutSize() *t.TDsize {
+// GetOutputSize - returns output size (dimensions)
+func (con *ConvLayer) GetOutputSize() *t.TDsize {
 	return con.Out.Size
 }
 

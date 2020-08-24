@@ -26,7 +26,7 @@ func CheckOR() {
 	fullyconnected1.SetActivationDerivativeFunc(cnns.ActivationTanhDerivative)
 
 	// Fully connected layer with 1 output neurons
-	fullyconnected2 := cnns.NewFullyConnectedLayer(fullyconnected1.OutSize(), 1)
+	fullyconnected2 := cnns.NewFullyConnectedLayer(fullyconnected1.GetOutputSize(), 1)
 	// There is 2 lines of reduntan code below, but it shows how to set definied activation function
 	fullyconnected2.SetActivationFunc(cnns.ActivationTanh)
 	fullyconnected2.SetActivationDerivativeFunc(cnns.ActivationTanhDerivative)

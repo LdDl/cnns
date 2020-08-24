@@ -20,9 +20,9 @@ func main() {
 func CheckXTO() {
 	rand.Seed(time.Now().UnixNano())
 	conv := cnns.NewConvLayer(1, 3, 2, t.TDsize{X: 8, Y: 9, Z: 1})
-	relu := cnns.NewLeakyReLULayer(conv.OutSize(), 0.01)
-	maxpool := cnns.NewMaxPoolingLayer(2, 2, relu.OutSize())
-	fullyconnected := cnns.NewFullyConnectedLayer(maxpool.OutSize(), 3)
+	relu := cnns.NewLeakyReLULayer(conv.GetOutputSize(), 0.01)
+	maxpool := cnns.NewMaxPoolingLayer(2, 2, relu.GetOutputSize())
+	fullyconnected := cnns.NewFullyConnectedLayer(maxpool.GetOutputSize(), 3)
 
 	// You can play with activation function for fully connected layer
 	fullyconnected.SetActivationFunc(cnns.ActivationSygmoid)

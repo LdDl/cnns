@@ -25,9 +25,9 @@ import (
 */
 func ExampleConv() {
 	conv := cnns.NewConvLayer(1, 3, 1, t.TDsize{X: 8, Y: 9, Z: 1})
-	relu := cnns.NewReLULayer(conv.OutSize())
-	maxpool := cnns.NewMaxPoolingLayer(2, 2, relu.OutSize())
-	fullyconnected := cnns.NewFullyConnectedLayer(maxpool.OutSize(), 3)
+	relu := cnns.NewReLULayer(conv.GetOutputSize())
+	maxpool := cnns.NewMaxPoolingLayer(2, 2, relu.GetOutputSize())
+	fullyconnected := cnns.NewFullyConnectedLayer(maxpool.GetOutputSize(), 3)
 
 	convCustomWeights := t.NewTensor(3, 3, 1)
 	convCustomWeights.SetData(3, 3, 1, []float64{
@@ -37,8 +37,8 @@ func ExampleConv() {
 	})
 	conv.SetCustomWeights(&[]t.Tensor{convCustomWeights})
 
-	fcCustomWeights := t.NewTensor(maxpool.OutSize().X*maxpool.OutSize().Y*maxpool.OutSize().Z, 3, 1)
-	fcCustomWeights.SetData(maxpool.OutSize().X*maxpool.OutSize().Y*maxpool.OutSize().Z, 3, 1, []float64{
+	fcCustomWeights := t.NewTensor(maxpool.GetOutputSize().X*maxpool.GetOutputSize().Y*maxpool.GetOutputSize().Z, 3, 1)
+	fcCustomWeights.SetData(maxpool.GetOutputSize().X*maxpool.GetOutputSize().Y*maxpool.GetOutputSize().Z, 3, 1, []float64{
 		-0.19908814, 0.01521263, 0.31363996, -0.28573613, -0.11934281, -0.18194183, -0.03111016, -0.21696585, -0.20689814,
 		0.17908468, -0.28144695, -0.29681312, -0.13912858, 0.07067328, 0.36249144, -0.20688576, -0.20291744, 0.25257304,
 		-0.29341734, 0.36533501, 0.19671917, 0.02382031, -0.47169692, -0.34167172, 0.10725344, 0.47524162, -0.42054638,

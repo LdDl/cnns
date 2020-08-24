@@ -40,8 +40,8 @@ func (maxpool *MaxPoolingLayer) SetCustomWeights(t *[]t.Tensor) {
 	fmt.Println("There are no weights for pooling layer")
 }
 
-// OutSize - returns output size (dimensions)
-func (maxpool *MaxPoolingLayer) OutSize() *t.TDsize {
+// GetOutputSize - returns output size (dimensions)
+func (maxpool *MaxPoolingLayer) GetOutputSize() *t.TDsize {
 	return maxpool.Out.Size
 }
 
