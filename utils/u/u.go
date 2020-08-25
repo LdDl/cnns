@@ -174,9 +174,8 @@ func unflatten(r, c int, d []float64) Matrix2D {
 func Round(v float64) float64 {
 	if v >= 0 {
 		return math.Floor(v + 0.5)
-	} else {
-		return math.Ceil(v - 0.5)
 	}
+	return math.Ceil(v - 0.5)
 }
 
 // RoundPlaces Round float64 to N decimal places

@@ -2,10 +2,10 @@ package im
 
 import (
 	"image"
-	_ "image/png"
 	"io"
 )
 
+// Pixel Representation of RGBA
 type Pixel struct {
 	R int
 	G int
@@ -13,6 +13,7 @@ type Pixel struct {
 	A int
 }
 
+// GetPixels Returns array of pixels for image
 func GetPixels(file io.Reader) ([][]Pixel, error) {
 	img, _, err := image.Decode(file)
 
@@ -35,7 +36,7 @@ func GetPixels(file io.Reader) ([][]Pixel, error) {
 	return pixels, nil
 }
 
-// img.At(x, y).RGBA() returns four uint32 values; we want a Pixel
+// RGBAToPixel Returns pixel value based on img.At(x, y).RGBA() result
 func RGBAToPixel(r uint32, g uint32, b uint32, a uint32) Pixel {
 	return Pixel{int(r / 257), int(g / 257), int(b / 257), int(a / 257)}
 }
