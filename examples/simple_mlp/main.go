@@ -42,8 +42,8 @@ func ExampleOne() {
 		}
 	}
 
-	// net.FeedForward(&inputData)
-	// net.PrintOutput()
+	net.FeedForward(inputData)
+	net.PrintOutput()
 }
 
 // ExampleTwo - Example of MLP
