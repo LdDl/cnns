@@ -29,6 +29,12 @@
     - [ ] Product
     - [ ] HadamardProduct
     - [ ] MSE
+- [ ] Test cases for layers and its methods
+    - [ ] Convolutional **WIP**
+    - [ ] Fully connected **WIP**
+    - [ ] ReLU
+    - [ ] Leaky ReLU
+    - [ ] Pooling  
 - [ ] Benchmarks. Do we really need it since this is just library for studying purposes?
 - [ ] Padding for convolutional layer
 - [ ] Write theoretical documents on most of functions (on every would be even better)
