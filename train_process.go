@@ -7,7 +7,7 @@ import (
 	"math/rand"
 	"time"
 
-	t "github.com/LdDl/cnns/tensor"
+	"github.com/LdDl/cnns/tensor"
 )
 
 // Train Train neural network
@@ -20,7 +20,7 @@ import (
 
 	epochsNum - number of epochs
 */
-func (n *WholeNet) Train(inputs []*t.Tensor, desired []*t.Tensor, testData []*t.Tensor, testDesired []*t.Tensor, epochsNum int) (float64, float64, error) {
+func (n *WholeNet) Train(inputs []*tensor.Tensor, desired []*tensor.Tensor, testData []*tensor.Tensor, testDesired []*tensor.Tensor, epochsNum int) (float64, float64, error) {
 	var err error
 	trainError := 0.0
 	testError := 0.0
@@ -88,7 +88,7 @@ func (n *WholeNet) Train(inputs []*t.Tensor, desired []*t.Tensor, testData []*t.
 	return trainError, testError, err
 }
 
-func maxIdx(tt *t.Tensor) (max int) {
+func maxIdx(tt *tensor.Tensor) (max int) {
 	maxF := 0.0
 	for i := range tt.Data {
 		if maxF < tt.Data[i] {

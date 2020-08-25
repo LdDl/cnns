@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/LdDl/cnns"
-	t "github.com/LdDl/cnns/tensor"
+	"github.com/LdDl/cnns/tensor"
 	"github.com/LdDl/cnns/utils/u"
 	"github.com/nfnt/resize"
 )
@@ -58,7 +58,7 @@ func main() {
 // CheckOCR - solve OCR problem
 func CheckOCR() {
 	rand.Seed(time.Now().UnixNano())
-	conv := cnns.NewConvLayer(1, 5, 4, t.TDsize{X: trainWidth, Y: trainHeight, Z: 1}) //
+	conv := cnns.NewConvLayer(1, 5, 4, tensor.TDsize{X: trainWidth, Y: trainHeight, Z: 1}) //
 	relu := cnns.NewReLULayer(conv.GetOutputSize())
 	maxpool := cnns.NewMaxPoolingLayer(2, 2, relu.GetOutputSize())
 	fullyconnected := cnns.NewFullyConnectedLayer(maxpool.GetOutputSize(), 22)
@@ -118,7 +118,7 @@ func CheckOCR() {
 
 }
 
-func formTrainDataOCR() ([]*t.Tensor, []*t.Tensor) {
+func formTrainDataOCR() ([]*tensor.Tensor, []*tensor.Tensor) {
 	fileNames, err := readFileNames(trainImagesPath)
 	if err != nil {
 		log.Panicln(err)
@@ -127,12 +127,12 @@ func formTrainDataOCR() ([]*t.Tensor, []*t.Tensor) {
 	for _, v := range fileNames {
 		numExamples += len(v)
 	}
-	var inputs []*t.Tensor
-	var desired []*t.Tensor
-	tensorFiles := make(map[string][]*t.Tensor)
+	var inputs []*tensor.Tensor
+	var desired []*tensor.Tensor
+	tensorFiles := make(map[string][]*tensor.Tensor)
 	for k, v := range fileNames {
 		if _, ok := tensorFiles[k]; !ok {
-			tensorFiles[k] = []*t.Tensor{}
+			tensorFiles[k] = []*tensor.Tensor{}
 		}
 		for _, j := range v {
 			img, err := u.ReadImage(j)
@@ -140,7 +140,7 @@ func formTrainDataOCR() ([]*t.Tensor, []*t.Tensor) {
 				log.Panicln(err)
 			}
 			img = resize.Resize(uint(trainWidth), uint(trainHeight), img, resize.Bicubic)
-			tmpTensor := t.NewTensor(trainWidth, trainHeight, 1)
+			tmpTensor := tensor.NewTensor(trainWidth, trainHeight, 1)
 			for i := 0; i < trainHeight; i++ {
 				for j := 0; j < trainWidth; j++ {
 					r, g, b, _ := img.At(j, i).RGBA()
@@ -169,12 +169,12 @@ func formTrainDataOCR() ([]*t.Tensor, []*t.Tensor) {
 			log.Panicln(err)
 		}
 		for mat := range v {
-			tmpDesired := t.NewTensor(22, 1, 1)
+			tmpDesired := tensor.NewTensor(22, 1, 1)
 			var target [][][]float64
 			target = [][][]float64{[][]float64{[]float64{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}}}
 			target[0][0][intK] = 1.0
 			tmpDesired.SetData3D(target)
-			tmpInput := t.NewTensor(trainWidth, trainHeight, trainDepth)
+			tmpInput := tensor.NewTensor(trainWidth, trainHeight, trainDepth)
 			tmpInput.SetData3D(v[mat].GetData3D())
 			inputs = append(inputs, tmpInput)
 			desired = append(desired, tmpDesired)
@@ -185,7 +185,7 @@ func formTrainDataOCR() ([]*t.Tensor, []*t.Tensor) {
 	return inputs, desired
 }
 
-func formTestDataOCR() ([]*t.Tensor, []*t.Tensor) {
+func formTestDataOCR() ([]*tensor.Tensor, []*tensor.Tensor) {
 
 	fileNames, err := readFileNames(testImagesPath)
 	if err != nil {
@@ -196,13 +196,13 @@ func formTestDataOCR() ([]*t.Tensor, []*t.Tensor) {
 		numExamples += len(v)
 	}
 
-	var inputs []*t.Tensor
-	var desired []*t.Tensor
+	var inputs []*tensor.Tensor
+	var desired []*tensor.Tensor
 
-	tensorFiles := make(map[string][]*t.Tensor)
+	tensorFiles := make(map[string][]*tensor.Tensor)
 	for k, v := range fileNames {
 		if _, ok := tensorFiles[k]; !ok {
-			tensorFiles[k] = []*t.Tensor{}
+			tensorFiles[k] = []*tensor.Tensor{}
 		}
 		for _, j := range v {
 			img, err := u.ReadImage(j)
@@ -210,7 +210,7 @@ func formTestDataOCR() ([]*t.Tensor, []*t.Tensor) {
 				log.Panicln(err)
 			}
 			img = resize.Resize(uint(trainWidth), uint(trainHeight), img, resize.Bicubic)
-			tmpTensor := t.NewTensor(trainWidth, trainHeight, 1)
+			tmpTensor := tensor.NewTensor(trainWidth, trainHeight, 1)
 			for i := 0; i < trainHeight; i++ {
 				for j := 0; j < trainWidth; j++ {
 					r, g, b, _ := img.At(j, i).RGBA()
@@ -229,12 +229,12 @@ func formTestDataOCR() ([]*t.Tensor, []*t.Tensor) {
 			log.Panicln(err)
 		}
 		for mat := range v {
-			tmpDesired := t.NewTensor(22, 1, 1)
+			tmpDesired := tensor.NewTensor(22, 1, 1)
 			var target [][][]float64
 			target = [][][]float64{[][]float64{[]float64{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}}}
 			target[0][0][intK] = 1.0
 			tmpDesired.SetData3D(target)
-			tmpInput := t.NewTensor(trainWidth, trainHeight, trainDepth)
+			tmpInput := tensor.NewTensor(trainWidth, trainHeight, trainDepth)
 			tmpInput.SetData3D(v[mat].GetData3D())
 			inputs = append(inputs, tmpInput)
 			desired = append(desired, tmpDesired)
@@ -270,7 +270,7 @@ func readFileNames(dir string) (map[string][]string, error) {
 }
 
 // train - train network
-func train(net *cnns.WholeNet, data map[string][]*t.Tensor) error {
+func train(net *cnns.WholeNet, data map[string][]*tensor.Tensor) error {
 	st := time.Now()
 	var err error
 	rand.Seed(time.Now().UnixNano())
@@ -282,12 +282,12 @@ func train(net *cnns.WholeNet, data map[string][]*t.Tensor) error {
 		}
 		for mat := range v {
 			var temp Trainer
-			temp.Desired = t.NewTensor(22, 1, 1)
+			temp.Desired = tensor.NewTensor(22, 1, 1)
 			var target [][][]float64
 			target = [][][]float64{[][]float64{[]float64{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}}}
 			target[0][0][intK] = 1.0
 			temp.Desired.SetData3D(target)
-			temp.Image = t.NewTensor(trainWidth, trainHeight, trainDepth)
+			temp.Image = tensor.NewTensor(trainWidth, trainHeight, trainDepth)
 			temp.Image.SetData3D(v[mat].GetData3D())
 			temp.LabelStr = chars[intK]
 			temp.LabelInt = intK
@@ -317,7 +317,7 @@ func train(net *cnns.WholeNet, data map[string][]*t.Tensor) error {
 }
 
 // testTrained - test network
-func testTrained(net *cnns.WholeNet, data map[string][]*t.Tensor) error {
+func testTrained(net *cnns.WholeNet, data map[string][]*tensor.Tensor) error {
 	var err error
 	var testers []Trainer
 	for k, v := range data {
@@ -330,9 +330,9 @@ func testTrained(net *cnns.WholeNet, data map[string][]*t.Tensor) error {
 			target = [][][]float64{[][]float64{[]float64{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}}}
 			target[0][0][intK] = 1.0
 			var temp Trainer
-			temp.Desired = t.NewTensor(22, 1, 1)
+			temp.Desired = tensor.NewTensor(22, 1, 1)
 			temp.Desired.SetData3D(target)
-			temp.Image = t.NewTensor(trainWidth, trainHeight, trainDepth)
+			temp.Image = tensor.NewTensor(trainWidth, trainHeight, trainDepth)
 			temp.LabelStr = chars[intK]
 			temp.LabelInt = intK
 			temp.Image.SetData3D(v[mat].GetData3D())
@@ -362,8 +362,8 @@ func testTrained(net *cnns.WholeNet, data map[string][]*t.Tensor) error {
 
 // Trainer - struct for training. Contains Image, Desired output
 type Trainer struct {
-	Image    *t.Tensor
-	Desired  *t.Tensor
+	Image    *tensor.Tensor
+	Desired  *tensor.Tensor
 	LabelStr string
 	LabelInt int
 }
@@ -377,16 +377,16 @@ func SuffleTrainers(data []Trainer) []Trainer {
 	return data
 }
 
-// readMatsTrain - fill map[string][]t.Tensor with data (for training)
+// readMatsTrain - fill map[string][]tensor.Tensor with data (for training)
 // adjust - parameter to fill data with same amount of images for each label (needed if you have a few amount of images for some label)
 // but, for a good training you have to provide a lot of unique data (not randomly repeated)
-func readMatsTrain(data *map[string][]string, adjust int, doAdjust bool) (map[string][]*t.Tensor, error) {
+func readMatsTrain(data *map[string][]string, adjust int, doAdjust bool) (map[string][]*tensor.Tensor, error) {
 	var err error
-	var ret map[string][]*t.Tensor
-	ret = make(map[string][]*t.Tensor)
+	var ret map[string][]*tensor.Tensor
+	ret = make(map[string][]*tensor.Tensor)
 	for k, v := range *data {
 		if _, ok := ret[k]; !ok {
-			ret[k] = []*t.Tensor{}
+			ret[k] = []*tensor.Tensor{}
 		}
 		for _, j := range v {
 			img, err := u.ReadImage(j)
@@ -394,7 +394,7 @@ func readMatsTrain(data *map[string][]string, adjust int, doAdjust bool) (map[st
 				return nil, err
 			}
 			img = resize.Resize(uint(trainWidth), uint(trainHeight), img, resize.Bicubic)
-			tmpTensor := t.NewTensor(trainWidth, trainHeight, 1)
+			tmpTensor := tensor.NewTensor(trainWidth, trainHeight, 1)
 			for i := 0; i < trainHeight; i++ {
 				for j := 0; j < trainWidth; j++ {
 					r, g, b, _ := img.At(j, i).RGBA()
@@ -421,14 +421,14 @@ func readMatsTrain(data *map[string][]string, adjust int, doAdjust bool) (map[st
 	return ret, err
 }
 
-// readMatsTests - fill map[string][]t.Tensor with data (for testing)
-func readMatsTests(data *map[string][]string) (map[string][]*t.Tensor, error) {
+// readMatsTests - fill map[string][]tensor.Tensor with data (for testing)
+func readMatsTests(data *map[string][]string) (map[string][]*tensor.Tensor, error) {
 	var err error
-	var ret map[string][]*t.Tensor
-	ret = make(map[string][]*t.Tensor)
+	var ret map[string][]*tensor.Tensor
+	ret = make(map[string][]*tensor.Tensor)
 	for k, v := range *data {
 		if _, ok := ret[k]; !ok {
-			ret[k] = []*t.Tensor{}
+			ret[k] = []*tensor.Tensor{}
 		}
 		for _, j := range v {
 			img, err := u.ReadImage(j)
@@ -436,7 +436,7 @@ func readMatsTests(data *map[string][]string) (map[string][]*t.Tensor, error) {
 				return nil, err
 			}
 			img = resize.Resize(uint(trainWidth), uint(trainHeight), img, resize.Bicubic)
-			tmpTensor := t.NewTensor(trainWidth, trainHeight, 1)
+			tmpTensor := tensor.NewTensor(trainWidth, trainHeight, 1)
 			for i := 0; i < trainHeight; i++ {
 				for j := 0; j < trainWidth; j++ {
 					r, g, b, _ := img.At(j, i).RGBA()

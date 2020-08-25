@@ -4,13 +4,13 @@ import (
 	"fmt"
 
 	"github.com/LdDl/cnns"
-	t "github.com/LdDl/cnns/tensor"
+	"github.com/LdDl/cnns/tensor"
 )
 
 func main() {
 	var net cnns.WholeNet
 
-	fullyconnected1 := cnns.NewFullyConnectedLayer(&t.TDsize{X: 2, Y: 1, Z: 1}, 2)
+	fullyconnected1 := cnns.NewFullyConnectedLayer(&tensor.TDsize{X: 2, Y: 1, Z: 1}, 2)
 	fullyconnected2 := cnns.NewFullyConnectedLayer(fullyconnected1.GetOutputSize(), 5)
 	fullyconnected3 := cnns.NewFullyConnectedLayer(fullyconnected2.GetOutputSize(), 3)
 	fullyconnected4 := cnns.NewFullyConnectedLayer(fullyconnected3.GetOutputSize(), 1)

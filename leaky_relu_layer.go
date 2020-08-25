@@ -3,7 +3,7 @@ package cnns
 import (
 	"fmt"
 
-	t "github.com/LdDl/cnns/tensor"
+	"github.com/LdDl/cnns/tensor"
 )
 
 // LeakyReLULayer - Rectified Linear Unit layer with leak.
@@ -15,9 +15,9 @@ import (
 	but in Leaky ReLU it is: f(x) = alpha*x (for x < 0) and f(x) = x (for x >= 0).
 */
 type LeakyReLULayer struct {
-	In                    *t.Tensor
-	Out                   *t.Tensor
-	InputGradientsWeights *t.Tensor
+	In                    *tensor.Tensor
+	Out                   *tensor.Tensor
+	InputGradientsWeights *tensor.Tensor
 	alpha                 float64
 }
 
@@ -26,49 +26,49 @@ type LeakyReLULayer struct {
 	inSize - Input layer's size;
 	alpha - Coefficient in activation function. Should small (for example 0.01).
 */
-func NewLeakyReLULayer(inSize *t.TDsize, alpha float64) Layer {
+func NewLeakyReLULayer(inSize *tensor.TDsize, alpha float64) Layer {
 	newLayer := &LeakyReLULayer{
-		InputGradientsWeights: t.NewTensor(inSize.X, inSize.Y, inSize.Z),
-		In:                    t.NewTensor(inSize.X, inSize.Y, inSize.Z),
-		Out:                   t.NewTensor(inSize.X, inSize.Y, inSize.Z),
+		InputGradientsWeights: tensor.NewTensor(inSize.X, inSize.Y, inSize.Z),
+		In:                    tensor.NewTensor(inSize.X, inSize.Y, inSize.Z),
+		Out:                   tensor.NewTensor(inSize.X, inSize.Y, inSize.Z),
 		alpha:                 alpha,
 	}
 	return newLayer
 }
 
 // SetCustomWeights - Set user's weights (make it carefully)
-func (lrelu *LeakyReLULayer) SetCustomWeights(t []*t.Tensor) {
+func (lrelu *LeakyReLULayer) SetCustomWeights(t []*tensor.Tensor) {
 	fmt.Println("There are no weights for ReLU layer")
 }
 
 // GetOutputSize - Return output size (dimensions)
-func (lrelu *LeakyReLULayer) GetOutputSize() *t.TDsize {
+func (lrelu *LeakyReLULayer) GetOutputSize() *tensor.TDsize {
 	return lrelu.Out.Size
 }
 
 // GetInputSize - Return input size (dimensions)
-func (lrelu *LeakyReLULayer) GetInputSize() *t.TDsize {
+func (lrelu *LeakyReLULayer) GetInputSize() *tensor.TDsize {
 	return lrelu.In.Size
 }
 
 // GetOutput - Return Leaky ReLU layer's output
-func (lrelu *LeakyReLULayer) GetOutput() *t.Tensor {
+func (lrelu *LeakyReLULayer) GetOutput() *tensor.Tensor {
 	return lrelu.Out
 }
 
 // GetWeights - Return Leaky ReLU layer's weights
-func (lrelu *LeakyReLULayer) GetWeights() []*t.Tensor {
+func (lrelu *LeakyReLULayer) GetWeights() []*tensor.Tensor {
 	fmt.Println("There are no weights for ReLU layer")
-	return []*t.Tensor{}
+	return []*tensor.Tensor{}
 }
 
 // GetGradients - Return Leaky ReLU layer's gradients
-func (lrelu *LeakyReLULayer) GetGradients() *t.Tensor {
+func (lrelu *LeakyReLULayer) GetGradients() *tensor.Tensor {
 	return lrelu.InputGradientsWeights
 }
 
 // FeedForward - Feed data to Leaky ReLU layer
-func (lrelu *LeakyReLULayer) FeedForward(t *t.Tensor) {
+func (lrelu *LeakyReLULayer) FeedForward(t *tensor.Tensor) {
 	lrelu.In = t
 	lrelu.DoActivation()
 }
@@ -89,7 +89,7 @@ func (lrelu *LeakyReLULayer) DoActivation() {
 }
 
 // CalculateGradients - Calculate Leaky ReLU layer's gradients
-func (lrelu *LeakyReLULayer) CalculateGradients(nextLayerGrad *t.Tensor) {
+func (lrelu *LeakyReLULayer) CalculateGradients(nextLayerGrad *tensor.Tensor) {
 	for i := 0; i < lrelu.In.Size.X; i++ {
 		for j := 0; j < lrelu.In.Size.Y; j++ {
 			for z := 0; z < lrelu.In.Size.Z; z++ {
