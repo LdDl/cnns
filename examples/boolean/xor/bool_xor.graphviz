@@ -1,5 +1,7 @@
 digraph G {
   input1 -> fc11
+  input1 -> fc12
+  input2 -> fc11
   input2 -> fc12
   fc11 -> fc21 [ label = <w<SUP>2</SUP><SUB>1,1</SUB>> ]
   fc11 -> fc22 [ label = <w<SUP>2</SUP><SUB>1,2</SUB>> ]
