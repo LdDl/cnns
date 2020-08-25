@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 	"strings"
 
-	t "github.com/LdDl/cnns/tensor"
+	"github.com/LdDl/cnns/tensor"
 )
 
 // WholeNet - net itself (array of layers)
@@ -17,7 +17,7 @@ type WholeNet struct {
 }
 
 // FeedForward - forward pass through the net
-func (wh *WholeNet) FeedForward(t *t.Tensor) {
+func (wh *WholeNet) FeedForward(t *tensor.Tensor) {
 	wh.Layers[0].FeedForward(t)
 	for l := 1; l < len(wh.Layers); l++ {
 		out := wh.Layers[l-1].GetOutput()
@@ -26,7 +26,7 @@ func (wh *WholeNet) FeedForward(t *t.Tensor) {
 }
 
 // Backpropagate - backward pass through the net (training)
-func (wh *WholeNet) Backpropagate(target *t.Tensor) {
+func (wh *WholeNet) Backpropagate(target *tensor.Tensor) {
 	lastLayer := wh.Layers[len(wh.Layers)-1].GetOutput()
 
 	difference := lastLayer.Sub(target)
@@ -47,7 +47,7 @@ func (wh *WholeNet) PrintOutput() {
 }
 
 // GetOutput - returns net's output (last layer output)
-func (wh *WholeNet) GetOutput() *t.Tensor {
+func (wh *WholeNet) GetOutput() *tensor.Tensor {
 	return wh.Layers[len(wh.Layers)-1].GetOutput()
 }
 
@@ -78,11 +78,11 @@ func (wh *WholeNet) ImportFromFile(fname string, randomWeights bool) error {
 			x := data.Network.Layers[i].InputSize.X
 			y := data.Network.Layers[i].InputSize.Y
 			z := data.Network.Layers[i].InputSize.Z
-			conv := NewConvLayer(stride, kernelSize, numOfFilters, t.TDsize{X: x, Y: y, Z: z})
+			conv := NewConvLayer(stride, kernelSize, numOfFilters, tensor.TDsize{X: x, Y: y, Z: z})
 			if randomWeights == false {
-				var weights = make([]*t.Tensor, numOfFilters)
+				var weights = make([]*tensor.Tensor, numOfFilters)
 				for w := 0; w < numOfFilters; w++ {
-					weights[w] = t.NewTensor(kernelSize, kernelSize, 1)
+					weights[w] = tensor.NewTensor(kernelSize, kernelSize, 1)
 					weights[w].SetData3D(data.Network.Layers[i].Weights[w].Data)
 				}
 				conv.SetCustomWeights(weights)
@@ -93,7 +93,7 @@ func (wh *WholeNet) ImportFromFile(fname string, randomWeights bool) error {
 			x := data.Network.Layers[i].InputSize.X
 			y := data.Network.Layers[i].InputSize.Y
 			z := data.Network.Layers[i].InputSize.Z
-			relu := NewReLULayer(&t.TDsize{X: x, Y: y, Z: z})
+			relu := NewReLULayer(&tensor.TDsize{X: x, Y: y, Z: z})
 			wh.Layers = append(wh.Layers, relu)
 			break
 		case "pool":
@@ -102,7 +102,7 @@ func (wh *WholeNet) ImportFromFile(fname string, randomWeights bool) error {
 			x := data.Network.Layers[i].InputSize.X
 			y := data.Network.Layers[i].InputSize.Y
 			z := data.Network.Layers[i].InputSize.Z
-			pool := NewMaxPoolingLayer(stride, kernelSize, &t.TDsize{X: x, Y: y, Z: z})
+			pool := NewMaxPoolingLayer(stride, kernelSize, &tensor.TDsize{X: x, Y: y, Z: z})
 			wh.Layers = append(wh.Layers, pool)
 			break
 		case "fc":
@@ -110,12 +110,12 @@ func (wh *WholeNet) ImportFromFile(fname string, randomWeights bool) error {
 			y := data.Network.Layers[i].InputSize.Y
 			z := data.Network.Layers[i].InputSize.Z
 			outSize := data.Network.Layers[i].OutputSize.X
-			fullyconnected := NewFullyConnectedLayer(&t.TDsize{X: x, Y: y, Z: z}, outSize)
+			fullyconnected := NewFullyConnectedLayer(&tensor.TDsize{X: x, Y: y, Z: z}, outSize)
 			if randomWeights == false {
-				var weights *t.Tensor
-				weights = t.NewTensor(x*y*z, outSize, 1)
+				var weights *tensor.Tensor
+				weights = tensor.NewTensor(x*y*z, outSize, 1)
 				weights.SetData3D(data.Network.Layers[i].Weights[0].Data)
-				fullyconnected.SetCustomWeights([]*t.Tensor{weights})
+				fullyconnected.SetCustomWeights([]*tensor.Tensor{weights})
 			}
 			wh.Layers = append(wh.Layers, fullyconnected)
 			break
@@ -214,7 +214,7 @@ type NetJSON struct {
 
 // TensorJSON ...
 type TensorJSON struct {
-	TDSize *t.TDsize     `json:"TDSize"`
+	TDSize *tensor.TDsize     `json:"TDSize"`
 	Data   [][][]float64 `json:"Data"`
 }
 
@@ -227,12 +227,12 @@ type LayerParamsJSON struct {
 // NetLayerJSON ...
 type NetLayerJSON struct {
 	LayerType  string          `json:"LayerType"`
-	InputSize  *t.TDsize       `json:"InputSize"`
+	InputSize  *tensor.TDsize       `json:"InputSize"`
 	Parameters LayerParamsJSON `json:"Parameters,omitempty"`
 	Weights    []TensorJSON    `json:"Weights,omitempty"`
 	// Actually "OutputSize" parameter is useful for fully connected layer only
 	// There are automatic calculation of output size for other layers' types
-	OutputSize *t.TDsize `json:"OutputSize,omitempty"`
+	OutputSize *tensor.TDsize `json:"OutputSize,omitempty"`
 }
 
 // NetworkJSON ...

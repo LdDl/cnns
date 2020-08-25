@@ -3,7 +3,7 @@ package cnns
 import (
 	"fmt"
 
-	t "github.com/LdDl/cnns/tensor"
+	"github.com/LdDl/cnns/tensor"
 )
 
 // ReLULayer - Rectified Linear Unit layer (activation: max(0, x))
@@ -13,57 +13,57 @@ import (
 	LocalDelta - incoming gradients*weights (backpropagation)
 */
 type ReLULayer struct {
-	In         *t.Tensor
-	Out        *t.Tensor
-	LocalDelta *t.Tensor
+	In         *tensor.Tensor
+	Out        *tensor.Tensor
+	LocalDelta *tensor.Tensor
 }
 
 // NewReLULayer - Constructor for new ReLU layer. You need to specify input size
 /*
 	inSize - input layer's size
 */
-func NewReLULayer(inSize *t.TDsize) Layer {
+func NewReLULayer(inSize *tensor.TDsize) Layer {
 	newLayer := &ReLULayer{
-		LocalDelta: t.NewTensor(inSize.X, inSize.Y, inSize.Z),
-		In:         t.NewTensor(inSize.X, inSize.Y, inSize.Z),
-		Out:        t.NewTensor(inSize.X, inSize.Y, inSize.Z),
+		LocalDelta: tensor.NewTensor(inSize.X, inSize.Y, inSize.Z),
+		In:         tensor.NewTensor(inSize.X, inSize.Y, inSize.Z),
+		Out:        tensor.NewTensor(inSize.X, inSize.Y, inSize.Z),
 	}
 	return newLayer
 }
 
 // SetCustomWeights - Set user's weights (make it carefully)
-func (relu *ReLULayer) SetCustomWeights(t []*t.Tensor) {
+func (relu *ReLULayer) SetCustomWeights(t []*tensor.Tensor) {
 	fmt.Println("There are no weights for ReLU layer")
 }
 
 // GetOutputSize - Return output size (dimensions)
-func (relu *ReLULayer) GetOutputSize() *t.TDsize {
+func (relu *ReLULayer) GetOutputSize() *tensor.TDsize {
 	return relu.Out.Size
 }
 
 // GetInputSize - Return input size (dimensions)
-func (relu *ReLULayer) GetInputSize() *t.TDsize {
+func (relu *ReLULayer) GetInputSize() *tensor.TDsize {
 	return relu.In.Size
 }
 
 // GetOutput - Return ReLU layer's output
-func (relu *ReLULayer) GetOutput() *t.Tensor {
+func (relu *ReLULayer) GetOutput() *tensor.Tensor {
 	return relu.Out
 }
 
 // GetWeights - Return ReLU layer's weights
-func (relu *ReLULayer) GetWeights() []*t.Tensor {
+func (relu *ReLULayer) GetWeights() []*tensor.Tensor {
 	fmt.Println("There are no weights for ReLU layer")
-	return []*t.Tensor{}
+	return []*tensor.Tensor{}
 }
 
 // GetGradients - Return ReLU layer's gradients
-func (relu *ReLULayer) GetGradients() *t.Tensor {
+func (relu *ReLULayer) GetGradients() *tensor.Tensor {
 	return relu.LocalDelta
 }
 
 // FeedForward - Feed data to ReLU layer
-func (relu *ReLULayer) FeedForward(t *t.Tensor) {
+func (relu *ReLULayer) FeedForward(t *tensor.Tensor) {
 	relu.In = t
 	relu.DoActivation()
 }
@@ -84,7 +84,7 @@ func (relu *ReLULayer) DoActivation() {
 }
 
 // CalculateGradients - Calculate ReLU layer's gradients
-func (relu *ReLULayer) CalculateGradients(nextLayerGrad *t.Tensor) {
+func (relu *ReLULayer) CalculateGradients(nextLayerGrad *tensor.Tensor) {
 	for i := 0; i < relu.In.Size.X; i++ {
 		for j := 0; j < relu.In.Size.Y; j++ {
 			for z := 0; z < relu.In.Size.Z; z++ {

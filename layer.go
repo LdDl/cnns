@@ -1,31 +1,31 @@
 package cnns
 
 import (
-	t "github.com/LdDl/cnns/tensor"
+	"github.com/LdDl/cnns/tensor"
 )
 
 // Layer - interface for all layer types
 type Layer interface {
 	// OutSize - returns output size (dimensions)
-	GetOutputSize() *t.TDsize
+	GetOutputSize() *tensor.TDsize
 
 	// GetInputSize - returns input size (dimensions)
-	GetInputSize() *t.TDsize
+	GetInputSize() *tensor.TDsize
 
 	// GetOutput - returns layer's output
-	GetOutput() *t.Tensor
+	GetOutput() *tensor.Tensor
 
 	// GetWeights - returns layer's weights
-	GetWeights() []*t.Tensor
+	GetWeights() []*tensor.Tensor
 
 	// GetGradients - returns layer's gradients
-	GetGradients() *t.Tensor
+	GetGradients() *tensor.Tensor
 
 	// FeedForward - feed data to layer
-	FeedForward(t *t.Tensor)
+	FeedForward(t *tensor.Tensor)
 
 	// CalculateGradients - calculate layers' gradients
-	CalculateGradients(nextLayerGradients *t.Tensor)
+	CalculateGradients(nextLayerGradients *tensor.Tensor)
 
 	// UpdateWeights - update layer's weights
 	UpdateWeights()
@@ -50,5 +50,5 @@ type Layer interface {
 
 	SetActivationFunc(f func(v float64) float64)
 	SetActivationDerivativeFunc(f func(v float64) float64)
-	SetCustomWeights(t []*t.Tensor)
+	SetCustomWeights(t []*tensor.Tensor)
 }

@@ -3,7 +3,7 @@ package cnns
 import (
 	"fmt"
 
-	t "github.com/LdDl/cnns/tensor"
+	"github.com/LdDl/cnns/tensor"
 )
 
 // Gradient - Gradient.
@@ -32,14 +32,14 @@ func (grad *Gradient) Update() {
 // TensorGradient - Tensor for gradient.
 type TensorGradient struct {
 	Data []Gradient
-	Size *t.TDsize
+	Size *tensor.TDsize
 }
 
 // NewTensorGradient - Constructor for tensor of gradients.
 func NewTensorGradient(x, y, z int) *TensorGradient {
 	return &TensorGradient{
 		Data: make([]Gradient, x*y*z),
-		Size: &t.TDsize{
+		Size: &tensor.TDsize{
 			X: x,
 			Y: y,
 			Z: z,
