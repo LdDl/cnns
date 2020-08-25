@@ -22,15 +22,13 @@ type ReLULayer struct {
 /*
 	inSize - input layer's size
 */
-func NewReLULayer(inSize *t.TDsize) *LayerStruct {
+func NewReLULayer(inSize *t.TDsize) Layer {
 	newLayer := &ReLULayer{
 		LocalDelta: t.NewTensor(inSize.X, inSize.Y, inSize.Z),
 		In:         t.NewTensor(inSize.X, inSize.Y, inSize.Z),
 		Out:        t.NewTensor(inSize.X, inSize.Y, inSize.Z),
 	}
-	return &LayerStruct{
-		Layer: newLayer,
-	}
+	return newLayer
 }
 
 // SetCustomWeights - Set user's weights (make it carefully)

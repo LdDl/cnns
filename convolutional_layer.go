@@ -21,7 +21,7 @@ type ConvLayer struct {
 }
 
 // NewConvLayer - constructor for new convolutional layer. You need to specify striding step, size (square) of kernel, amount of kernels, input size.
-func NewConvLayer(stride, kernelSize, numberFilters int, inSize t.TDsize) *LayerStruct {
+func NewConvLayer(stride, kernelSize, numberFilters int, inSize t.TDsize) Layer {
 	newLayer := &ConvLayer{
 		DeltaWeightsComponent: t.NewTensor(inSize.X, inSize.Y, inSize.Z),
 		In:                    t.NewTensor(inSize.X, inSize.Y, inSize.Z),
@@ -55,9 +55,7 @@ func NewConvLayer(stride, kernelSize, numberFilters int, inSize t.TDsize) *Layer
 			newLayer.LocalDeltas = append(newLayer.LocalDeltas, t)
 		}
 	}
-	return &LayerStruct{
-		Layer: newLayer,
-	}
+	return newLayer
 }
 
 // SetCustomWeights - set user's weights (make it carefully)

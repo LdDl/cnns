@@ -22,7 +22,7 @@ type MaxPoolingLayer struct {
 }
 
 // NewMaxPoolingLayer - constructor for new MaxPooling layer.
-func NewMaxPoolingLayer(stride, extendFilter int, inSize *t.TDsize) *LayerStruct {
+func NewMaxPoolingLayer(stride, extendFilter int, inSize *t.TDsize) Layer {
 	newLayer := &MaxPoolingLayer{
 		In:           t.NewTensor(inSize.X, inSize.Y, inSize.Z),
 		Out:          t.NewTensor((inSize.X-extendFilter)/stride+1, (inSize.Y-extendFilter)/stride+1, inSize.Z),
@@ -30,9 +30,7 @@ func NewMaxPoolingLayer(stride, extendFilter int, inSize *t.TDsize) *LayerStruct
 		Stride:       stride,
 		ExtendFilter: extendFilter,
 	}
-	return &LayerStruct{
-		Layer: newLayer,
-	}
+	return newLayer
 }
 
 // SetCustomWeights - set user's weights (make it carefully)

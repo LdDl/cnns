@@ -30,7 +30,7 @@ type FullyConnectedLayer struct {
 }
 
 // NewFullyConnectedLayer - constructor for new fully connected layer. You need to specify input size and output size
-func NewFullyConnectedLayer(inSize *t.TDsize, outSize int) *LayerStruct {
+func NewFullyConnectedLayer(inSize *t.TDsize, outSize int) Layer {
 	newLayer := &FullyConnectedLayer{
 		In:                       t.NewTensor(inSize.X, inSize.Y, inSize.Z),
 		Out:                      t.NewTensor(outSize, 1, 1),
@@ -47,9 +47,7 @@ func NewFullyConnectedLayer(inSize *t.TDsize, outSize int) *LayerStruct {
 			newLayer.Weights.Set(h, i, 0, rand.Float64()-0.5)
 		}
 	}
-	return &LayerStruct{
-		Layer: newLayer,
-	}
+	return newLayer
 }
 
 // SetCustomWeights - set user's weights (make it carefully)

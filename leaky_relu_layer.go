@@ -26,16 +26,14 @@ type LeakyReLULayer struct {
 	inSize - Input layer's size;
 	alpha - Coefficient in activation function. Should small (for example 0.01).
 */
-func NewLeakyReLULayer(inSize *t.TDsize, alpha float64) *LayerStruct {
+func NewLeakyReLULayer(inSize *t.TDsize, alpha float64) Layer {
 	newLayer := &LeakyReLULayer{
 		InputGradientsWeights: t.NewTensor(inSize.X, inSize.Y, inSize.Z),
 		In:                    t.NewTensor(inSize.X, inSize.Y, inSize.Z),
 		Out:                   t.NewTensor(inSize.X, inSize.Y, inSize.Z),
 		alpha:                 alpha,
 	}
-	return &LayerStruct{
-		Layer: newLayer,
-	}
+	return newLayer
 }
 
 // SetCustomWeights - Set user's weights (make it carefully)
