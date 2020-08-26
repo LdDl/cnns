@@ -39,7 +39,7 @@ func (t1 *Tensor) MSE(t2 *Tensor) float64 {
 	return sum / float64(num)
 }
 
-// Transpose - Transponse tensor by X and Y axis (2D)
+// Transpose Transponse tensor by X and Y axis (2D). See ref. https://en.wikipedia.org/wiki/Transpose
 func (t1 *Tensor) Transpose() *Tensor {
 	ret := NewTensor(t1.Size.Y, t1.Size.X, t1.Size.Z)
 	for z := 0; z < t1.Size.Z; z++ {
@@ -52,7 +52,7 @@ func (t1 *Tensor) Transpose() *Tensor {
 	return ret
 }
 
-// Product - Product Tensor by Tensor (by X and Y axis, 2D)
+// Product Product Tensor by Tensor (by X and Y axis, 2D). See ref. https://en.wikipedia.org/wiki/Matrix_multiplication
 func (t1 *Tensor) Product(t2 *Tensor) (*Tensor, error) {
 	ret := NewTensor(t2.Size.X, t1.Size.Y, t1.Size.Z)
 	if t1.Size.Z != t2.Size.Z || t1.Size.X != t2.Size.Y {
@@ -72,18 +72,14 @@ func (t1 *Tensor) Product(t2 *Tensor) (*Tensor, error) {
 	return ret, nil
 }
 
-// HadamardProduct - Element-wise product
+// HadamardProduct Element-wise product. See ref. https://en.wikipedia.org/wiki/Hadamard_product_(matrices)
 func HadamardProduct(t1, t2 *Tensor) (*Tensor, error) {
 	ret := NewTensor(t1.Size.X, t1.Size.Y, t1.Size.Z)
 	if t1.Size.Z != t2.Size.Z || t1.Size.Y != t2.Size.Y || t1.Size.X != t2.Size.X {
 		return ret, errors.New("Invalid dimension sizes")
 	}
-	for z := 0; z < t1.Size.Z; z++ {
-		for y := 0; y < t1.Size.Y; y++ {
-			for x := 0; x < t1.Size.X; x++ {
-				ret.Set(x, y, z, t1.Get(x, y, z)*t2.Get(x, y, z))
-			}
-		}
+	for i := range ret.Data {
+		ret.Data[i] = t1.Data[i] * t2.Data[i]
 	}
 	return ret, nil
 }
