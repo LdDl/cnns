@@ -50,7 +50,8 @@ func TestHadamardProduct(t *testing.T) {
 	tensor1.SetData(3, 3, 1, []float64{10, 11, 12, 13, 14, 15, 16, 18, 19})
 
 	tensor3, err = HadamardProduct(tensor1, tensor2)
-	if err == nil {
+	if err == nil || err != ErrDimensionsAreNotEqual {
 		t.Error("Error must appear because of tensor1 has shape (3,3,2) and tensor2 has shape (3,3,1)")
+		return
 	}
 }

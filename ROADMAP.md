@@ -8,7 +8,7 @@
     - [ ] Bias;
 - [ ] Refactor code and rethink structure of library
 - [ ] Remove some legacy and experemintal code to other branches
-- [ ] Error types and wrapping them
+- [ ] Error types and wrapping them **WIP**
 - [ ] Test cases for most of math functions
     - [x] ActivationTanh
     - [x] ActivationTanhDerivative
@@ -27,7 +27,7 @@
     - [ ] Sub
     - [x] Transpose
     - [ ] Product
-    - [ ] HadamardProduct
+    - [x] HadamardProduct
     - [ ] MSE
 - [ ] Test cases for layers and its methods
     - [ ] Convolutional **WIP**

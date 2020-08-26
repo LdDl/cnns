@@ -1,7 +1,6 @@
 package tensor
 
 import (
-	"errors"
 	"math"
 )
 
@@ -56,7 +55,7 @@ func (t1 *Tensor) Transpose() *Tensor {
 func (t1 *Tensor) Product(t2 *Tensor) (*Tensor, error) {
 	ret := NewTensor(t2.Size.X, t1.Size.Y, t1.Size.Z)
 	if t1.Size.Z != t2.Size.Z || t1.Size.X != t2.Size.Y {
-		return ret, errors.New("Invalid sizes")
+		return ret, ErrDimensionsNotFit
 	}
 	for z := 0; z < t1.Size.Z; z++ {
 		for y := 0; y < t1.Size.Y; y++ {
@@ -76,7 +75,7 @@ func (t1 *Tensor) Product(t2 *Tensor) (*Tensor, error) {
 func HadamardProduct(t1, t2 *Tensor) (*Tensor, error) {
 	ret := NewTensor(t1.Size.X, t1.Size.Y, t1.Size.Z)
 	if t1.Size.Z != t2.Size.Z || t1.Size.Y != t2.Size.Y || t1.Size.X != t2.Size.X {
-		return ret, errors.New("Invalid dimension sizes")
+		return ret, ErrDimensionsAreNotEqual
 	}
 	for i := range ret.Data {
 		ret.Data[i] = t1.Data[i] * t2.Data[i]
