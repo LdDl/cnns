@@ -19,7 +19,38 @@ func TestTranspose(t *testing.T) {
 
 	for i := range transponsed.Data {
 		if transponsed.Data[i] != tensorCorrect.Data[i] {
-			t.Error("Tensors are not equal")
+			t.Errorf("Tensors are not equal at pos #%d. Expected value: %f. Got: %f", i, tensorCorrect.Data[i], transponsed.Data[i])
 		}
+	}
+}
+
+func TestHadamardProduct(t *testing.T) {
+	tensor1 := NewTensor(2, 3, 1)
+	tensor1.SetData(2, 3, 1, []float64{1, 2, 3, 4, 5, 6})
+	tensor2 := NewTensor(2, 3, 1)
+	tensor2.SetData(2, 3, 1, []float64{7, 8, 9, 10, 11, 12})
+
+	tensorCorrect := NewTensor(2, 3, 1)
+	tensorCorrect.SetData(2, 3, 1, []float64{7, 16, 27, 40, 55, 72})
+
+	tensor3, err := HadamardProduct(tensor1, tensor2)
+	if err != nil {
+		t.Error(err)
+	}
+
+	for i := range tensor3.Data {
+		if tensor3.Data[i] != tensorCorrect.Data[i] {
+			t.Errorf("Tensors are not equal at pos #%d. Expected value: %f. Got: %f", i, tensorCorrect.Data[i], tensor3.Data[i])
+		}
+	}
+
+	tensor1 = NewTensor(3, 3, 2)
+	tensor1.SetData(3, 3, 2, []float64{1, 2, 3, 4, 5, 6, 7, 8, 9, -1, -2, -3, -4, -5, -6, -7, -8, -9})
+	tensor2 = NewTensor(3, 3, 1)
+	tensor1.SetData(3, 3, 1, []float64{10, 11, 12, 13, 14, 15, 16, 18, 19})
+
+	tensor3, err = HadamardProduct(tensor1, tensor2)
+	if err == nil {
+		t.Error("Error must appear because of tensor1 has shape (3,3,2) and tensor2 has shape (3,3,1)")
 	}
 }
