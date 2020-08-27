@@ -308,7 +308,11 @@ func train(net *cnns.WholeNet, data map[string][]*tensor.Tensor) error {
 			// Feedforward
 			net.FeedForward(t.Image)
 			// Backward
-			net.Backpropagate(t.Desired)
+			err = net.Backpropagate(t.Desired)
+			if err != nil {
+				log.Printf("Backpropagate caused error: %s", err.Error())
+				return err
+			}
 		}
 		fmt.Printf("Epoch #%v in %v\n", e, time.Since(st))
 	}

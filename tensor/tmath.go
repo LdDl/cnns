@@ -9,21 +9,29 @@ import (
 */
 
 // Add - Element-wise summation.
-func (t1 *Tensor) Add(t2 *Tensor) *Tensor {
+func (t1 *Tensor) Add(t2 *Tensor) (*Tensor, error) {
 	var ret = NewTensor(t1.Size.X, t1.Size.Y, t1.Size.Z)
+	ok := t1.IsEqualDims(t2)
+	if !ok {
+		return ret, ErrDimensionsAreNotEqual
+	}
 	for i := 0; i < t2.Size.Total(); i++ {
 		ret.Data[i] = t1.Data[i] + t2.Data[i]
 	}
-	return ret
+	return ret, nil
 }
 
 // Sub - Element-wise subtraction.
-func (t1 *Tensor) Sub(t2 *Tensor) *Tensor {
+func (t1 *Tensor) Sub(t2 *Tensor) (*Tensor, error) {
 	var ret = NewTensor(t1.Size.X, t1.Size.Y, t1.Size.Z)
+	ok := t1.IsEqualDims(t2)
+	if !ok {
+		return ret, ErrDimensionsAreNotEqual
+	}
 	for i := 0; i < t2.Size.Total(); i++ {
 		ret.Data[i] = t1.Data[i] - t2.Data[i]
 	}
-	return ret
+	return ret, nil
 }
 
 // MSE - Mean square error
@@ -74,7 +82,8 @@ func (t1 *Tensor) Product(t2 *Tensor) (*Tensor, error) {
 // HadamardProduct Element-wise product. See ref. https://en.wikipedia.org/wiki/Hadamard_product_(matrices)
 func HadamardProduct(t1, t2 *Tensor) (*Tensor, error) {
 	ret := NewTensor(t1.Size.X, t1.Size.Y, t1.Size.Z)
-	if t1.Size.Z != t2.Size.Z || t1.Size.Y != t2.Size.Y || t1.Size.X != t2.Size.X {
+	ok := t1.IsEqualDims(t2)
+	if !ok {
 		return ret, ErrDimensionsAreNotEqual
 	}
 	for i := range ret.Data {

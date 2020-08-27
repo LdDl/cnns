@@ -155,3 +155,11 @@ func (t *Tensor) GetData3D() [][][]float64 {
 	}
 	return ret
 }
+
+// IsEqualDims Returns true if dimensions of two tensors are equal, otherwise -> false.
+func (t *Tensor) IsEqualDims(t2 *Tensor) bool {
+	if t.Size.X != t2.Size.X || t.Size.Y != t2.Size.Y || t.Size.Z != t2.Size.Z {
+		return false
+	}
+	return true
+}

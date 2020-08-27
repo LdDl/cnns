@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/LdDl/cnns"
 	"github.com/LdDl/cnns/tensor"
@@ -80,7 +81,11 @@ func ExampleConv() {
 				[]float64{0.32, 0.45, 0.96},
 			},
 		})
-		net.Backpropagate(desired)
+		err := net.Backpropagate(desired)
+		if err != nil {
+			log.Printf("Backpropagate caused error: %s", err.Error())
+			return
+		}
 	}
 
 	net.FeedForward(image)
