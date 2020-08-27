@@ -34,7 +34,12 @@ func ExampleOne() {
 		net.FeedForward(inputData)
 		desired := tensor.NewTensor(1, 1, 1)
 		desired.SetData(1, 1, 1, []float64{0.4})
-		net.Backpropagate(desired)
+		err := net.Backpropagate(desired)
+		if err != nil {
+			log.Printf("Backpropagate caused error: %s", err.Error())
+			return
+		}
+
 		fmt.Printf("Layers (after):\n")
 		for i := range net.Layers {
 			fmt.Printf("%v weights:\n", net.Layers[i].GetType())
@@ -72,7 +77,11 @@ func ExampleTwo() {
 		net.FeedForward(inputData)
 		desired := tensor.NewTensor(1, 1, 1)
 		desired.SetData(1, 1, 1, []float64{0.4})
-		net.Backpropagate(desired)
+		err := net.Backpropagate(desired)
+		if err != nil {
+			log.Printf("Backpropagate caused error: %s", err.Error())
+			return
+		}
 		fmt.Printf("Layers (after):\n")
 		for i := range net.Layers {
 			fmt.Printf("%v weights:\n", net.Layers[i].GetType())

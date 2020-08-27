@@ -50,7 +50,11 @@ func ImportExportNet() {
 			[]float64{0.32, 0.45, 0.96},
 		},
 	})
-	net.Backpropagate(desired)
+	err = net.Backpropagate(desired)
+	if err != nil {
+		log.Printf("Backpropagate caused error: %s", err.Error())
+		return
+	}
 	fmt.Println("Weights after training:")
 	net.Layers[0].PrintWeights()
 	net.Layers[len(net.Layers)-1].PrintWeights()

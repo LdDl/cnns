@@ -26,12 +26,14 @@ func (wh *WholeNet) FeedForward(t *tensor.Tensor) {
 }
 
 // Backpropagate - backward pass through the net (training)
-func (wh *WholeNet) Backpropagate(target *tensor.Tensor) {
+func (wh *WholeNet) Backpropagate(target *tensor.Tensor) error {
 	lastLayer := wh.Layers[len(wh.Layers)-1].GetOutput()
 
-	difference := lastLayer.Sub(target)
+	difference, err := lastLayer.Sub(target)
+	if err != nil {
+		return err
+	}
 	wh.Layers[len(wh.Layers)-1].CalculateGradients(difference)
-
 	for i := len(wh.Layers) - 2; i >= 0; i-- {
 		grad := wh.Layers[i+1].GetGradients()
 		wh.Layers[i].CalculateGradients(grad)
@@ -39,6 +41,7 @@ func (wh *WholeNet) Backpropagate(target *tensor.Tensor) {
 	for i := range wh.Layers {
 		wh.Layers[i].UpdateWeights()
 	}
+	return nil
 }
 
 // PrintOutput - prints net's output (last layer output)
@@ -214,8 +217,8 @@ type NetJSON struct {
 
 // TensorJSON ...
 type TensorJSON struct {
-	TDSize *tensor.TDsize     `json:"TDSize"`
-	Data   [][][]float64 `json:"Data"`
+	TDSize *tensor.TDsize `json:"TDSize"`
+	Data   [][][]float64  `json:"Data"`
 }
 
 // LayerParamsJSON ...
@@ -227,7 +230,7 @@ type LayerParamsJSON struct {
 // NetLayerJSON ...
 type NetLayerJSON struct {
 	LayerType  string          `json:"LayerType"`
-	InputSize  *tensor.TDsize       `json:"InputSize"`
+	InputSize  *tensor.TDsize  `json:"InputSize"`
 	Parameters LayerParamsJSON `json:"Parameters,omitempty"`
 	Weights    []TensorJSON    `json:"Weights,omitempty"`
 	// Actually "OutputSize" parameter is useful for fully connected layer only

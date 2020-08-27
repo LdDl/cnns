@@ -55,7 +55,11 @@ func (n *WholeNet) Train(inputs []*tensor.Tensor, desired []*tensor.Tensor, test
 			in := inputs[i]
 			target := desired[i]
 			n.FeedForward(in)
-			n.Backpropagate(target)
+			err := n.Backpropagate(target)
+			if err != nil {
+				log.Printf("Backpropagate caused error: %s", err.Error())
+				return 0.0, 0.0, err
+			}
 		}
 		log.Printf("Epoch #%v done in %v", e, time.Since(st))
 	}
