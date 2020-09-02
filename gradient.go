@@ -7,10 +7,8 @@ import (
 )
 
 // Gradient - Gradient.
-/*
-	Grad - current value of gradient;
-	OldGradient - previous value of gradient.
-*/
+// Grad - current value of gradient;
+// OldGradient - previous value of gradient.
 type Gradient struct {
 	Grad    float64
 	OldGrad float64
@@ -22,11 +20,6 @@ func NewGradient() *Gradient {
 		Grad:    0.0,
 		OldGrad: 0.0,
 	}
-}
-
-// Update - Update gradient with new values (based on gradient from previous training iteration).
-func (grad *Gradient) Update() {
-	grad.OldGrad = grad.Grad //+ (*grad).OldGrad*lp.Momentum
 }
 
 // TensorGradient - Tensor for gradient.
