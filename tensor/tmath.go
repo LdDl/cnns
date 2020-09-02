@@ -8,7 +8,7 @@ import (
 	Simple math operations for Tensor type
 */
 
-// Add - Element-wise summation.
+// Add Element-wise summation.
 func (t1 *Tensor) Add(t2 *Tensor) (*Tensor, error) {
 	var ret = NewTensor(t1.Size.X, t1.Size.Y, t1.Size.Z)
 	ok := t1.IsEqualDims(t2)
@@ -21,7 +21,7 @@ func (t1 *Tensor) Add(t2 *Tensor) (*Tensor, error) {
 	return ret, nil
 }
 
-// Sub - Element-wise subtraction.
+// Sub Element-wise subtraction.
 func (t1 *Tensor) Sub(t2 *Tensor) (*Tensor, error) {
 	var ret = NewTensor(t1.Size.X, t1.Size.Y, t1.Size.Z)
 	ok := t1.IsEqualDims(t2)
@@ -34,7 +34,7 @@ func (t1 *Tensor) Sub(t2 *Tensor) (*Tensor, error) {
 	return ret, nil
 }
 
-// MSE - Mean square error
+// MSE Mean square error. See ref. https://en.wikipedia.org/wiki/Mean_squared_error
 func (t1 *Tensor) MSE(t2 *Tensor) float64 {
 	sum := 0.0
 	var ret = NewTensorCopy(t1)
@@ -59,8 +59,8 @@ func (t1 *Tensor) Transpose() *Tensor {
 	return ret
 }
 
-// Product Product Tensor by Tensor (by X and Y axis, 2D). See ref. https://en.wikipedia.org/wiki/Matrix_multiplication
-func (t1 *Tensor) Product(t2 *Tensor) (*Tensor, error) {
+// Multiply Product of two tensors (by X and Y axis, Matrix2D). See ref. https://en.wikipedia.org/wiki/Matrix_multiplication
+func (t1 *Tensor) Multiply(t2 *Tensor) (*Tensor, error) {
 	ret := NewTensor(t2.Size.X, t1.Size.Y, t1.Size.Z)
 	if t1.Size.Z != t2.Size.Z || t1.Size.X != t2.Size.Y {
 		return ret, ErrDimensionsNotFit
@@ -91,49 +91,3 @@ func HadamardProduct(t1, t2 *Tensor) (*Tensor, error) {
 	}
 	return ret, nil
 }
-
-/* @experimental
-func Reshape(a []float64, newshape ... int) (Tensor, error) {
-	indexes := TDsize { X: 0, Y: 1, Z: 2, }
-	sizes := TDsize { X: 1, Y: 1, Z: 1, }
-	switch len(newshape) {
-		case 0:
-		case 1:
-			if newshape[indexes.X] > 0 {
-				sizes.X = newshape[indexes.X]
-			} else {
-				return NewTensor(sizes.X, sizes.Y, sizes.Z), errors.New("Invalid argument")
-			}
-		case 2:
-			if newshape[indexes.X] > 0 && newshape[indexes.Y] > 0 {
-				sizes.X = newshape[indexes.X]
-				sizes.Y = newshape[indexes.Y]
-			} else {
-				return NewTensor(sizes.X, sizes.Y, sizes.Z), errors.New("Invalid argument")
-			}
-		case 3:
-			if newshape[indexes.X] > 0 && newshape[indexes.Y] > 0 && newshape[indexes.Z] > 0 {
-				sizes.X = newshape[indexes.X]
-				sizes.Y = newshape[indexes.Y]
-				sizes.Z = newshape[indexes.Z]
-			} else {
-				return NewTensor(sizes.X, sizes.Y, sizes.Z), errors.New("Invalid argument")
-			}
-		default:
-			return NewTensor(sizes.X, sizes.Y, sizes.Z), errors.New("Invalid argument")
-	}
-	ret := NewTensor(sizes.X, sizes.Y, sizes.Z)
-	for z := 0; z < ret.Size.Z; z++ {
-		for y := 0; y < ret.Size.Y; y++ {
-			for x := 0; x < ret.Size.X; x++ {
-				if x + y * ret.Size.X + z * ret.Size.X * ret.Size.Y < len(a) {
-					ret.Set(x, y, z, a[x + y * ret.Size.X + z * ret.Size.X * ret.Size.Y])
-				} else {
-					ret.Set(x, y, z, 0)
-				}
-			}
-		}
-	}
-	return ret, nil
-}
-*/

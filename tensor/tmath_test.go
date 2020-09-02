@@ -4,9 +4,7 @@ import (
 	"testing"
 )
 
-/*
-	Test coverage for math stuff
-*/
+/* Test coverage for math stuff */
 
 func TestTranspose(t *testing.T) {
 	tensor := NewTensor(2, 3, 1)
@@ -24,7 +22,7 @@ func TestTranspose(t *testing.T) {
 	}
 }
 
-func TestProduct(t *testing.T) {
+func TestMultiply(t *testing.T) {
 	tensor1 := NewTensor(2, 2, 1)
 	tensor1.SetData(2, 2, 1, []float64{1, 2, 3, 4})
 	tensor2 := NewTensor(2, 2, 1)
@@ -33,7 +31,7 @@ func TestProduct(t *testing.T) {
 	tensorCorrect := NewTensor(2, 2, 1)
 	tensorCorrect.SetData(2, 2, 1, []float64{19, 22, 43, 50})
 
-	tensor3, err := tensor1.Product(tensor2)
+	tensor3, err := tensor1.Multiply(tensor2)
 	if err != nil {
 		t.Error(err)
 		return
@@ -50,7 +48,7 @@ func TestProduct(t *testing.T) {
 	tensor2 = NewTensor(2, 2, 1)
 	tensor2.SetData(2, 2, 1, []float64{5, 6, 7, 8})
 
-	tensor3, err = tensor1.Product(tensor2)
+	tensor3, err = tensor1.Multiply(tensor2)
 	if err == nil || err != ErrDimensionsNotFit {
 		t.Error(err)
 	}
