@@ -104,11 +104,8 @@ func (con *ConvLayer) FeedForward(t *tensor.Tensor) {
 func (con *ConvLayer) DoActivation() {
 	for filter := 0; filter < len(con.Kernels); filter++ {
 		filterData := con.Kernels[filter]
-		// filterData = filterData.Rot2D180()
-		// con.Out = con.In.Conv2D(filterData, [2]int{1, 1}, [2]int{0, 0})
 		for x := 0; x < con.Out.Size.X; x++ {
 			for y := 0; y < con.Out.Size.Y; y++ {
-				// mappedX, mappedY, _ := con.mapToInput(x, y, 0)
 				mappedX, mappedY := x*con.Stride, y*con.Stride
 				sum := 0.0
 				for i := 0; i < con.KernelSize; i++ {

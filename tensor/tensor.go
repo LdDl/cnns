@@ -4,11 +4,9 @@ import (
 	"fmt"
 )
 
-// Tensor - Structure for storing data of float64. Actually we can't call this Tensor in terms of math: this one just implements 3 dimmensions
-/*
-	Data - one-dimensional array of float64;
-	Size - tensor's data size (see "TDsize" structure).
-*/
+// Tensor - Structure for storing data of float64. Actually we can't call this Tensor in terms of math: this one just implements 3 dimensions
+// Data - one-dimensional array of float64;
+// Size - tensor's data size (see "TDsize" structure).
 type Tensor struct {
 	Data []float64
 	Size *TDsize
@@ -37,11 +35,11 @@ func NewTensor(x, y, z int) *Tensor {
 */
 func NewTensorCopy(t *Tensor) *Tensor {
 	return &Tensor{
-		Data: (*t).Data,
+		Data: t.Data,
 		Size: &TDsize{
-			X: (*t).Size.X,
-			Y: (*t).Size.Y,
-			Z: (*t).Size.Z,
+			X: t.Size.X,
+			Y: t.Size.Y,
+			Z: t.Size.Z,
 		},
 	}
 }

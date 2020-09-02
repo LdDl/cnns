@@ -100,11 +100,7 @@ func (maxpool *MaxPoolingLayer) CalculateGradients(nextLayerGrad *tensor.Tensor)
 			for z := 0; z < maxpool.In.Size.Z; z++ {
 				sumError := 0.0
 				for i := rn.MinX; i <= rn.MaxX; i++ {
-					minX := i * maxpool.Stride
-					_ = minX
 					for j := rn.MinY; j <= rn.MaxY; j++ {
-						minY := j * maxpool.Stride
-						_ = minY
 						if maxpool.In.Get(x, y, z) == maxpool.Out.Get(i, j, z) {
 							sumError += (*nextLayerGrad).Get(i, j, z)
 						} else {
