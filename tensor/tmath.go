@@ -61,10 +61,10 @@ func (t1 *Tensor) Transpose() *Tensor {
 
 // Multiply Product of two tensors (by X and Y axis, Matrix2D). See ref. https://en.wikipedia.org/wiki/Matrix_multiplication
 func (t1 *Tensor) Multiply(t2 *Tensor) (*Tensor, error) {
-	ret := NewTensor(t2.Size.X, t1.Size.Y, t1.Size.Z)
 	if t1.Size.Z != t2.Size.Z || t1.Size.X != t2.Size.Y {
-		return ret, ErrDimensionsNotFit
+		return nil, ErrDimensionsNotFit
 	}
+	ret := NewTensor(t2.Size.X, t1.Size.Y, t1.Size.Z)
 	for z := 0; z < t1.Size.Z; z++ {
 		for y := 0; y < t1.Size.Y; y++ {
 			for x := 0; x < t2.Size.X; x++ {
@@ -94,21 +94,18 @@ func HadamardProduct(t1, t2 *Tensor) (*Tensor, error) {
 
 // Convolve2D Convolution between a kernel and a tensor (by X and Y axis, Matrix2D).See ref. https://en.wikipedia.org/wiki/Kernel_(image_processing)#Convolution
 func (t1 *Tensor) Convolve2D(kernel *Tensor, stride int) (*Tensor, error) {
-	if kernel.Size.Z != 1 {
-		return nil, ErrKernelZAxis
-	}
 	outTensor := NewTensor((t1.Size.X-kernel.Size.X)/stride+1, (t1.Size.Y-kernel.Size.Y)/stride+1, t1.Size.Z)
-	for z := 0; z < t1.Size.Z; z++ {
-		for x := 0; x < outTensor.Size.X; x++ {
-			for y := 0; y < outTensor.Size.Y; y++ {
-				mappedX, mappedY := x*stride, y*stride
-				sum := 0.0
-				for i := 0; i < kernel.Size.X; i++ {
-					for j := 0; j < kernel.Size.Y; j++ {
-						sum += kernel.Get(i, j, z) * t1.Get(mappedX+i, mappedY+j, z)
+	for x := 0; x < outTensor.Size.X; x++ {
+		for y := 0; y < outTensor.Size.Y; y++ {
+			mappedX, mappedY := x*stride, y*stride
+			for i := 0; i < kernel.Size.X; i++ {
+				for j := 0; j < kernel.Size.X; j++ {
+					for z := 0; z < t1.Size.Z; z++ {
+						f := kernel.Get(i, j, z)
+						v := t1.Get(mappedX+i, mappedY+j, z)
+						outTensor.SetAdd(x, y, z, f*v)
 					}
 				}
-				outTensor.Set(x, y, z, sum)
 			}
 		}
 	}

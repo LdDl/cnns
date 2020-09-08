@@ -81,16 +81,6 @@ func CheckOCR() {
 	net.Layers = append(net.Layers, fullyconnected2)
 	net.Layers = append(net.Layers, fullyconnected3)
 
-	// inputs, desired := formTrainDataOCR()
-
-	// inputsTests, desiredTests := formTestDataOCR()
-
-	// numOfEpochs := 15
-	// _, _, err := net.Train(&inputs, &desired, &inputsTests, &desiredTests, numOfEpochs)
-	// if err != nil {
-	// 	log.Fatalln(err)
-	// }
-
 	// Paste your path for training data
 	trainFiles, err := readFileNames(trainImagesPath)
 	if err != nil {
