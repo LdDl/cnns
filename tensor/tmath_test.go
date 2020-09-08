@@ -87,6 +87,23 @@ func TestMultiply(t *testing.T) {
 		}
 	}
 
+	tensor1 = NewTensor(2, 2, 2)
+	tensor1.SetData(2, 2, 2, []float64{5, 6, 7, 8, 1, 2, 3, 4})
+	tensor2 = NewTensor(2, 2, 2)
+	tensor2.SetData(2, 2, 2, []float64{1, 2, 3, 4, 9, 8, 7, 6})
+	tensorCorrect = NewTensor(2, 2, 2)
+	tensorCorrect.SetData(2, 2, 2, []float64{23, 34, 31, 46, 23, 20, 55, 48})
+	tensor3, err = tensor1.Multiply(tensor2)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	for i := range tensor3.Data {
+		if tensor3.Data[i] != tensorCorrect.Data[i] {
+			t.Errorf("Tensors are not equal at pos #%d. Expected value: %f. Got: %f", i, tensorCorrect.Data[i], tensor3.Data[i])
+		}
+	}
+
 	tensor1 = NewTensor(3, 2, 1)
 	tensor1.SetData(3, 2, 1, []float64{1, 2, 3, 4, 11, 12})
 	tensor2 = NewTensor(2, 2, 1)
@@ -175,18 +192,4 @@ func TestConvolve2D(t *testing.T) {
 		}
 	}
 
-	kernel = NewTensor(3, 3, 2)
-	kernel.SetData(3, 3, 2, []float64{
-		0.10466029, -0.06228581, -0.43436298,
-		0.44050909, -0.07536250, -0.34348075,
-		0.16456005, 0.18682307, -0.40303048,
-		-0.10466029, 0.06228581, 0.43436298,
-		-0.44050909, 0.07536250, 0.34348075,
-		-0.16456005, -0.18682307, 0.40303048,
-	})
-
-	_, err = tensor1.Convolve2D(kernel, stride)
-	if err == nil || err != ErrKernelZAxis {
-		t.Error("Error must appear because of kernel has Z = 1")
-	}
 }
