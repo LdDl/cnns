@@ -91,3 +91,9 @@ func HadamardProduct(t1, t2 *Tensor) (*Tensor, error) {
 	}
 	return ret, nil
 }
+
+// Convolve2D Convolution between a kernel and a tensor (by X and Y axis, Matrix2D).https://en.wikipedia.org/wiki/Kernel_(image_processing)#Convolution
+func (t1 *Tensor) Convolve2D(kernel *Tensor) (*Tensor, error) {
+	// @todo
+	return nil, nil
+}
