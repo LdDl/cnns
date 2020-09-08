@@ -6,6 +6,9 @@
     - [ ] Dropout layer;
     - [ ] Optimization for learning;
     - [ ] Bias;
+- [ ] Add new operations
+    - [ ] Convolve2D
+    - [ ] Determinant
 - [ ] Refactor code and rethink structure of library
 - [ ] Remove some legacy and experemintal code to other branches
 - [ ] Error types and wrapping them **WIP**
