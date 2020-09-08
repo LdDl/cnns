@@ -23,10 +23,10 @@
     - [x] ActivationSoftPlusDerivative
     - [x] ActivationGaussian
     - [x] ActivationGaussianDerivative
-    - [ ] Add
-    - [ ] Sub
+    - [x] Add (element-wise)
+    - [x] Sub (element-wise)
     - [x] Transpose
-    - [ ] Product
+    - [x] Multiply
     - [x] HadamardProduct
     - [ ] MSE
 - [ ] Test cases for layers and its methods

@@ -6,6 +6,48 @@ import (
 
 /* Test coverage for math stuff */
 
+func TestAddWise(t *testing.T) {
+	tensor1 := NewTensor(2, 2, 1)
+	tensor1.SetData(2, 2, 1, []float64{1, 2, 3, 4})
+	tensor2 := NewTensor(2, 2, 1)
+	tensor2.SetData(2, 2, 1, []float64{5, 6, 7, 8})
+
+	tensorCorrect := NewTensor(2, 2, 1)
+	tensorCorrect.SetData(2, 2, 1, []float64{6, 8, 10, 12})
+
+	added, err := tensor1.Add(tensor2)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	for i := range added.Data {
+		if added.Data[i] != tensorCorrect.Data[i] {
+			t.Errorf("Tensors are not equal at pos #%d. Expected value: %f. Got: %f", i, tensorCorrect.Data[i], added.Data[i])
+		}
+	}
+}
+
+func TestSubWise(t *testing.T) {
+	tensor1 := NewTensor(2, 2, 1)
+	tensor1.SetData(2, 2, 1, []float64{1, 2, 3, 4})
+	tensor2 := NewTensor(2, 2, 1)
+	tensor2.SetData(2, 2, 1, []float64{5, 6, 7, 8})
+
+	tensorCorrect := NewTensor(2, 2, 1)
+	tensorCorrect.SetData(2, 2, 1, []float64{-4, -4, -4, -4})
+
+	added, err := tensor1.Sub(tensor2)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	for i := range added.Data {
+		if added.Data[i] != tensorCorrect.Data[i] {
+			t.Errorf("Tensors are not equal at pos #%d. Expected value: %f. Got: %f", i, tensorCorrect.Data[i], added.Data[i])
+		}
+	}
+}
+
 func TestTranspose(t *testing.T) {
 	tensor := NewTensor(2, 3, 1)
 	tensor.SetData(2, 3, 1, []float64{1, 2, 3, 4, 5, 6})
