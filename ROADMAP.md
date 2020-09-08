@@ -7,7 +7,7 @@
     - [ ] Optimization for learning;
     - [ ] Bias;
 - [ ] Add new operations
-    - [ ] Convolve2D
+    - [x] Convolve2D
     - [ ] Determinant
 - [ ] Refactor code and rethink structure of library
 - [ ] Remove some legacy and experemintal code to other branches **WIP**
@@ -32,6 +32,7 @@
     - [x] Multiply
     - [x] HadamardProduct
     - [ ] MSE
+    - [x] Convolve2D
 - [ ] Test cases for layers and its methods
     - [ ] Convolutional **WIP**
     - [ ] Fully connected **WIP**

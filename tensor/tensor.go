@@ -119,7 +119,7 @@ func (t *Tensor) Print() {
 		fmt.Printf("Dim: %v\n", z)
 		for y := 0; y < my; y++ {
 			for x := 0; x < mx; x++ {
-				fmt.Printf("%.10f\t", t.Get(x, y, z))
+				fmt.Printf("%.15f\t", t.Get(x, y, z))
 			}
 			fmt.Println()
 		}
