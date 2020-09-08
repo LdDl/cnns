@@ -92,8 +92,25 @@ func HadamardProduct(t1, t2 *Tensor) (*Tensor, error) {
 	return ret, nil
 }
 
-// Convolve2D Convolution between a kernel and a tensor (by X and Y axis, Matrix2D).https://en.wikipedia.org/wiki/Kernel_(image_processing)#Convolution
-func (t1 *Tensor) Convolve2D(kernel *Tensor) (*Tensor, error) {
-	// @todo
-	return nil, nil
+// Convolve2D Convolution between a kernel and a tensor (by X and Y axis, Matrix2D).See ref. https://en.wikipedia.org/wiki/Kernel_(image_processing)#Convolution
+func (t1 *Tensor) Convolve2D(kernel *Tensor, stride int) (*Tensor, error) {
+	if kernel.Size.Z != 1 {
+		return nil, ErrKernelZAxis
+	}
+	outTensor := NewTensor((t1.Size.X-kernel.Size.X)/stride+1, (t1.Size.Y-kernel.Size.Y)/stride+1, t1.Size.Z)
+	for z := 0; z < t1.Size.Z; z++ {
+		for x := 0; x < outTensor.Size.X; x++ {
+			for y := 0; y < outTensor.Size.Y; y++ {
+				mappedX, mappedY := x*stride, y*stride
+				sum := 0.0
+				for i := 0; i < kernel.Size.X; i++ {
+					for j := 0; j < kernel.Size.Y; j++ {
+						sum += kernel.Get(i, j, z) * t1.Get(mappedX+i, mappedY+j, z)
+					}
+				}
+				outTensor.Set(x, y, z, sum)
+			}
+		}
+	}
+	return outTensor, nil
 }
