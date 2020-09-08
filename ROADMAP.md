@@ -10,7 +10,7 @@
     - [ ] Convolve2D
     - [ ] Determinant
 - [ ] Refactor code and rethink structure of library
-- [ ] Remove some legacy and experemintal code to other branches
+- [ ] Remove some legacy and experemintal code to other branches **WIP**
 - [ ] Error types and wrapping them **WIP**
 - [ ] Test cases for most of math functions
     - [x] ActivationTanh
