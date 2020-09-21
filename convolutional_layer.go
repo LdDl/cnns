@@ -5,247 +5,269 @@ import (
 	"math/rand"
 
 	"github.com/LdDl/cnns/tensor"
-	"github.com/LdDl/cnns/utils/u"
+	"github.com/pkg/errors"
+	"gonum.org/v1/gonum/mat"
 )
 
-// ConvLayer is convolutional layer structure
+// ConvLayer Convolutional layer structure
+/*
+	Oj - O{j}, activated output from previous layer for j-th neuron (in other words: previous summation input)
+	Ok - O{k}, activated output from current layer for k-th node (in other words: activated summation input)
+	SumInput - non-activated output for current layer for k-th node (in other words: summation input)
+*/
 type ConvLayer struct {
-	DeltaWeightsComponent *tensor.Tensor
-	In                    *tensor.Tensor
-	Out                   *tensor.Tensor
-	Kernels               []*tensor.Tensor
-	PreviousKernelsDeltas []*tensor.Tensor
-	LocalDeltas           []*TensorGradient
-	Stride                int
-	KernelSize            int
+	Oj                        *mat.Dense
+	Ok                        *mat.Dense
+	Kernels                   []*mat.Dense
+	PreviousDeltaKernelsState []*mat.Dense
+
+	LocalDeltas        []*mat.Dense
+	NextDeltaWeightSum *mat.Dense
+
+	Stride     int
+	KernelSize int
+
+	OutputSize *tensor.TDsize
+	inChannels int
+	trainMode  bool
 }
 
-// NewConvLayer - constructor for new convolutional layer. You need to specify striding step, size (square) of kernel, amount of kernels, input size.
-func NewConvLayer(stride, kernelSize, numberFilters int, inSize tensor.TDsize) Layer {
+// NewConvLayer Constructor for convolutional layer. You need to specify striding step, size (square) of kernel, amount of kernels, input size.
+/*
+	inSize - size of input (width/height and number of channels)
+	stride - step on convolve operation
+	kernelSize - width==height of kernel
+	numberFilters - number of kernels
+*/
+func NewConvLayer(inSize tensor.TDsize, stride, kernelSize, numberFilters int) Layer {
 	newLayer := &ConvLayer{
-		DeltaWeightsComponent: tensor.NewTensor(inSize.X, inSize.Y, inSize.Z),
-		In:                    tensor.NewTensor(inSize.X, inSize.Y, inSize.Z),
-		Out:                   tensor.NewTensor((inSize.X-kernelSize)/stride+1, (inSize.Y-kernelSize)/stride+1, numberFilters),
-		Stride:                stride,
-		KernelSize:            kernelSize,
+		Stride:                    stride,
+		KernelSize:                kernelSize,
+		Ok:                        &mat.Dense{},
+		Kernels:                   make([]*mat.Dense, numberFilters),
+		PreviousDeltaKernelsState: make([]*mat.Dense, numberFilters),
+		LocalDeltas:               make([]*mat.Dense, numberFilters),
+		NextDeltaWeightSum:        &mat.Dense{},
+		OutputSize:                &tensor.TDsize{X: (inSize.Y-kernelSize)/stride + 1, Y: (inSize.X-kernelSize)/stride + 1, Z: numberFilters},
+		inChannels:                inSize.Z,
+		trainMode:                 false,
 	}
-	for a := 0; a < numberFilters; a++ {
-		tmp := tensor.NewTensor(kernelSize, kernelSize, inSize.Z)
-		for i := 0; i < kernelSize; i++ {
-			for j := 0; j < kernelSize; j++ {
-				for z := 0; z < inSize.Z; z++ {
-					tmp.Set(i, j, z, rand.Float64()-0.5)
-				}
+	for f := 0; f < numberFilters; f++ {
+		newLayer.Kernels[f] = mat.NewDense(kernelSize*kernelSize, inSize.Z, nil)
+		for i := 0; i < kernelSize*kernelSize; i++ {
+			for h := 0; h < inSize.Z; h++ {
+				newLayer.Kernels[f].Set(i, h, rand.Float64()-0.5)
 			}
 		}
-		newLayer.Kernels = append(newLayer.Kernels, tmp)
-
-		tt := tensor.NewTensor(kernelSize, kernelSize, inSize.Z)
-		for i := 0; i < kernelSize; i++ {
-			for j := 0; j < kernelSize; j++ {
-				for z := 0; z < inSize.Z; z++ {
-					tt.Set(i, j, z, 0)
-				}
-			}
-		}
-		newLayer.PreviousKernelsDeltas = append(newLayer.PreviousKernelsDeltas, tt)
-
-		for i := 0; i < numberFilters; i++ {
-			t := NewTensorGradient(kernelSize, kernelSize, inSize.Z)
-			newLayer.LocalDeltas = append(newLayer.LocalDeltas, t)
-		}
+		newLayer.PreviousDeltaKernelsState[f] = mat.NewDense(kernelSize*kernelSize, inSize.Z, nil)
+		newLayer.PreviousDeltaKernelsState[f].Zero()
 	}
 	return newLayer
 }
 
-// SetCustomWeights - set user's weights (make it carefully)
-func (con *ConvLayer) SetCustomWeights(t []*tensor.Tensor) {
-	if len(con.Kernels) != len(t) {
+// SetCustomWeights Set user's weights for convolutional layer (make it carefully)
+/*
+	kernels - slice of kernels
+*/
+func (conv *ConvLayer) SetCustomWeights(kernels []*mat.Dense) {
+	if len(conv.Kernels) != len(kernels) {
 		fmt.Println("Amount of custom filters has to be equal to layer's amount of filters. Skipping...")
 		return
 	}
-	for i := range con.Kernels {
-		con.Kernels[i] = t[i]
+	for i := range kernels {
+		conv.Kernels[i].CloneFrom(kernels[i])
+		tr, tc := kernels[i].Dims()
+		conv.PreviousDeltaKernelsState[i] = mat.NewDense(tr, tc, nil)
+		conv.PreviousDeltaKernelsState[i].Zero()
 	}
 }
 
-// GetOutputSize - returns output size (dimensions)
-func (con *ConvLayer) GetOutputSize() *tensor.TDsize {
-	return con.Out.Size
+// GetOutputSize Returns output size (dimensions) of convolutional layer
+func (conv *ConvLayer) GetOutputSize() *tensor.TDsize {
+	return conv.OutputSize
 }
 
-// GetInputSize - returns input size (dimensions)
-func (con *ConvLayer) GetInputSize() *tensor.TDsize {
-	return con.In.Size
+// GetActivatedOutput Returns convolutional layer's output
+func (conv *ConvLayer) GetActivatedOutput() *mat.Dense {
+	return conv.Ok
 }
 
-// GetOutput - returns convolutional layer's output
-func (con *ConvLayer) GetOutput() *tensor.Tensor {
-	return con.Out
+// GetWeights Returns convolutional layer's weights.
+func (conv *ConvLayer) GetWeights() []*mat.Dense {
+	return conv.Kernels
 }
 
-// GetWeights - returns convolutional layer's weights
-func (con *ConvLayer) GetWeights() []*tensor.Tensor {
-	return con.Kernels
+// GetGradients Returns convolutional layer's gradients dense
+func (conv *ConvLayer) GetGradients() *mat.Dense {
+	return conv.NextDeltaWeightSum
 }
 
-// GetGradients - returns convolutional layer's gradients
-func (con *ConvLayer) GetGradients() *tensor.Tensor {
-	return con.DeltaWeightsComponent
+// FeedForward Feed data to convolutional layer
+func (conv *ConvLayer) FeedForward(input *mat.Dense) error {
+	conv.Oj = input
+	err := conv.doActivation()
+	if err != nil {
+		return errors.Wrap(err, "Can't call FeedForward() on convolutional layer")
+	}
+	return nil
 }
 
-// FeedForward - feed data to convolutional layer
-func (con *ConvLayer) FeedForward(t *tensor.Tensor) {
-	con.In = t
-	con.DoActivation()
-}
-
-// DoActivation - convolutional layer's output activation
-func (con *ConvLayer) DoActivation() {
-	for filter := 0; filter < len(con.Kernels); filter++ {
-		filterData := con.Kernels[filter]
-		for x := 0; x < con.Out.Size.X; x++ {
-			for y := 0; y < con.Out.Size.Y; y++ {
-				mappedX, mappedY := x*con.Stride, y*con.Stride
-				sum := 0.0
-				for i := 0; i < con.KernelSize; i++ {
-					for j := 0; j < con.KernelSize; j++ {
-						for z := 0; z < con.In.Size.Z; z++ {
-							f := filterData.Get(i, j, z)
-							v := con.In.Get(mappedX+i, mappedY+j, z)
-							sum += f * v
-						}
-					}
-				}
-				con.Out.Set(x, y, filter, sum)
-			}
+// doActivation Convolutional layer's output activation
+func (conv *ConvLayer) doActivation() error {
+	for i := range conv.Kernels {
+		feature, err := Convolve2D(conv.Oj, conv.Kernels[i], conv.inChannels, conv.Stride)
+		if err != nil {
+			return errors.Wrap(err, "Can't call doActivation() on Convolutional Layer")
+		}
+		if conv.Ok.IsEmpty() {
+			conv.Ok = feature
+		} else {
+			t := &mat.Dense{}
+			t.Stack(conv.Ok, feature)
+			conv.Ok = t
 		}
 	}
+	return nil
 }
 
-// CalculateGradients - calculate convolutional layer's gradients
-func (con *ConvLayer) CalculateGradients(nextLayerGrad *tensor.Tensor) {
-	for k := 0; k < len(con.LocalDeltas); k++ {
-		for i := 0; i < con.KernelSize; i++ {
-			for j := 0; j < con.KernelSize; j++ {
-				for z := 0; z < con.In.Size.Z; z++ {
-					con.LocalDeltas[k].SetGrad(i, j, z, 0.0)
-				}
+// CalculateGradients Evaluate convolutional layer's gradients
+func (conv *ConvLayer) CalculateGradients(lossGradients *mat.Dense) error {
+
+	channels := conv.inChannels
+	features := conv.OutputSize.Z
+	errRows, errCols := lossGradients.Dims()
+	inputRows, inputCols := conv.Oj.Dims()
+
+	for f := 0; f < features; f++ {
+		partialErrors := lossGradients.Slice(f*errCols, errRows/features+f*errCols, 0, errCols).(*mat.Dense)
+		channelsStack := &mat.Dense{}
+		for c := 0; c < channels; c++ {
+			partialMatrix := conv.Oj.Slice(c*inputCols, inputRows/channels+c*inputCols, 0, inputCols).(*mat.Dense)
+			// dL/dF = Convolution(Input, LossGradient dL/dO)
+			partialLocalDeltas, err := Convolve2D(partialMatrix, partialErrors, 1, conv.Stride)
+			if err != nil {
+				return errors.Wrap(err, "Can't call CalculateGradients() while calculate Convolution(Input, LossGradient dL/dO)")
 			}
+			if channelsStack.IsEmpty() {
+				channelsStack = partialLocalDeltas
+			} else {
+				t := &mat.Dense{}
+				t.Stack(channelsStack, partialLocalDeltas)
+				channelsStack = t
+			}
+		}
+		conv.LocalDeltas[f] = channelsStack
+	}
+
+	conv.NextDeltaWeightSum = &mat.Dense{}
+	for f := 0; f < features; f++ {
+
+		// Add padding for each incoming loss gradient
+		partialErrors := lossGradients.Slice(f*errCols, errRows/features+f*errCols, 0, errCols).(*mat.Dense)
+		padded := ZeroPadding(partialErrors, conv.KernelSize-1)
+
+		// Rotate each kernel by 180 degrees and do full convolution
+		kernelR, kernelC := conv.Kernels[f].Dims()
+		channelStacked := &mat.Dense{}
+		for c := 0; c < channels; c++ {
+			partialKernel := conv.Kernels[f].Slice(c*kernelC, kernelR/channels+c*kernelC, 0, kernelC).(*mat.Dense)
+			partialRotatedKernel := Rot2D180(partialKernel)
+
+			// error = dL/dX = FullConvolution(LossGradient dL/dO, rot180(kernel))
+			dLdX, err := Convolve2D(padded, partialRotatedKernel, 1, conv.Stride)
+			if err != nil {
+				return errors.Wrap(err, "Can't call CalculateGradients() while calculate FullConvolution(LossGradient dL/dO, rot180(kernel))")
+			}
+			// Stack channels for each feature
+			if channelStacked.IsEmpty() {
+				channelStacked = dLdX
+			} else {
+				t := &mat.Dense{}
+				t.Stack(channelStacked, dLdX)
+				channelStacked = t
+			}
+		}
+
+		// Sum channels for each feature
+		if conv.NextDeltaWeightSum.IsEmpty() {
+			conv.NextDeltaWeightSum = channelStacked
+		} else {
+			t := &mat.Dense{}
+			t.Add(conv.NextDeltaWeightSum, channelStacked)
+			conv.NextDeltaWeightSum = t
 		}
 	}
-	for x := 0; x < con.In.Size.X; x++ {
-		for y := 0; y < con.In.Size.Y; y++ {
-			rn := con.sameAsOuput(x, y)
-			for z := 0; z < con.In.Size.Z; z++ {
-				sumError := 0.0
-				for i := rn.MinX; i <= rn.MaxX; i++ {
-					minX := i * con.Stride
-					for j := rn.MinY; j <= rn.MaxY; j++ {
-						minY := j * con.Stride
-						for k := rn.MinZ; k <= rn.MaxZ; k++ {
-							weightApplied := con.Kernels[k].Get(x-minX, y-minY, z)
-							sumError += weightApplied * (*nextLayerGrad).Get(i, j, k)
-							con.LocalDeltas[k].AddToGrad(x-minX, y-minY, z, con.In.Get(x, y, z)*(*nextLayerGrad).Get(i, j, k))
-						}
-					}
-				}
-				con.DeltaWeightsComponent.Set(x, y, z, sumError)
-			}
-		}
+
+	return nil
+}
+
+// UpdateWeights Update convolutional layer's weights
+func (conv *ConvLayer) UpdateWeights() {
+	features := len(conv.Kernels)
+
+	for f := 0; f < features; f++ {
+		kernel := conv.Kernels[f]
+		previousDeltaWeights := conv.PreviousDeltaKernelsState[f]
+		partialErrors := conv.LocalDeltas[f]
+
+		// Evaluate ΔΣ(k)/Δw{j}{k}
+		// In FC layer we do: Δw.Mul(fc.LocalDelta, fc.Oj.T()), but fc.Oj.T() = 1.0 in case of convolutional layer. So we can skip this step
+		Δw := &mat.Dense{}
+		Δw.Scale(-1.0*lp.LearningRate, partialErrors)
+
+		// Inertia (as separated Scale() call)
+		// @todo - this should be optional
+		Δw.Scale(1.0-lp.Momentum, Δw)
+
+		previousDeltaWeights.Scale(lp.Momentum, previousDeltaWeights)
+		Δw.Add(Δw, previousDeltaWeights)
+
+		// Update weights: w = w + Δw
+		kernel.Add(kernel, Δw)
 	}
 }
 
-// UpdateWeights - update convolutional layer's weights
-func (con *ConvLayer) UpdateWeights() {
-	for a := 0; a < len(con.Kernels); a++ {
-		for i := 0; i < con.KernelSize; i++ {
-			for j := 0; j < con.KernelSize; j++ {
-				for z := 0; z < con.In.Size.Z; z++ {
-					grad := con.LocalDeltas[a].Get(i, j, z)
-
-					prevDW := con.PreviousKernelsDeltas[a].Get(i, j, z)
-					dw := (1.0-lp.Momentum)*(-1.0*(lp.LearningRate*grad.Grad*1.0)) + lp.Momentum*prevDW
-
-					con.PreviousKernelsDeltas[a].Set(i, j, z, dw)
-					con.Kernels[a].SetAdd(i, j, z, dw)
-
-					con.LocalDeltas[a].Set(i, j, z, grad)
-				}
-			}
-		}
-	}
-}
-
-// PrintOutput - print convolutional layer's output
-func (con *ConvLayer) PrintOutput() {
+// PrintOutput Pretty print convolutional layer's output
+func (conv *ConvLayer) PrintOutput() {
 	fmt.Println("Printing Convolutional Layer output...")
-	con.Out.Print()
 }
 
-// PrintWeights - print convolutional layer's weights
-func (con *ConvLayer) PrintWeights() {
+// PrintWeights Pretty print convolutional layer's weights
+func (conv *ConvLayer) PrintWeights() {
 	fmt.Println("Printing Convolutional Layer kernels...")
-	for i := range con.Kernels {
-		fmt.Printf("Kernel #%v\n", i)
-		con.Kernels[i].Print()
+	features := len(conv.Kernels)
+	for f := 0; f < features; f++ {
+		fmt.Printf("\tKernel #%d:\n", f)
+		for c := 0; c < conv.inChannels; c++ {
+			rows, cols := conv.Kernels[f].Dims()
+			partialKernel := conv.Kernels[f].Slice(c*cols, rows/conv.inChannels+c*cols, 0, cols).(*mat.Dense)
+			fmt.Printf("\tChannel #%d:\n", c)
+			rows, _ = partialKernel.Dims()
+			for r := 0; r < rows; r++ {
+				fmt.Printf("\t\t%v\n", partialKernel.RawRowView(r))
+			}
+		}
 	}
 }
 
-// PrintGradients - print convolutional layer's gradients
-func (con *ConvLayer) PrintGradients() {
-	fmt.Println("Printing Convolutional Layer gradients-weights...")
-	con.DeltaWeightsComponent.Print()
-}
-
-// SetActivationFunc - sets activation function for layer
-func (con *ConvLayer) SetActivationFunc(f func(v float64) float64) {
+// SetActivationFunc Set activation function for layer
+func (conv *ConvLayer) SetActivationFunc(f func(v float64) float64) {
 	// Nothing here. Just for interface.
 	fmt.Println("You can not set activation function for convolutional layer")
 }
 
-// SetActivationDerivativeFunc sets derivative of activation function
-func (con *ConvLayer) SetActivationDerivativeFunc(f func(v float64) float64) {
+// SetActivationDerivativeFunc Set derivative of activation function
+func (conv *ConvLayer) SetActivationDerivativeFunc(f func(v float64) float64) {
 	// Nothing here. Just for interface.
 	fmt.Println("You can not set derivative of activation function for convolutional layer")
 }
 
-// GetType - return "conv" as layer's type
-func (con *ConvLayer) GetType() string {
+// GetType Returns "conv" as layer's type
+func (conv *ConvLayer) GetType() string {
 	return "conv"
 }
 
-// GetStride - get stride of layer
-func (con *ConvLayer) GetStride() int {
-	return con.Stride
-}
-
-// GetKernelSize - return kernel size
-func (con *ConvLayer) GetKernelSize() int {
-	return con.KernelSize
-}
-
-func (con *ConvLayer) mapToInput(i, j, k int) (x int, y int, z int) {
-	return i * con.Stride, j * con.Stride, k
-}
-
-// Range - struct for reshaping data indecies
-type Range struct {
-	MinX, MaxX int
-	MinY, MaxY int
-	MinZ, MaxZ int
-}
-
-// sameAsOuput - reshape convolutional layer's output
-func (con *ConvLayer) sameAsOuput(x, y int) Range {
-	a := float64(x)
-	b := float64(y)
-	return Range{
-		MinX: u.NormalizeRange((a-float64(con.KernelSize)+1.0)/float64(con.Stride), con.Out.Size.X, true),
-		MinY: u.NormalizeRange((b-float64(con.KernelSize)+1.0)/float64(con.Stride), con.Out.Size.Y, true),
-		MinZ: 0,
-		MaxX: u.NormalizeRange(a/float64(con.Stride), con.Out.Size.X, false),
-		MaxY: u.NormalizeRange(b/float64(con.Stride), con.Out.Size.Y, false),
-		MaxZ: len(con.Kernels) - 1,
-	}
+// GetStride Returns stride of layer
+func (conv *ConvLayer) GetStride() int {
+	return conv.Stride
 }

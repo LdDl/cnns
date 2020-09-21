@@ -1,0 +1,24 @@
+package cnns
+
+import "gonum.org/v1/gonum/mat"
+
+// Flatten Convert matrix to vector. Result is defined as NewDense(1, num of rows * num of cols, matrix data)
+/*
+	matrix - source matrix
+*/
+func Flatten(matrix *mat.Dense) *mat.Dense {
+	height, width := matrix.Dims()
+	numElements := height * width
+	vector := make([]float64, numElements)
+	for row := 0; row < height; row++ {
+		flatten(matrix, vector, row, width)
+	}
+	return mat.NewDense(1, numElements, vector)
+}
+
+// flatten Indexing vector as matrix. See ref. Flatten()
+func flatten(matrix *mat.Dense, vector []float64, row, width int) {
+	for column := 0; column < width; column++ {
+		vector[row*width+column] = matrix.At(row, column)
+	}
+}

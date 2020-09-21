@@ -7,7 +7,7 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/LdDl/cnns/tensor"
+	"gonum.org/v1/gonum/mat"
 )
 
 // Train Train neural network
@@ -20,7 +20,7 @@ import (
 
 	epochsNum - number of epochs
 */
-func (n *WholeNet) Train(inputs []*tensor.Tensor, desired []*tensor.Tensor, testData []*tensor.Tensor, testDesired []*tensor.Tensor, epochsNum int) (float64, float64, error) {
+func (n *WholeNet) Train(inputs []*mat.Dense, desired []*mat.Dense, testData []*mat.Dense, testDesired []*mat.Dense, epochsNum int) (float64, float64, error) {
 	var err error
 	trainError := 0.0
 	testError := 0.0
@@ -66,39 +66,42 @@ func (n *WholeNet) Train(inputs []*tensor.Tensor, desired []*tensor.Tensor, test
 	log.Printf("Training %v epochs done in %v", epochsNum, time.Since(start))
 
 	fmt.Println("Evaluating errors...")
+
 	for i := range inputs {
 		in := inputs[i]
 		target := desired[i]
 		n.FeedForward(in)
 		out := n.GetOutput()
-		loss := target.MSE(out)
+		loss := mse(target, out)
 		trainError += loss
 	}
 
 	for i := range testData {
 		in := testData[i]
-		// in.Print()
 		target := testDesired[i]
 		n.FeedForward(in)
-		out := n.GetOutput()
 		fmt.Println("\n>>>Out:")
-		out.Print()
+		fmt.Println(n.GetOutput())
 		fmt.Println(">>>Desired:")
-		target.Print()
-		loss := target.MSE(out)
+		fmt.Println(target)
+		out := n.GetOutput()
+		loss := mse(target, out)
 		testError += loss
 	}
 
 	return trainError, testError, err
 }
 
-func maxIdx(tt *tensor.Tensor) (max int) {
-	maxF := 0.0
-	for i := range tt.Data {
-		if maxF < tt.Data[i] {
-			maxF = tt.Data[i]
-			max = i
-		}
+func mse(t1, t2 *mat.Dense) float64 {
+	r, c := t1.Dims()
+	ret := mat.NewDense(r, c, nil)
+	ret.Sub(t1, t2)
+	ret.Pow(ret, 2)
+
+	sum := 0.0
+	raw := ret.RawMatrix().Data
+	for i := range raw {
+		sum += raw[i]
 	}
-	return max
+	return sum
 }

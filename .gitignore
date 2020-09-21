@@ -9,3 +9,4 @@
 /.vscode
 /python_test
 main
+.*py
