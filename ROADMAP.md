@@ -12,6 +12,7 @@
     - [x] Pool2D
     - [x] ZeroPadding
     - [ ] Determinant
+    - [ ] ContoursPadding
 - [ ] Refactor code and rethink structure of library
 - [ ] Remove some legacy and experemintal code to other branches **WIP**
 - [ ] Error types and wrapping them **WIP**
@@ -40,6 +41,7 @@
     - [ ] Pool2D
     - [ ] ZeroPadding
     - [ ] Im2Col
+    - [ ] ContoursPadding
 - [ ] Test cases for layers and its methods
     - [ ] Convolutional **WIP**
     - [ ] Fully connected **WIP**
@@ -48,10 +50,11 @@
     - [ ] Pooling  
 - [ ] [Gonum](https://github.com/gonum/gonum) integration **WIP**
 - [ ] Use of goroutines for boosting calculations
-    - [ ] ZeroPadding **WIP**
+    - [x] ZeroPadding
     - [ ] Pool2D **WIP**
-    - [ ] Im2Col **WIP**
-    - [ ] Flaten **WIP**
+    - [x] Im2Col
+    - [x] Flaten
+    - [ ] ContoursPadding
 - [ ] Benchmarks. Do we really need it since this is just library for studying purposes?
 - [ ] Padding for convolutional layer
 - [ ] Write theoretical documents on most of functions (on every would be even better)
