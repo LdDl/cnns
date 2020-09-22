@@ -53,7 +53,7 @@
     - [x] ZeroPadding
     - [ ] Pool2D **WIP**
     - [x] Im2Col
-    - [x] Flaten
+    - [x] Flatten
     - [ ] ContoursPadding
 - [ ] Benchmarks. Do we really need it since this is just library for studying purposes?
 - [ ] Padding for convolutional layer
