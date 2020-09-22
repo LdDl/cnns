@@ -13,26 +13,25 @@ import (
 */
 func ZeroPadding(matrix *mat.Dense, num int) *mat.Dense {
 	r, c := matrix.Dims()
-	newRows := r + num*2
-	newCols := c + num*2
-	flattenMatrix := make([]float64, newRows*newCols)
+	outRows := r + num*2
+	outCols := c + num*2
+	flattenMatrix := make([]float64, outRows*outCols)
 	wg := sync.WaitGroup{}
-	for y := 0; y < newRows; y++ {
+	for y := 0; y < outRows; y++ {
 		wg.Add(1)
-		go zeroPadding(matrix, r, c, newRows, newCols, flattenMatrix, num, y, &wg)
+		go zeroPadding(matrix, flattenMatrix, r, c, outCols, num, y, &wg)
 	}
 	wg.Wait()
-	return mat.NewDense(newRows, newCols, flattenMatrix)
+	return mat.NewDense(outRows, outCols, flattenMatrix)
 }
 
 // zeroPadding See ZeroPadding()
-func zeroPadding(matrix *mat.Dense, rows, cols, newRows, newCols int, newFlattenMatrix []float64, w, y int, wg *sync.WaitGroup) {
-	for x := 0; x < newCols; x++ {
+func zeroPadding(matrix *mat.Dense, newFlattenMatrix []float64, rows, cols, outCols int, w, y int, wg *sync.WaitGroup) {
+	for x := 0; x < outCols; x++ {
 		if y > w-1 && y < rows+w && x > w-1 && x < cols+w {
-			newFlattenMatrix[y*newCols+x] = matrix.At(y-w, x-w)
+			newFlattenMatrix[y*outCols+x] = matrix.At(y-w, x-w)
 		} else {
-			newFlattenMatrix[y*newCols+x] = 0.0
+			newFlattenMatrix[y*outCols+x] = 0.0
 		}
 	}
-	wg.Done()
 }

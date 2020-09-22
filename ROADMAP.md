@@ -12,7 +12,7 @@
     - [x] Pool2D
     - [x] ZeroPadding
     - [ ] Determinant
-    - [ ] ContoursPadding **WIP**
+    - [X] ContoursPadding
 - [ ] Refactor code and rethink structure of library
 - [ ] Remove some legacy and experemintal code to other branches **WIP**
 - [ ] Error types and wrapping them **WIP**
