@@ -53,6 +53,17 @@ func NewConvLayer(inSize tensor.TDsize, stride, kernelSize, numberFilters int) L
 		trainMode:                 false,
 	}
 	for f := 0; f < numberFilters; f++ {
+		if inSize.Z == 1 {
+			newLayer.Kernels[f] = mat.NewDense(kernelSize, kernelSize, nil)
+			for i := 0; i < kernelSize; i++ {
+				for h := 0; h < kernelSize; h++ {
+					newLayer.Kernels[f].Set(i, h, rand.Float64()-0.5)
+				}
+			}
+			newLayer.PreviousDeltaKernelsState[f] = mat.NewDense(kernelSize, kernelSize, nil)
+			newLayer.PreviousDeltaKernelsState[f].Zero()
+			continue
+		}
 		newLayer.Kernels[f] = mat.NewDense(kernelSize*kernelSize, inSize.Z, nil)
 		for i := 0; i < kernelSize*kernelSize; i++ {
 			for h := 0; h < inSize.Z; h++ {
@@ -114,19 +125,21 @@ func (conv *ConvLayer) FeedForward(input *mat.Dense) error {
 
 // doActivation Convolutional layer's output activation
 func (conv *ConvLayer) doActivation() error {
+	resultMatrix := &mat.Dense{}
 	for i := range conv.Kernels {
 		feature, err := Convolve2D(conv.Oj, conv.Kernels[i], conv.inChannels, conv.Stride)
 		if err != nil {
 			return errors.Wrap(err, "Can't call doActivation() on Convolutional Layer")
 		}
-		if conv.Ok.IsEmpty() {
-			conv.Ok = feature
+		if resultMatrix.IsEmpty() {
+			resultMatrix = feature
 		} else {
 			t := &mat.Dense{}
-			t.Stack(conv.Ok, feature)
-			conv.Ok = t
+			t.Stack(resultMatrix, feature)
+			resultMatrix = t
 		}
 	}
+	conv.Ok = resultMatrix
 	return nil
 }
 
@@ -164,6 +177,7 @@ func (conv *ConvLayer) CalculateGradients(lossGradients *mat.Dense) error {
 
 		// Add padding for each incoming loss gradient
 		partialErrors := lossGradients.Slice(f*errCols, errRows/features+f*errCols, 0, errCols).(*mat.Dense)
+
 		padded := ZeroPadding(partialErrors, conv.KernelSize-1)
 
 		// Rotate each kernel by 180 degrees and do full convolution
@@ -178,6 +192,7 @@ func (conv *ConvLayer) CalculateGradients(lossGradients *mat.Dense) error {
 			if err != nil {
 				return errors.Wrap(err, "Can't call CalculateGradients() while calculate FullConvolution(LossGradient dL/dO, rot180(kernel))")
 			}
+
 			// Stack channels for each feature
 			if channelStacked.IsEmpty() {
 				channelStacked = dLdX
@@ -221,6 +236,7 @@ func (conv *ConvLayer) UpdateWeights() {
 
 		previousDeltaWeights.Scale(lp.Momentum, previousDeltaWeights)
 		Δw.Add(Δw, previousDeltaWeights)
+		conv.PreviousDeltaKernelsState[f].CloneFrom(Δw)
 
 		// Update weights: w = w + Δw
 		kernel.Add(kernel, Δw)

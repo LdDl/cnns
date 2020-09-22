@@ -34,4 +34,5 @@ func zeroPadding(matrix *mat.Dense, newFlattenMatrix []float64, rows, cols, outC
 			newFlattenMatrix[y*outCols+x] = 0.0
 		}
 	}
+	wg.Done()
 }

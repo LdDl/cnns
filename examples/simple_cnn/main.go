@@ -10,8 +10,8 @@ import (
 )
 
 func main() {
-	// ExampleConv()
-	ExampleConv2()
+	ExampleConv()
+	// ExampleConv2()
 }
 
 // ExampleConv Check how convolutional network's layers works with single channel image. Corresponding file is "step_by_step_cnn(dense inertia).xlsx" file.
@@ -74,7 +74,7 @@ func ExampleConv() {
 		net.Layers[i].PrintWeights()
 	}
 	fmt.Println("\tDoing training....")
-	for e := 0; e < 1; e++ {
+	for e := 0; e < 3; e++ {
 		err := net.FeedForward(image)
 		if err != nil {
 			log.Printf("Feedforward caused error: %s", err.Error())

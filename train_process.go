@@ -34,7 +34,6 @@ func (n *WholeNet) Train(inputs []*mat.Dense, desired []*mat.Dense, testData []*
 	}
 
 	// Initial shuffling of input data
-	// rand.Seed(time.Now().UTC().UnixNano())
 	for i := range inputs {
 		j := rand.Intn(i + 1)
 		inputs[i], inputs[j] = inputs[j], inputs[i]
@@ -54,8 +53,12 @@ func (n *WholeNet) Train(inputs []*mat.Dense, desired []*mat.Dense, testData []*
 		for i := range inputs {
 			in := inputs[i]
 			target := desired[i]
-			n.FeedForward(in)
-			err := n.Backpropagate(target)
+			err := n.FeedForward(in)
+			if err != nil {
+				log.Printf("Feedforward caused error: %s", err.Error())
+				return 0.0, 0.0, err
+			}
+			err = n.Backpropagate(target)
 			if err != nil {
 				log.Printf("Backpropagate caused error: %s", err.Error())
 				return 0.0, 0.0, err
@@ -70,7 +73,11 @@ func (n *WholeNet) Train(inputs []*mat.Dense, desired []*mat.Dense, testData []*
 	for i := range inputs {
 		in := inputs[i]
 		target := desired[i]
-		n.FeedForward(in)
+		err := n.FeedForward(in)
+		if err != nil {
+			log.Printf("Feedforward (testing) caused error: %s", err.Error())
+			return 0.0, 0.0, err
+		}
 		out := n.GetOutput()
 		loss := mse(target, out)
 		trainError += loss
@@ -80,10 +87,6 @@ func (n *WholeNet) Train(inputs []*mat.Dense, desired []*mat.Dense, testData []*
 		in := testData[i]
 		target := testDesired[i]
 		n.FeedForward(in)
-		fmt.Println("\n>>>Out:")
-		fmt.Println(n.GetOutput())
-		fmt.Println(">>>Desired:")
-		fmt.Println(target)
 		out := n.GetOutput()
 		loss := mse(target, out)
 		testError += loss
@@ -93,15 +96,9 @@ func (n *WholeNet) Train(inputs []*mat.Dense, desired []*mat.Dense, testData []*
 }
 
 func mse(t1, t2 *mat.Dense) float64 {
-	r, c := t1.Dims()
-	ret := mat.NewDense(r, c, nil)
-	ret.Sub(t1, t2)
-	ret.Pow(ret, 2)
-
-	sum := 0.0
-	raw := ret.RawMatrix().Data
-	for i := range raw {
-		sum += raw[i]
-	}
-	return sum
+	tmp := &mat.Dense{}
+	tmp.Sub(t1, t2)
+	tmpPow := &mat.Dense{}
+	tmpPow.MulElem(tmp, tmp)
+	return mat.Sum(tmpPow)
 }
