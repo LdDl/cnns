@@ -20,6 +20,7 @@ func Flatten(matrix *mat.Dense) *mat.Dense {
 		wg.Add(1)
 		go flatten(matrix, flattenMatrix, row, width, &wg)
 	}
+	wg.Wait()
 	return mat.NewDense(1, numElements, flattenMatrix)
 }
 

@@ -51,7 +51,7 @@
 - [ ] [Gonum](https://github.com/gonum/gonum) integration **WIP**
 - [ ] Use of goroutines for boosting calculations
     - [x] ZeroPadding
-    - [ ] Pool2D **WIP**
+    - [X] Pool2D
     - [x] Im2Col
     - [x] Flatten
     - [ ] ContoursPadding

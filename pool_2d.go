@@ -2,6 +2,7 @@ package cnns
 
 import (
 	"math"
+	"sync"
 
 	"gonum.org/v1/gonum/mat"
 )
@@ -25,13 +26,17 @@ func Pool2D(matrix *mat.Dense, outRows, outCols, channels, windowSize, stride in
 		for c := 0; c < channels; c++ {
 			partialSlice := make([]float64, outRows*outCols)
 			tmpMatrix := matrix.Slice(c*sourceC, sourceR/channels+c*sourceC, 0, sourceC).(*mat.Dense)
+			wg := sync.WaitGroup{}
 			for y := 0; y < outRows; y++ {
 				startYi := y * stride
 				startYj := startYi + windowSize
-				pool2D(tmpMatrix, nil, partialSlice, y, startYi, startYj, outCols, windowSize, stride, ptype)
+				wg.Add(1)
+				go pool2D(tmpMatrix, partialSlice, y, startYi, startYj, outCols, windowSize, stride, ptype, &wg)
 			}
+			wg.Wait()
 			flattenSlice = append(flattenSlice, partialSlice...)
 		}
+		return mat.NewDense(outRows*channels, outCols, flattenSlice), nil, nil
 	}
 
 	masks := &mat.Dense{}
@@ -42,13 +47,16 @@ func Pool2D(matrix *mat.Dense, outRows, outCols, channels, windowSize, stride in
 		tmpR, tmpC := tmpMatrix.Dims()
 		partialMasks := mat.NewDense(tmpR, tmpC, nil)
 		partialMasks.Zero()
+
 		partialMasksIndices := make([][][2]int, outRows)
+		wg := sync.WaitGroup{}
 		for y := 0; y < outRows; y++ {
+			wg.Add(1)
 			startYi := y * stride
 			startYj := startYi + windowSize
-			rowMasks := pool2D(tmpMatrix, partialMasks, partialSlice, y, startYi, startYj, outCols, windowSize, stride, ptype)
-			partialMasksIndices[y] = rowMasks
+			go pool2DWithMasks(tmpMatrix, partialMasks, partialMasksIndices, partialSlice, y, startYi, startYj, outCols, windowSize, stride, ptype, &wg)
 		}
+		wg.Wait()
 
 		if masks.IsEmpty() {
 			masks = partialMasks
@@ -65,26 +73,26 @@ func Pool2D(matrix *mat.Dense, outRows, outCols, channels, windowSize, stride in
 }
 
 // pool2D See ref. Pool2D()
-func pool2D(matrix, masks *mat.Dense, flattenMatrix []float64, y, startYi, startYj, outCols, windowSize, stride int, ptype poolingType) [][2]int {
-	if masks == nil {
-		for x := 0; x < outCols; x++ {
-			startX := x * stride
-			part := matrix.Slice(startYi, startYj, startX, startX+windowSize)
-			switch ptype {
-			case poolMAX:
-				flattenMatrix[y*outCols+x] = maxPool(part)
-				break
-			case poolMIN:
-				panic("poolMIN is not implemented")
-			case poolAVG:
-				panic("poolAVG is not implemented")
-			default:
-				panic("default behaviour for pool_%TYPE% is not implemented")
-			}
+func pool2D(matrix *mat.Dense, flattenMatrix []float64, y, startYi, startYj, outCols, windowSize, stride int, ptype poolingType, wg *sync.WaitGroup) {
+	for x := 0; x < outCols; x++ {
+		startX := x * stride
+		part := matrix.Slice(startYi, startYj, startX, startX+windowSize)
+		switch ptype {
+		case poolMAX:
+			flattenMatrix[y*outCols+x] = maxPool(part)
+			break
+		case poolMIN:
+			panic("poolMIN is not implemented")
+		case poolAVG:
+			panic("poolAVG is not implemented")
+		default:
+			panic("default behaviour for pool_%TYPE% is not implemented")
 		}
-		return nil
 	}
+	wg.Done()
+}
 
+func pool2DWithMasks(matrix, masks *mat.Dense, partialMasksIndices [][][2]int, flattenMatrix []float64, y, startYi, startYj, outCols, windowSize, stride int, ptype poolingType, wg *sync.WaitGroup) {
 	partialMasks := make([][2]int, outCols)
 	for x := 0; x < outCols; x++ {
 		startX := x * stride
@@ -105,8 +113,8 @@ func pool2D(matrix, masks *mat.Dense, flattenMatrix []float64, y, startYi, start
 			panic("default behaviour for pool_%TYPE% is not implemented (with masks)")
 		}
 	}
-	return partialMasks
-
+	partialMasksIndices[y] = partialMasks
+	wg.Done()
 }
 
 func maxPoolIdx(m mat.Matrix) (int, int, float64) {
