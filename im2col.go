@@ -31,7 +31,7 @@ func Im2Col(matrix *mat.Dense, kernelRows, kernelCols, stride int) *mat.Dense {
 func makeCol(matrix *mat.Dense, kernelSizeR, kernelSizeC, stride, startY, shiftY, cols, colIdx int, newFlattenMatrix []float64) {
 	for x := 0; x < cols; x++ {
 		startX := x * stride
-		part := matrix.Slice(startY, shiftY, startX, startX+kernelSizeC)
+		part := matrix.Slice(startY, shiftY, startX, startX+kernelSizeC).(*mat.Dense)
 		for i := 0; i < kernelSizeR; i++ {
 			for j := 0; j < kernelSizeC; j++ {
 				newFlattenMatrix[colIdx] = part.At(i, j)
