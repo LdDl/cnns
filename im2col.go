@@ -1,8 +1,6 @@
 package cnns
 
 import (
-	"sync"
-
 	"gonum.org/v1/gonum/mat"
 )
 
@@ -21,22 +19,19 @@ func Im2Col(matrix *mat.Dense, kernelRows, kernelCols, stride int) *mat.Dense {
 	flattenMatrix := make([]float64, colSize*rows*cols)
 
 	idx := 0
-	wg := sync.WaitGroup{}
 	for y := 0; y < rows; y++ {
-		wg.Add(1)
-		go makeCol(matrix, kernelRows, kernelCols, stride, y, cols, idx, flattenMatrix, &wg)
+		startY := y * stride
+		makeCol(matrix, kernelRows, kernelCols, stride, startY, startY+kernelRows, cols, idx, flattenMatrix)
 		idx += colSize * cols
 	}
-	wg.Wait()
 	return mat.NewDense(rows*cols, colSize, flattenMatrix)
 }
 
 // makeCol Slice matrix for Im2Col(). See ref. Im2Col()
-func makeCol(matrix *mat.Dense, kernelSizeR, kernelSizeC, s, y, cols, colIdx int, newFlattenMatrix []float64, wg *sync.WaitGroup) {
+func makeCol(matrix *mat.Dense, kernelSizeR, kernelSizeC, stride, startY, shiftY, cols, colIdx int, newFlattenMatrix []float64) {
 	for x := 0; x < cols; x++ {
-		startY := y * s
-		startX := x * s
-		part := matrix.Slice(startY, startY+kernelSizeR, startX, startX+kernelSizeC)
+		startX := x * stride
+		part := matrix.Slice(startY, shiftY, startX, startX+kernelSizeC)
 		for i := 0; i < kernelSizeR; i++ {
 			for j := 0; j < kernelSizeC; j++ {
 				newFlattenMatrix[colIdx] = part.At(i, j)
@@ -44,5 +39,4 @@ func makeCol(matrix *mat.Dense, kernelSizeR, kernelSizeC, s, y, cols, colIdx int
 			}
 		}
 	}
-	wg.Done()
 }

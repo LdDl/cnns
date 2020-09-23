@@ -1,8 +1,6 @@
 package cnns
 
 import (
-	"sync"
-
 	"gonum.org/v1/gonum/mat"
 )
 
@@ -15,19 +13,15 @@ func Flatten(matrix *mat.Dense) *mat.Dense {
 	numElements := height * width
 	flattenMatrix := make([]float64, numElements)
 
-	wg := sync.WaitGroup{}
 	for row := 0; row < height; row++ {
-		wg.Add(1)
-		go flatten(matrix, flattenMatrix, row, width, &wg)
+		flatten(matrix, flattenMatrix, row, width)
 	}
-	wg.Wait()
 	return mat.NewDense(1, numElements, flattenMatrix)
 }
 
 // flatten Indexing vector as matrix. See ref. Flatten()
-func flatten(matrix *mat.Dense, flattenMatrix []float64, row, width int, wg *sync.WaitGroup) {
+func flatten(matrix *mat.Dense, flattenMatrix []float64, row, width int) {
 	for column := 0; column < width; column++ {
 		flattenMatrix[row*width+column] = matrix.At(row, column)
 	}
-	wg.Done()
 }

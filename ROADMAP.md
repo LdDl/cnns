@@ -50,11 +50,11 @@
     - [ ] Pooling  
 - [ ] [Gonum](https://github.com/gonum/gonum) integration **WIP**
 - [ ] Use of goroutines for boosting calculations
-    - [x] ZeroPadding
-    - [X] Pool2D
-    - [x] Im2Col
-    - [x] Flatten
-    - [ ] ContoursPadding
+    - ~~[x] ZeroPadding Slow down perfomance~~
+    - ~~[X] Pool2D Slow down perfomance~~
+    - ~~[x] Im2Col Slow down perfomance~~
+    - ~~[x] Flatten Slow down perfomance~~
+    - ~~[ ] ContoursPadding Slow down perfomance~~
 - [ ] Benchmarks. Do we really need it since this is just library for studying purposes?
 - [ ] Padding for convolutional layer
 - [ ] Write theoretical documents on most of functions (on every would be even better)
@@ -64,4 +64,4 @@
 - [ ] Graphviz pretty print. **WIP**
 - [x] Add CI on https://travis-ci.com
 
-Updated at: 2020-09-22
+Updated at: 2020-09-23

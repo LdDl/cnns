@@ -52,12 +52,12 @@ func (n *WholeNet) Train(inputs []*mat.Dense, desired []*mat.Dense, testData []*
 		st := time.Now()
 		for i := range inputs {
 			in := inputs[i]
-			target := desired[i]
 			err := n.FeedForward(in)
 			if err != nil {
 				log.Printf("Feedforward caused error: %s", err.Error())
 				return 0.0, 0.0, err
 			}
+			target := desired[i]
 			err = n.Backpropagate(target)
 			if err != nil {
 				log.Printf("Backpropagate caused error: %s", err.Error())

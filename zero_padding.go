@@ -1,8 +1,6 @@
 package cnns
 
 import (
-	"sync"
-
 	"gonum.org/v1/gonum/mat"
 )
 
@@ -16,17 +14,14 @@ func ZeroPadding(matrix *mat.Dense, num int) *mat.Dense {
 	outRows := r + num*2
 	outCols := c + num*2
 	flattenMatrix := make([]float64, outRows*outCols)
-	wg := sync.WaitGroup{}
 	for y := 0; y < outRows; y++ {
-		wg.Add(1)
-		go zeroPadding(matrix, flattenMatrix, r, c, outCols, num, y, &wg)
+		zeroPadding(matrix, flattenMatrix, r, c, outCols, num, y)
 	}
-	wg.Wait()
 	return mat.NewDense(outRows, outCols, flattenMatrix)
 }
 
 // zeroPadding See ZeroPadding()
-func zeroPadding(matrix *mat.Dense, newFlattenMatrix []float64, rows, cols, outCols int, w, y int, wg *sync.WaitGroup) {
+func zeroPadding(matrix *mat.Dense, newFlattenMatrix []float64, rows, cols, outCols int, w, y int) {
 	for x := 0; x < outCols; x++ {
 		if y > w-1 && y < rows+w && x > w-1 && x < cols+w {
 			newFlattenMatrix[y*outCols+x] = matrix.At(y-w, x-w)
@@ -34,5 +29,4 @@ func zeroPadding(matrix *mat.Dense, newFlattenMatrix []float64, rows, cols, outC
 			newFlattenMatrix[y*outCols+x] = 0.0
 		}
 	}
-	wg.Done()
 }
