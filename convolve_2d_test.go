@@ -1,8 +1,10 @@
 package cnns
 
 import (
+	"math"
 	"testing"
 
+	"github.com/LdDl/cnns/tensor"
 	"gonum.org/v1/gonum/mat"
 )
 
@@ -36,4 +38,46 @@ func BenchmarkConvolve2DSingle(b *testing.B) {
 			panic(err)
 		}
 	}
+}
+
+func BenchmarkNaiveConvolve(b *testing.B) {
+	data := tensor.NewConvolveLayer(8, 9, 1, 1, 3, 1)
+	data.In.Data = benchSingleChannelImage.RawMatrix().Data
+	data.Kernels[0].Data = benchKernelSingle.RawMatrix().Data
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		data.NaiveConv()
+	}
+}
+
+func TestConvAndNaive(t *testing.T) {
+	data := tensor.NewConvolveLayer(8, 9, 1, 1, 3, 1)
+	data.In.Data = benchSingleChannelImage.RawMatrix().Data
+	data.Kernels[0].Data = benchKernelSingle.RawMatrix().Data
+	data.NaiveConv()
+
+	outConv2d, err := Convolve2D(benchSingleChannelImage, benchKernelSingle, benchNumFiltersSingle, benchStrideSingle)
+	if err != nil {
+		t.Error(err)
+	}
+
+	dataConv2d := outConv2d.RawMatrix().Data
+
+	for i := range data.Out.Data {
+		if (data.Out.Data[i] - dataConv2d[i]) >= 0.000000000001 {
+			t.Errorf("Pos #%d. Value naive: %f, Value gonum: %f, Difference: %f", i, data.Out.Data[i], dataConv2d[i], math.Abs(data.Out.Data[i]-dataConv2d[i]))
+		}
+	}
+}
+
+func RoundPlaces(v float64, places int) float64 {
+	shift := math.Pow(10, float64(places))
+	return Round(v*shift) / shift
+}
+
+func Round(v float64) float64 {
+	if v >= 0 {
+		return math.Floor(v + 0.5)
+	}
+	return math.Ceil(v - 0.5)
 }
