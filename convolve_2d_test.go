@@ -52,21 +52,23 @@ func BenchmarkNaiveConvolveSmall(b *testing.B) {
 }
 
 func BenchmarkConvolve2DSingleBig(b *testing.B) {
-	data := make([]float64, 416*416)
-	for i := 0; i < 416; i++ {
-		for j := 0; j < 416; j++ {
-			data[i*416+j] = rand.Float64() - 0.5
+	width, height := 512, 512
+	kernelSize := 7
+	data := make([]float64, width*height)
+	for i := 0; i < height; i++ {
+		for j := 0; j < width; j++ {
+			data[i*width+j] = rand.Float64() - 0.5
 		}
 	}
-	bigMat := mat.NewDense(416, 416, data)
+	bigMat := mat.NewDense(height, width, data)
 
-	kernelData := make([]float64, 7*7)
-	for i := 0; i < 7; i++ {
-		for j := 0; j < 7; j++ {
-			data[i*7+j] = rand.Float64() - 0.5
+	kernelData := make([]float64, kernelSize*kernelSize)
+	for i := 0; i < kernelSize; i++ {
+		for j := 0; j < kernelSize; j++ {
+			data[i*kernelSize+j] = rand.Float64() - 0.5
 		}
 	}
-	bigKernel := mat.NewDense(7, 7, kernelData)
+	bigKernel := mat.NewDense(kernelSize, kernelSize, kernelData)
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -78,19 +80,20 @@ func BenchmarkConvolve2DSingleBig(b *testing.B) {
 }
 
 func BenchmarkNaiveConvolveBig(b *testing.B) {
-
-	data := make([]float64, 416*416)
-	for i := 0; i < 416; i++ {
-		for j := 0; j < 416; j++ {
-			data[i*416+j] = rand.Float64() - 0.5
+	width, height := 512, 512
+	kernelSize := 7
+	data := make([]float64, width*height)
+	for i := 0; i < height; i++ {
+		for j := 0; j < width; j++ {
+			data[i*width+j] = rand.Float64() - 0.5
 		}
 	}
-	bigMat := tensor.NewConvolveLayer(416, 416, 1, 1, 7, 1)
+	bigMat := tensor.NewConvolveLayer(width, height, 1, 1, kernelSize, 1)
 
-	kernelData := make([]float64, 7*7)
-	for i := 0; i < 7; i++ {
-		for j := 0; j < 7; j++ {
-			data[i*7+j] = rand.Float64() - 0.5
+	kernelData := make([]float64, kernelSize*kernelSize)
+	for i := 0; i < kernelSize; i++ {
+		for j := 0; j < kernelSize; j++ {
+			data[i*kernelSize+j] = rand.Float64() - 0.5
 		}
 	}
 
@@ -123,33 +126,34 @@ func TestConvAndNaiveSmall(t *testing.T) {
 }
 
 func TestConvAndNaiveBig(t *testing.T) {
+	width, height := 512, 512
+	kernelSize := 7
 
-	data := make([]float64, 416*416)
-	for i := 0; i < 416; i++ {
-		for j := 0; j < 416; j++ {
-			data[i*416+j] = rand.Float64() - 0.5
+	data := make([]float64, width*height)
+	for i := 0; i < height; i++ {
+		for j := 0; j < width; j++ {
+			data[i*width+j] = rand.Float64() - 0.5
 		}
 	}
-	kernelData := make([]float64, 7*7)
-	for i := 0; i < 7; i++ {
-		for j := 0; j < 7; j++ {
-			data[i*7+j] = rand.Float64() - 0.5
+	kernelData := make([]float64, kernelSize*kernelSize)
+	for i := 0; i < kernelSize; i++ {
+		for j := 0; j < kernelSize; j++ {
+			data[i*kernelSize+j] = rand.Float64() - 0.5
 		}
 	}
 
-	oldWay := tensor.NewConvolveLayer(416, 416, 1, 1, 7, 1)
+	oldWay := tensor.NewConvolveLayer(width, height, 1, 1, kernelSize, 1)
 	oldWay.In.Data = data
 	oldWay.Kernels[0].Data = kernelData
 	oldWay.NaiveConv()
 
-	newWay, err := Convolve2D(mat.NewDense(416, 416, data), mat.NewDense(7, 7, kernelData), benchNumFiltersSingle, benchStrideSingle)
+	newWay, err := Convolve2D(mat.NewDense(height, width, data), mat.NewDense(kernelSize, kernelSize, kernelData), benchNumFiltersSingle, benchStrideSingle)
 	if err != nil {
 		t.Error(err)
 	}
 
 	dataNewWay := newWay.RawMatrix().Data
 
-	// t.Error(len(dataNewWay), len(oldWay.Out.Data))
 	for i := range oldWay.Out.Data {
 		if (oldWay.Out.Data[i] - dataNewWay[i]) >= 0.000000000001 {
 			t.Errorf("Pos #%d. Value naive: %f, Value gonum: %f, Difference: %f", i, oldWay.Out.Data[i], dataNewWay[i], math.Abs(oldWay.Out.Data[i]-dataNewWay[i]))
