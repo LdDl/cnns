@@ -2,6 +2,7 @@ package cnns
 
 import (
 	"math"
+	"math/rand"
 	"testing"
 
 	"github.com/LdDl/cnns/tensor"
@@ -27,11 +28,12 @@ var (
 		0.16456005, 0.18682307, -0.40303048,
 	})
 
+	oldTensorSingle       = tensor.NewConvolveLayer(8, 9, 1, 1, 3, 1)
 	benchNumFiltersSingle = 1
 	benchStrideSingle     = 1
 )
 
-func BenchmarkConvolve2DSingle(b *testing.B) {
+func BenchmarkConvolve2DSingleSmall(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		_, err := Convolve2D(benchSingleChannelImage, benchKernelSingle, benchNumFiltersSingle, benchStrideSingle)
 		if err != nil {
@@ -40,17 +42,67 @@ func BenchmarkConvolve2DSingle(b *testing.B) {
 	}
 }
 
-func BenchmarkNaiveConvolve(b *testing.B) {
-	data := tensor.NewConvolveLayer(8, 9, 1, 1, 3, 1)
-	data.In.Data = benchSingleChannelImage.RawMatrix().Data
-	data.Kernels[0].Data = benchKernelSingle.RawMatrix().Data
+func BenchmarkNaiveConvolveSmall(b *testing.B) {
+	oldTensorSingle.In.Data = benchSingleChannelImage.RawMatrix().Data
+	oldTensorSingle.Kernels[0].Data = benchKernelSingle.RawMatrix().Data
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		data.NaiveConv()
+		oldTensorSingle.NaiveConv()
 	}
 }
 
-func TestConvAndNaive(t *testing.T) {
+func BenchmarkConvolve2DSingleBig(b *testing.B) {
+	data := make([]float64, 416*416)
+	for i := 0; i < 416; i++ {
+		for j := 0; j < 416; j++ {
+			data[i*416+j] = rand.Float64() - 0.5
+		}
+	}
+	bigMat := mat.NewDense(416, 416, data)
+
+	kernelData := make([]float64, 7*7)
+	for i := 0; i < 7; i++ {
+		for j := 0; j < 7; j++ {
+			data[i*7+j] = rand.Float64() - 0.5
+		}
+	}
+	bigKernel := mat.NewDense(7, 7, kernelData)
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_, err := Convolve2D(bigMat, bigKernel, benchNumFiltersSingle, benchStrideSingle)
+		if err != nil {
+			panic(err)
+		}
+	}
+}
+
+func BenchmarkNaiveConvolveBig(b *testing.B) {
+
+	data := make([]float64, 416*416)
+	for i := 0; i < 416; i++ {
+		for j := 0; j < 416; j++ {
+			data[i*416+j] = rand.Float64() - 0.5
+		}
+	}
+	bigMat := tensor.NewConvolveLayer(416, 416, 1, 1, 7, 1)
+
+	kernelData := make([]float64, 7*7)
+	for i := 0; i < 7; i++ {
+		for j := 0; j < 7; j++ {
+			data[i*7+j] = rand.Float64() - 0.5
+		}
+	}
+
+	bigMat.In.Data = data
+	bigMat.Kernels[0].Data = kernelData
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		bigMat.NaiveConv()
+	}
+}
+
+func TestConvAndNaiveSmall(t *testing.T) {
 	data := tensor.NewConvolveLayer(8, 9, 1, 1, 3, 1)
 	data.In.Data = benchSingleChannelImage.RawMatrix().Data
 	data.Kernels[0].Data = benchKernelSingle.RawMatrix().Data
@@ -66,6 +118,41 @@ func TestConvAndNaive(t *testing.T) {
 	for i := range data.Out.Data {
 		if (data.Out.Data[i] - dataConv2d[i]) >= 0.000000000001 {
 			t.Errorf("Pos #%d. Value naive: %f, Value gonum: %f, Difference: %f", i, data.Out.Data[i], dataConv2d[i], math.Abs(data.Out.Data[i]-dataConv2d[i]))
+		}
+	}
+}
+
+func TestConvAndNaiveBig(t *testing.T) {
+
+	data := make([]float64, 416*416)
+	for i := 0; i < 416; i++ {
+		for j := 0; j < 416; j++ {
+			data[i*416+j] = rand.Float64() - 0.5
+		}
+	}
+	kernelData := make([]float64, 7*7)
+	for i := 0; i < 7; i++ {
+		for j := 0; j < 7; j++ {
+			data[i*7+j] = rand.Float64() - 0.5
+		}
+	}
+
+	oldWay := tensor.NewConvolveLayer(416, 416, 1, 1, 7, 1)
+	oldWay.In.Data = data
+	oldWay.Kernels[0].Data = kernelData
+	oldWay.NaiveConv()
+
+	newWay, err := Convolve2D(mat.NewDense(416, 416, data), mat.NewDense(7, 7, kernelData), benchNumFiltersSingle, benchStrideSingle)
+	if err != nil {
+		t.Error(err)
+	}
+
+	dataNewWay := newWay.RawMatrix().Data
+
+	// t.Error(len(dataNewWay), len(oldWay.Out.Data))
+	for i := range oldWay.Out.Data {
+		if (oldWay.Out.Data[i] - dataNewWay[i]) >= 0.000000000001 {
+			t.Errorf("Pos #%d. Value naive: %f, Value gonum: %f, Difference: %f", i, oldWay.Out.Data[i], dataNewWay[i], math.Abs(oldWay.Out.Data[i]-dataNewWay[i]))
 		}
 	}
 }
