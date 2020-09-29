@@ -48,7 +48,7 @@ func NewConvLayer(inSize tensor.TDsize, stride, kernelSize, numberFilters int) L
 		PreviousDeltaKernelsState: make([]*mat.Dense, numberFilters),
 		LocalDeltas:               make([]*mat.Dense, numberFilters),
 		NextDeltaWeightSum:        &mat.Dense{},
-		OutputSize:                &tensor.TDsize{X: (inSize.Y-kernelSize)/stride + 1, Y: (inSize.X-kernelSize)/stride + 1, Z: numberFilters},
+		OutputSize:                &tensor.TDsize{X: (inSize.X-kernelSize)/stride + 1, Y: (inSize.Y-kernelSize)/stride + 1, Z: numberFilters},
 		inChannels:                inSize.Z,
 		trainMode:                 false,
 	}

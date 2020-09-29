@@ -31,7 +31,7 @@ func main() {
 	Using custom weights (for testing purposes) also.
 */
 func ExampleConv() {
-	conv := cnns.NewConvLayer(tensor.TDsize{X: 8, Y: 9, Z: 1}, 1, 3, 1)
+	conv := cnns.NewConvLayer(tensor.TDsize{X: 9, Y: 8, Z: 1}, 1, 3, 1)
 	relu := cnns.NewReLULayer(conv.GetOutputSize())
 	maxpool := cnns.NewPoolingLayer(relu.GetOutputSize(), 2, 2, "max", "valid")
 	fullyconnected := cnns.NewFullyConnectedLayer(maxpool.GetOutputSize(), 3)

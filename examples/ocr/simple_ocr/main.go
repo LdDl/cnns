@@ -21,7 +21,7 @@ var (
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
-	conv := cnns.NewConvLayer(tensor.TDsize{X: 8, Y: 9, Z: 1}, 1, 3, 1)
+	conv := cnns.NewConvLayer(tensor.TDsize{X: imgHeight, Y: imgWidth, Z: 1}, 1, 3, 1)
 	relu := cnns.NewReLULayer(conv.GetOutputSize())
 	maxpool := cnns.NewPoolingLayer(relu.GetOutputSize(), 2, 2, "max", "valid")
 	fullyconnected := cnns.NewFullyConnectedLayer(maxpool.GetOutputSize(), 3)
