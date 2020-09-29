@@ -20,7 +20,7 @@ import (
 )
 
 var (
-	trainWidth          = 28
+	trainWidth          = 30
 	trainHeight         = 28
 	trainDepth          = 1
 	trainImagesPath     = "./out/"

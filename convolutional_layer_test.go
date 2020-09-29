@@ -7,7 +7,7 @@ import (
 )
 
 func TestConvSize(t *testing.T) {
-	conv := NewConvLayer(tensor.TDsize{X: 8, Y: 9, Z: 1}, 1, 3, 1)
+	conv := NewConvLayer(tensor.TDsize{X: 9, Y: 8, Z: 1}, 1, 3, 1)
 	correct := tensor.TDsize{X: 7, Y: 6, Z: 1}
 	outSize := conv.GetOutputSize()
 	if outSize.X != correct.X {

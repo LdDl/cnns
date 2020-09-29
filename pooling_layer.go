@@ -102,6 +102,8 @@ func NewPoolingLayer(inSize *tensor.TDsize, stride, extendFilter int, poolingTyp
 		break
 	}
 
+	// fmt.Println(newLayer.OutputSize)
+	// panic("1")
 	return newLayer
 }
 

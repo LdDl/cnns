@@ -7,7 +7,7 @@ import (
 )
 
 func TestFullyConectedSize(t *testing.T) {
-	fc := NewFullyConnectedLayer(&tensor.TDsize{X: 6, Y: 7, Z: 1}, 3)
+	fc := NewFullyConnectedLayer(&tensor.TDsize{X: 7, Y: 6, Z: 1}, 3)
 	correct := tensor.TDsize{X: 3, Y: 1, Z: 1}
 	outSize := fc.GetOutputSize()
 	if outSize.X != correct.X {
