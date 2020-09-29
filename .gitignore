@@ -10,4 +10,4 @@
 /python_test
 main
 *.py
-examples/ocr/fonts_ocr/out/*
+examples/ocr/fonts_ocr/out
