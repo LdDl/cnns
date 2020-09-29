@@ -152,10 +152,10 @@ func (conv *ConvLayer) CalculateGradients(lossGradients *mat.Dense) error {
 	inputRows, inputCols := conv.Oj.Dims()
 
 	for f := 0; f < features; f++ {
-		partialErrors := lossGradients.Slice(f*errCols, errRows/features+f*errCols, 0, errCols).(*mat.Dense)
+		partialErrors := ExtractChannel(lossGradients, errRows, errCols, features, f)
 		channelsStack := &mat.Dense{}
 		for c := 0; c < channels; c++ {
-			partialMatrix := conv.Oj.Slice(c*inputCols, inputRows/channels+c*inputCols, 0, inputCols).(*mat.Dense)
+			partialMatrix := ExtractChannel(conv.Oj, inputRows, inputCols, channels, c)
 			// dL/dF = Convolution(Input, LossGradient dL/dO)
 			partialLocalDeltas, err := Convolve2D(partialMatrix, partialErrors, 1, conv.Stride)
 			if err != nil {
@@ -176,7 +176,7 @@ func (conv *ConvLayer) CalculateGradients(lossGradients *mat.Dense) error {
 	for f := 0; f < features; f++ {
 
 		// Add padding for each incoming loss gradient
-		partialErrors := lossGradients.Slice(f*errCols, errRows/features+f*errCols, 0, errCols).(*mat.Dense)
+		partialErrors := ExtractChannel(lossGradients, errRows, errCols, features, f)
 
 		padded := ZeroPadding(partialErrors, conv.KernelSize-1)
 
@@ -184,7 +184,7 @@ func (conv *ConvLayer) CalculateGradients(lossGradients *mat.Dense) error {
 		kernelR, kernelC := conv.Kernels[f].Dims()
 		channelStacked := &mat.Dense{}
 		for c := 0; c < channels; c++ {
-			partialKernel := conv.Kernels[f].Slice(c*kernelC, kernelR/channels+c*kernelC, 0, kernelC).(*mat.Dense)
+			partialKernel := ExtractChannel(conv.Kernels[f], kernelR, kernelC, channels, c)
 			partialRotatedKernel := Rot2D180(partialKernel)
 
 			// error = dL/dX = FullConvolution(LossGradient dL/dO, rot180(kernel))
@@ -253,12 +253,12 @@ func (conv *ConvLayer) PrintWeights() {
 	fmt.Println("Printing Convolutional Layer kernels...")
 	features := len(conv.Kernels)
 	for f := 0; f < features; f++ {
+		kernelRows, kernelCols := conv.Kernels[f].Dims()
 		fmt.Printf("\tKernel #%d:\n", f)
 		for c := 0; c < conv.inChannels; c++ {
-			rows, cols := conv.Kernels[f].Dims()
-			partialKernel := conv.Kernels[f].Slice(c*cols, rows/conv.inChannels+c*cols, 0, cols).(*mat.Dense)
+			partialKernel := ExtractChannel(conv.Kernels[f], kernelRows, kernelCols, conv.inChannels, c)
 			fmt.Printf("\tChannel #%d:\n", c)
-			rows, _ = partialKernel.Dims()
+			rows, _ := partialKernel.Dims()
 			for r := 0; r < rows; r++ {
 				fmt.Printf("\t\t%v\n", partialKernel.RawRowView(r))
 			}

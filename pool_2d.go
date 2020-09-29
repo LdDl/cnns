@@ -24,7 +24,8 @@ func Pool2D(matrix *mat.Dense, outRows, outCols, channels, windowSize, stride in
 	if !returnMasks {
 		for c := 0; c < channels; c++ {
 			partialSlice := make([]float64, outRows*outCols)
-			tmpMatrix := matrix.Slice(c*sourceC, sourceR/channels+c*sourceC, 0, sourceC).(*mat.Dense)
+			tmpMatrix := ExtractChannel(matrix, sourceR, sourceC, channels, c)
+
 			for y := 0; y < outRows; y++ {
 				startYi := y * stride
 				startYj := startYi + windowSize
@@ -39,7 +40,7 @@ func Pool2D(matrix *mat.Dense, outRows, outCols, channels, windowSize, stride in
 	masksIndices := [][][2]int{}
 	for c := 0; c < channels; c++ {
 		partialSlice := make([]float64, outRows*outCols)
-		tmpMatrix := matrix.Slice(c*sourceC, sourceR/channels+c*sourceC, 0, sourceC).(*mat.Dense)
+		tmpMatrix := ExtractChannel(matrix, sourceR, sourceC, channels, c)
 		tmpR, tmpC := tmpMatrix.Dims()
 		partialMasks := mat.NewDense(tmpR, tmpC, nil)
 		partialMasks.Zero()

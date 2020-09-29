@@ -17,8 +17,9 @@ func Convolve2D(matrix, kernel *mat.Dense, channels, stride int) (*mat.Dense, er
 	matrixR, matrixC := matrix.Dims()
 	out := &mat.Dense{}
 	for c := 0; c < channels; c++ {
-		partialMatrix := matrix.Slice(c*matrixC, matrixR/channels+c*matrixC, 0, matrixC).(*mat.Dense)
-		partialKernel := kernel.Slice(c*kernelC, kernelR/channels+c*kernelC, 0, kernelC).(*mat.Dense)
+
+		partialMatrix := ExtractChannel(matrix, matrixR, matrixC, channels, c)
+		partialKernel := ExtractChannel(kernel, kernelR, kernelC, channels, c)
 		partialConvolve, err := convolve2D(partialMatrix, partialKernel, stride)
 		if err != nil {
 			return nil, errors.Wrap(err, "Can't call Convolve2D()")
@@ -47,4 +48,8 @@ func convolve2D(matrix, kernel *mat.Dense, stride int) (*mat.Dense, error) {
 		return nil, errors.Wrap(err, "Can't call unexported convolve2D()")
 	}
 	return out, nil
+}
+
+func ExtractChannel(matrix *mat.Dense, rows, cols, channels, channel int) *mat.Dense {
+	return matrix.Slice(channel*rows/channels, (channel+1)*rows/channels, 0, cols).(*mat.Dense)
 }

@@ -141,7 +141,7 @@ func (pool *PoolingLayer) FeedForward(input *mat.Dense) error {
 		stacked := &mat.Dense{}
 		for c := 0; c < pool.OutputSize.Z; c++ {
 			// Add padding for each channel
-			partialMatrix := pool.Oj.Slice(c*matrixC, matrixR/pool.OutputSize.Z+c*matrixC, 0, matrixC).(*mat.Dense)
+			partialMatrix := ExtractChannel(pool.Oj, matrixR, matrixC, pool.OutputSize.Z, c) //pool.Oj.Slice(c*matrixC, matrixR/pool.OutputSize.Z+c*matrixC, 0, matrixC).(*mat.Dense)
 			padded := ZeroPadding(partialMatrix, 1)
 			if stacked.IsEmpty() {
 				stacked = padded
@@ -159,6 +159,8 @@ func (pool *PoolingLayer) FeedForward(input *mat.Dense) error {
 
 // DoActivation Pooling layer's output activation
 func (pool *PoolingLayer) doActivation() {
+	// fmt.Println(pool.Oj)
+	// fmt.Println(pool.OutputSize.X, pool.OutputSize.Y, pool.OutputSize.Z, pool.ExtendFilter, pool.Stride, pool.PoolingType)
 	pool.Ok, pool.Masks, pool.masksIndices = Pool2D(pool.Oj, pool.OutputSize.X, pool.OutputSize.Y, pool.OutputSize.Z, pool.ExtendFilter, pool.Stride, pool.PoolingType, true)
 }
 
@@ -180,9 +182,9 @@ func (pool *PoolingLayer) CalculateGradients(errorsDense *mat.Dense) error {
 	errorsRows, errorsCols := errorsReshaped.Dims()
 	maskR, maskC := pool.Masks.Dims()
 	for c := 0; c < channels; c++ {
-		partialErrors := errorsReshaped.Slice(c*errorsCols, errorsRows/channels+c*errorsCols, 0, errorsCols).(*mat.Dense)
+		partialErrors := ExtractChannel(errorsReshaped, errorsRows, errorsCols, channels, c)
 		partialErrRows, partialErrCols := partialErrors.Dims()
-		partialMask := pool.Masks.Slice(c*maskC, maskR/channels+c*maskC, 0, maskC).(*mat.Dense)
+		partialMask := ExtractChannel(pool.Masks, maskR, maskC, channels, c)
 		partialMaskIndices := pool.masksIndices[c*okC : okC+c*okC]
 		for y := 0; y < partialErrRows; y++ {
 			startYi := y * stride
