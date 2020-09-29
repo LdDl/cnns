@@ -25,7 +25,6 @@ func Pool2D(matrix *mat.Dense, outRows, outCols, channels, windowSize, stride in
 		for c := 0; c < channels; c++ {
 			partialSlice := make([]float64, outRows*outCols)
 			tmpMatrix := ExtractChannel(matrix, sourceR, sourceC, channels, c)
-
 			for y := 0; y < outRows; y++ {
 				startYi := y * stride
 				startYj := startYi + windowSize

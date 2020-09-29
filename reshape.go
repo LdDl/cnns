@@ -26,3 +26,15 @@ func Reshape(matrix *mat.Dense, r, c int) (*mat.Dense, error) {
 	}
 	return mat.NewDense(r, c, newMat), nil
 }
+
+// ExtractChannel Returns selected channel from N-channeled matrix (usefully in terms of image processing)
+/*
+	matrix - Source matrix
+	rows - Number of rows (height)
+	cols - Number of columns (width)
+	channels - Number of channels
+	channel - Index of channel
+*/
+func ExtractChannel(matrix *mat.Dense, rows, cols, channels, channel int) *mat.Dense {
+	return matrix.Slice(channel*rows/channels, (channel+1)*rows/channels, 0, cols).(*mat.Dense)
+}

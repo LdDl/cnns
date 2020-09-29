@@ -49,7 +49,3 @@ func convolve2D(matrix, kernel *mat.Dense, stride int) (*mat.Dense, error) {
 	}
 	return out, nil
 }
-
-func ExtractChannel(matrix *mat.Dense, rows, cols, channels, channel int) *mat.Dense {
-	return matrix.Slice(channel*rows/channels, (channel+1)*rows/channels, 0, cols).(*mat.Dense)
-}

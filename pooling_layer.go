@@ -1,4 +1,3 @@
-package cnns
 
 import (
 	"fmt"
@@ -102,8 +101,6 @@ func NewPoolingLayer(inSize *tensor.TDsize, stride, extendFilter int, poolingTyp
 		break
 	}
 
-	// fmt.Println(newLayer.OutputSize)
-	// panic("1")
 	return newLayer
 }
 
@@ -159,8 +156,7 @@ func (pool *PoolingLayer) FeedForward(input *mat.Dense) error {
 
 // DoActivation Pooling layer's output activation
 func (pool *PoolingLayer) doActivation() {
-	// fmt.Println(pool.Oj)
-	// fmt.Println(pool.OutputSize.X, pool.OutputSize.Y, pool.OutputSize.Z, pool.ExtendFilter, pool.Stride, pool.PoolingType)
+
 	pool.Ok, pool.Masks, pool.masksIndices = Pool2D(pool.Oj, pool.OutputSize.X, pool.OutputSize.Y, pool.OutputSize.Z, pool.ExtendFilter, pool.Stride, pool.PoolingType, true)
 }
 
@@ -181,17 +177,19 @@ func (pool *PoolingLayer) CalculateGradients(errorsDense *mat.Dense) error {
 	channels := pool.OutputSize.Z
 	errorsRows, errorsCols := errorsReshaped.Dims()
 	maskR, maskC := pool.Masks.Dims()
+	maskIndicesSplit := len(pool.masksIndices) / channels
 	for c := 0; c < channels; c++ {
 		partialErrors := ExtractChannel(errorsReshaped, errorsRows, errorsCols, channels, c)
 		partialErrRows, partialErrCols := partialErrors.Dims()
 		partialMask := ExtractChannel(pool.Masks, maskR, maskC, channels, c)
-		partialMaskIndices := pool.masksIndices[c*okC : okC+c*okC]
+		partialMaskIndices := pool.masksIndices[c*maskIndicesSplit : maskIndicesSplit+c*maskIndicesSplit]
 		for y := 0; y < partialErrRows; y++ {
 			startYi := y * stride
 			startYj := startYi + windowSize
 			for x := 0; x < partialErrCols; x++ {
 				startX := x * stride
 				part := partialMask.Slice(startYi, startYj, startX, startX+windowSize).(*mat.Dense)
+				// fmt.Println(len(partialMaskIndices), y, x)
 				part.Set(partialMaskIndices[y][x][0], partialMaskIndices[y][x][1], partialErrors.At(y, x))
 			}
 		}
