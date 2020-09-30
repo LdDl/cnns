@@ -33,10 +33,10 @@ type NetLayerJSON struct {
 
 // LayerParamsJSON JSON representation of layers attributes
 type LayerParamsJSON struct {
-	Stride      int    `json:"stride"`
-	KernelSize  int    `json:"kernel_size"`
-	PoolingType string `json:"pooling_type"`
-	PaddingType string `json:"padding_type"`
+	Stride          int    `json:"stride"`
+	KernelSize      int    `json:"kernel_size"`
+	PoolingType     string `json:"pooling_type"`
+	ZeroPaddingType string `json:"zero_padding_type"`
 }
 
 // TensorJSON JSON representation of tensor
@@ -98,7 +98,7 @@ func (wh *WholeNet) ImportFromFile(fname string, randomWeights bool) error {
 			x := data.Network.Layers[i].InputSize.X
 			y := data.Network.Layers[i].InputSize.Y
 			z := data.Network.Layers[i].InputSize.Z
-			pool := NewPoolingLayer(&tensor.TDsize{X: x, Y: y, Z: z}, stride, kernelSize, data.Network.Layers[i].Parameters.PoolingType, data.Network.Layers[i].Parameters.PaddingType)
+			pool := NewPoolingLayer(&tensor.TDsize{X: x, Y: y, Z: z}, stride, kernelSize, data.Network.Layers[i].Parameters.PoolingType, data.Network.Layers[i].Parameters.ZeroPaddingType)
 			wh.Layers = append(wh.Layers, pool)
 			break
 		case "fc":
@@ -122,47 +122,5 @@ func (wh *WholeNet) ImportFromFile(fname string, randomWeights bool) error {
 	wh.LP.LearningRate = data.Parameters.LearningRate
 	wh.LP.Momentum = data.Parameters.Momentum
 	wh.LP.WeightDecay = data.Parameters.WeightDecay
-	return err
-}
-
-// ExportToFile Save network structure and its weights to JSON file
-func (wh *WholeNet) ExportToFile(fname string) error {
-	var err error
-	var save NetJSON
-
-	for i := 0; i < len(wh.Layers); i++ {
-		switch wh.Layers[i].GetType() {
-		case "conv":
-
-			break
-		case "relu":
-
-			break
-		case "pool":
-
-			break
-		case "fc":
-
-			break
-		default:
-			err = fmt.Errorf("Unrecognized layer type: %v", wh.Layers[i].GetType())
-			return err
-		}
-	}
-
-	save.Parameters.LearningRate = lp.LearningRate
-	save.Parameters.Momentum = lp.Momentum
-	save.Parameters.WeightDecay = lp.WeightDecay
-
-	saveJSON, err := json.Marshal(save)
-	if err != nil {
-		return err
-	}
-
-	err = ioutil.WriteFile(fname, saveJSON, 0644)
-	if err != nil {
-		return err
-	}
-
 	return err
 }

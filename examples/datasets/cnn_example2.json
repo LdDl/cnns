@@ -74,7 +74,7 @@
                     "stride": 2,
                     "kernel_size": 2,
                     "pooling_type": "max",
-                    "padding_type": "valid"
+                    "zero_padding_type": "valid"
                 }
             },
             {

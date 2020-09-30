@@ -18,12 +18,36 @@ const (
 	poolAVG
 )
 
+func (pt poolingType) String() string {
+	switch pt {
+	case poolMAX:
+		return "max"
+	case poolMIN:
+		return "min"
+	case poolAVG:
+		return "avg"
+	default:
+		return fmt.Sprintf("Pooling type #%d is not defined", pt)
+	}
+}
+
 type zeroPaddingType int
 
 const (
 	poolVALID = iota + 1
 	poolSAME
 )
+
+func (zpt zeroPaddingType) String() string {
+	switch zpt {
+	case poolVALID:
+		return "valid"
+	case poolSAME:
+		return "same"
+	default:
+		return fmt.Sprintf("Zero padding type #%d is not defined", zpt)
+	}
+}
 
 // PoolingLayer Pooling layer structure
 /*
