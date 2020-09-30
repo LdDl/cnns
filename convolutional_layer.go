@@ -28,6 +28,8 @@ type ConvLayer struct {
 	KernelSize int
 
 	OutputSize *tensor.TDsize
+	inputSize  *tensor.TDsize
+
 	inChannels int
 	trainMode  bool
 }
@@ -39,8 +41,9 @@ type ConvLayer struct {
 	kernelSize - width==height of kernel
 	numberFilters - number of kernels
 */
-func NewConvLayer(inSize tensor.TDsize, stride, kernelSize, numberFilters int) Layer {
+func NewConvLayer(inSize *tensor.TDsize, stride, kernelSize, numberFilters int) Layer {
 	newLayer := &ConvLayer{
+		inputSize:                 inSize,
 		Stride:                    stride,
 		KernelSize:                kernelSize,
 		Ok:                        &mat.Dense{},
@@ -91,6 +94,11 @@ func (conv *ConvLayer) SetCustomWeights(kernels []*mat.Dense) {
 		conv.PreviousDeltaKernelsState[i] = mat.NewDense(tr, tc, nil)
 		conv.PreviousDeltaKernelsState[i].Zero()
 	}
+}
+
+// GetInputSize Returns dimensions of incoming data for convolutional layer
+func (conv *ConvLayer) GetInputSize() *tensor.TDsize {
+	return conv.inputSize
 }
 
 // GetOutputSize Returns output size (dimensions) of convolutional layer

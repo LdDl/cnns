@@ -7,7 +7,10 @@ import (
 
 // Layer Interface for all layer types
 type Layer interface {
-	// OutSize Returns output size (dimensions) of layer
+	// GetInputSize Returns dimensions of incoming data for layer
+	GetInputSize() *tensor.TDsize
+
+	// GetOutputSize Returns output size (dimensions) of layer
 	GetOutputSize() *tensor.TDsize
 
 	// GetActivatedOutput Returns activated layer's output

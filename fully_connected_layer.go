@@ -29,6 +29,7 @@ type FullyConnectedLayer struct {
 	ActivationFunc       func(v float64) float64
 	ActivationDerivative func(v float64) float64
 	OutputSize           *tensor.TDsize
+	inputSize            *tensor.TDsize
 
 	trainMode bool
 }
@@ -36,6 +37,7 @@ type FullyConnectedLayer struct {
 // NewFullyConnectedLayer Constructor for fully-connected layer. You need to specify input size and output size
 func NewFullyConnectedLayer(inSize *tensor.TDsize, outSize int) Layer {
 	newLayer := &FullyConnectedLayer{
+		inputSize:            inSize,
 		OutputSize:           &tensor.TDsize{X: outSize, Y: 1, Z: 1},
 		Ok:                   &mat.Dense{},
 		Oj:                   mat.NewDense(outSize, 1, nil),
@@ -64,6 +66,11 @@ func (fc *FullyConnectedLayer) SetCustomWeights(weights []*mat.Dense) {
 	r, c := weights[0].Dims()
 	fc.Weights = mat.NewDense(r, c, nil)
 	fc.Weights.CloneFrom(weights[0])
+}
+
+// GetInputSize Returns dimensions of incoming data for fully-connected layer
+func (fc *FullyConnectedLayer) GetInputSize() *tensor.TDsize {
+	return fc.inputSize
 }
 
 // GetOutputSize Returns output size (dimensions) of fully-connected layer

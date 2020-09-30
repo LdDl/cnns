@@ -32,7 +32,7 @@ func main() {
 */
 func ExampleConv() {
 
-	conv := cnns.NewConvLayer(tensor.TDsize{X: 9, Y: 8, Z: 1}, 1, 3, 1)
+	conv := cnns.NewConvLayer(&tensor.TDsize{X: 9, Y: 8, Z: 1}, 1, 3, 1)
 	relu := cnns.NewReLULayer(conv.GetOutputSize())
 	maxpool := cnns.NewPoolingLayer(relu.GetOutputSize(), 2, 2, "max", "valid")
 	fullyconnected := cnns.NewFullyConnectedLayer(maxpool.GetOutputSize(), 3)
@@ -114,7 +114,7 @@ func ExampleConv() {
 */
 func ExampleConv2() {
 
-	conv := cnns.NewConvLayer(tensor.TDsize{X: 5, Y: 5, Z: 3}, 1, 3, 2)
+	conv := cnns.NewConvLayer(&tensor.TDsize{X: 5, Y: 5, Z: 3}, 1, 3, 2)
 	relu := cnns.NewReLULayer(conv.GetOutputSize())
 	maxpool := cnns.NewPoolingLayer(relu.GetOutputSize(), 2, 2, "max", "valid")
 	fullyconnected := cnns.NewFullyConnectedLayer(maxpool.GetOutputSize(), 2)

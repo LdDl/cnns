@@ -53,7 +53,7 @@ var (
 )
 
 func main() {
-	conv := cnns.NewConvLayer(tensor.TDsize{X: trainHeight, Y: trainWidth, Z: 1}, 1, 5, 4)
+	conv := cnns.NewConvLayer(&tensor.TDsize{X: trainHeight, Y: trainWidth, Z: 1}, 1, 5, 4)
 	relu := cnns.NewReLULayer(conv.GetOutputSize())
 	maxpool := cnns.NewPoolingLayer(relu.GetOutputSize(), 2, 2, "max", "valid")
 	fullyconnected := cnns.NewFullyConnectedLayer(maxpool.GetOutputSize(), len(chars))

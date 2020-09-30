@@ -40,6 +40,7 @@ type PoolingLayer struct {
 	masksIndices [][][2]int
 
 	OutputSize *tensor.TDsize
+	inputSize  *tensor.TDsize
 
 	PoolingType poolingType
 	ZeroPadding zeroPaddingType
@@ -49,6 +50,7 @@ type PoolingLayer struct {
 // NewPoolingLayer Constructor for pooling layer.
 func NewPoolingLayer(inSize *tensor.TDsize, stride, extendFilter int, poolingType string, zeroPad string) Layer {
 	newLayer := &PoolingLayer{
+		inputSize:    inSize,
 		Oj:           mat.NewDense(inSize.X, inSize.Y, nil),
 		Ok:           &mat.Dense{},
 		Masks:        mat.NewDense(inSize.X, inSize.Y, nil),
@@ -108,6 +110,11 @@ func NewPoolingLayer(inSize *tensor.TDsize, stride, extendFilter int, poolingTyp
 // SetCustomWeights Set user's weights (make it carefully) for pooling layer
 func (pool *PoolingLayer) SetCustomWeights(t []*mat.Dense) {
 	fmt.Println("There are no weights for pooling layer")
+}
+
+// GetInputSize Returns dimensions of incoming data for pooling layer
+func (pool *PoolingLayer) GetInputSize() *tensor.TDsize {
+	return pool.inputSize
 }
 
 // GetOutputSize Returns output size (dimensions) of pooling layer

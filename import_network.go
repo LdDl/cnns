@@ -74,7 +74,7 @@ func (wh *WholeNet) ImportFromFile(fname string, randomWeights bool) error {
 			x := data.Network.Layers[i].InputSize.X
 			y := data.Network.Layers[i].InputSize.Y
 			z := data.Network.Layers[i].InputSize.Z
-			conv := NewConvLayer(tensor.TDsize{X: x, Y: y, Z: z}, stride, kernelSize, numOfFilters)
+			conv := NewConvLayer(&tensor.TDsize{X: x, Y: y, Z: z}, stride, kernelSize, numOfFilters)
 			if randomWeights == false {
 				weights := make([]*mat.Dense, numOfFilters)
 				for w := 0; w < numOfFilters; w++ {

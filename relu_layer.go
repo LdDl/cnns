@@ -19,7 +19,9 @@ type ReLULayer struct {
 	LocalDelta *mat.Dense
 
 	OutputSize *tensor.TDsize
-	trainMode  bool
+	inputSize  *tensor.TDsize
+
+	trainMode bool
 }
 
 // NewReLULayer - Constructor for new ReLU layer. You need to specify input size
@@ -28,6 +30,7 @@ type ReLULayer struct {
 */
 func NewReLULayer(inSize *tensor.TDsize) Layer {
 	newLayer := &ReLULayer{
+		inputSize:  inSize,
 		Oj:         mat.NewDense(inSize.X*inSize.Z, inSize.Y, nil),
 		Ok:         mat.NewDense(inSize.X*inSize.Z, inSize.Y, nil),
 		LocalDelta: mat.NewDense(inSize.X*inSize.Z, inSize.Y, nil),
@@ -40,6 +43,11 @@ func NewReLULayer(inSize *tensor.TDsize) Layer {
 // SetCustomWeights Set user's weights for ReLU layer (make it carefully)
 func (relu *ReLULayer) SetCustomWeights(t []*mat.Dense) {
 	fmt.Println("There are no weights for ReLU layer")
+}
+
+// GetInputSize Returns dimensions of incoming data for ReLU layer
+func (relu *ReLULayer) GetInputSize() *tensor.TDsize {
+	return relu.inputSize
 }
 
 // GetOutputSize Returns output size (dimensions) of ReLU layer
