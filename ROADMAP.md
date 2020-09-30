@@ -48,14 +48,14 @@
     - [ ] ReLU
     - [ ] Leaky ReLU
     - [ ] Pooling  
-- [ ] [Gonum](https://github.com/gonum/gonum) integration **WIP**
+- [x] [Gonum](https://github.com/gonum/gonum) integration
 - [ ] Use of goroutines for boosting calculations
     - ~~[x] ZeroPadding Slow down perfomance~~
     - ~~[X] Pool2D Slow down perfomance~~
     - ~~[x] Im2Col Slow down perfomance~~
     - ~~[x] Flatten Slow down perfomance~~
     - ~~[ ] ContoursPadding Slow down perfomance~~
-- [ ] Benchmarks. Do we really need it since this is just library for studying purposes?
+- [ ] Benchmarks. Do we really need it since this is just library for studying purposes? **WIP**
 - [ ] Padding for convolutional layer
 - [ ] Write theoretical documents on most of functions (on every would be even better)
 - [x] New struct of examples folder (split it on different types of tasks for neural networks)
@@ -63,5 +63,6 @@
 - [ ] Improve README's **WIP**
 - [ ] Graphviz pretty print. **WIP**
 - [x] Add CI on https://travis-ci.com
+- [ ] Import/Export activation functions and its derivatives for JSON files.
 
-Updated at: 2020-09-23
+Updated at: 2020-09-30
