@@ -1,13 +1,12 @@
 package cnns
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"math/rand"
 	"time"
 
-	"github.com/LdDl/cnns/tensor"
+	"gonum.org/v1/gonum/mat"
 )
 
 // Train Train neural network
@@ -20,21 +19,20 @@ import (
 
 	epochsNum - number of epochs
 */
-func (n *WholeNet) Train(inputs []*tensor.Tensor, desired []*tensor.Tensor, testData []*tensor.Tensor, testDesired []*tensor.Tensor, epochsNum int) (float64, float64, error) {
+func (n *WholeNet) Train(inputs []*mat.Dense, desired []*mat.Dense, testData []*mat.Dense, testDesired []*mat.Dense, epochsNum int) (float64, float64, error) {
 	var err error
 	trainError := 0.0
 	testError := 0.0
 
 	if len(inputs) != len(desired) {
-		return trainError, testError, errors.New("number of inputs not equal to number of desired")
+		return trainError, testError, fmt.Errorf("number of inputs not equal to number of desired")
 	}
 
 	if len(testData) != len(testDesired) {
-		return trainError, testError, errors.New("number of inputs for test not equal to number of desired for test")
+		return trainError, testError, fmt.Errorf("number of inputs for test not equal to number of desired for test")
 	}
 
 	// Initial shuffling of input data
-	// rand.Seed(time.Now().UTC().UnixNano())
 	for i := range inputs {
 		j := rand.Intn(i + 1)
 		inputs[i], inputs[j] = inputs[j], inputs[i]
@@ -53,9 +51,13 @@ func (n *WholeNet) Train(inputs []*tensor.Tensor, desired []*tensor.Tensor, test
 		st := time.Now()
 		for i := range inputs {
 			in := inputs[i]
+			err := n.FeedForward(in)
+			if err != nil {
+				log.Printf("Feedforward caused error: %s", err.Error())
+				return 0.0, 0.0, err
+			}
 			target := desired[i]
-			n.FeedForward(in)
-			err := n.Backpropagate(target)
+			err = n.Backpropagate(target)
 			if err != nil {
 				log.Printf("Backpropagate caused error: %s", err.Error())
 				return 0.0, 0.0, err
@@ -66,39 +68,36 @@ func (n *WholeNet) Train(inputs []*tensor.Tensor, desired []*tensor.Tensor, test
 	log.Printf("Training %v epochs done in %v", epochsNum, time.Since(start))
 
 	fmt.Println("Evaluating errors...")
+
 	for i := range inputs {
 		in := inputs[i]
 		target := desired[i]
-		n.FeedForward(in)
+		err := n.FeedForward(in)
+		if err != nil {
+			log.Printf("Feedforward (testing) caused error: %s", err.Error())
+			return 0.0, 0.0, err
+		}
 		out := n.GetOutput()
-		loss := target.MSE(out)
+		loss := mse(target, out)
 		trainError += loss
 	}
 
 	for i := range testData {
 		in := testData[i]
-		// in.Print()
 		target := testDesired[i]
 		n.FeedForward(in)
 		out := n.GetOutput()
-		fmt.Println("\n>>>Out:")
-		out.Print()
-		fmt.Println(">>>Desired:")
-		target.Print()
-		loss := target.MSE(out)
+		loss := mse(target, out)
 		testError += loss
 	}
 
 	return trainError, testError, err
 }
 
-func maxIdx(tt *tensor.Tensor) (max int) {
-	maxF := 0.0
-	for i := range tt.Data {
-		if maxF < tt.Data[i] {
-			maxF = tt.Data[i]
-			max = i
-		}
-	}
-	return max
+func mse(t1, t2 *mat.Dense) float64 {
+	tmp := &mat.Dense{}
+	tmp.Sub(t1, t2)
+	tmpPow := &mat.Dense{}
+	tmpPow.MulElem(tmp, tmp)
+	return mat.Sum(tmpPow)
 }

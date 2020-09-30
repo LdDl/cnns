@@ -1,114 +1,73 @@
 {
-    "Network": {
-        "Layers": [
+    "network": {
+        "layers": [
             {
-                "LayerType": "fc",
-                "InputSize": {
+                "layer_type": "fc",
+                "input_size": {
                     "X": 2,
                     "Y": 1,
                     "Z": 1
                 },
-                "OutputSize": {
+                "output_size": {
                     "X": 2,
                     "Y": 1,
                     "Z": 1
                 },
-                "Weights": [
+                "weights": [
                     {
-                        "TDSize": {
-                            "X": 2,
-                            "Y": 1,
-                            "Z": 1
-                        },
-                        "Data": [
-                            [
-                                [
-                                    -1.0,
-                                    1.0
-                                ],
-                                [
-                                    1.0,
-                                    2.0
-                                ]
-                            ]
+                        "data": [
+                            -1.0, 1.0,
+                            1.0, 2.0
                         ]
                     }
                 ]
             },
             {
-                "LayerType": "fc",
-                "InputSize": {
+                "layer_type": "fc",
+                "input_size": {
                     "X": 2,
                     "Y": 1,
                     "Z": 1
                 },
-                "OutputSize": {
+                "output_size": {
                     "X": 3,
                     "Y": 1,
                     "Z": 1
                 },
-                "Weights": [
+                "weights": [
                     {
-                        "TDSize": {
-                            "X": 3,
-                            "Y": 1,
-                            "Z": 1
-                        },
-                        "Data": [
-                            [
-                                [
-                                    -1.0,
-                                    2.0
-                                ],
-                                [
-                                    1.0,
-                                    1.0
-                                ],
-                                [
-                                    3.0,
-                                    -2.0
-                                ]
-                            ]
+                        "data": [
+                            -1.0, 2.0,
+                            1.0, 1.0,
+                            3.0, -2.0
                         ]
                     }
                 ]
             },
             {
-                "LayerType": "fc",
-                "InputSize": {
+                "layer_type": "fc",
+                "input_size": {
                     "X": 3,
                     "Y": 1,
                     "Z": 1
                 },
-                "OutputSize": {
+                "output_size": {
                     "X": 1,
                     "Y": 1,
                     "Z": 1
                 },
-                "Weights": [
+                "weights": [
                     {
-                        "TDSize": {
-                            "X": 1,
-                            "Y": 1,
-                            "Z": 1
-                        },
-                        "Data": [
-                            [
-                                [
-                                    1.0,
-                                    2.0,
-                                    4.0
-                                ]
-                            ]
+                        "data": [
+                            1.0, 2.0, 4.0
                         ]
                     }
                 ]
             }
         ]
     },
-    "Parameters": {
-        "LearningRate": 0.85,
-        "Momentum": 0.0,
-        "WeightDecay": 0.0
+    "parameters": {
+        "learning_rate": 0.01,
+        "momentum": 0.6
     }
 }

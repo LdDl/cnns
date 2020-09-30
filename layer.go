@@ -2,53 +2,53 @@ package cnns
 
 import (
 	"github.com/LdDl/cnns/tensor"
+	"gonum.org/v1/gonum/mat"
 )
 
-// Layer - interface for all layer types
+// Layer Interface for all layer types
 type Layer interface {
-	// OutSize - returns output size (dimensions)
-	GetOutputSize() *tensor.TDsize
-
-	// GetInputSize - returns input size (dimensions)
+	// GetInputSize Returns dimensions of incoming data for layer
 	GetInputSize() *tensor.TDsize
 
-	// GetOutput - returns layer's output
-	GetOutput() *tensor.Tensor
+	// GetOutputSize Returns output size (dimensions) of layer
+	GetOutputSize() *tensor.TDsize
 
-	// GetWeights - returns layer's weights
-	GetWeights() []*tensor.Tensor
+	// GetActivatedOutput Returns activated layer's output
+	GetActivatedOutput() *mat.Dense
 
-	// GetGradients - returns layer's gradients
-	GetGradients() *tensor.Tensor
+	// GetWeights Returns layer's weights
+	GetWeights() []*mat.Dense
 
-	// FeedForward - feed data to layer
-	FeedForward(t *tensor.Tensor)
+	// GetGradients Returns layer's gradients dense
+	GetGradients() *mat.Dense
 
-	// CalculateGradients - calculate layers' gradients
-	CalculateGradients(nextLayerGradients *tensor.Tensor)
+	// FeedForward Feed data to layer
+	FeedForward(input *mat.Dense) error
 
-	// UpdateWeights - update layer's weights
-	UpdateWeights()
+	// CalculateGradients Evaluate layers' gradients
+	CalculateGradients(errorsDense *mat.Dense) error
 
-	// PrintOutput - print layer's output
+	// UpdateWeights Call updating process for layer's weights
+	UpdateWeights(lp *LearningParams)
+
+	// PrintOutput Pretty print layer's output
 	PrintOutput()
 
-	// PrintWeights - print layer's weights
+	// PrintWeights Pretty print layer's weights
 	PrintWeights()
 
-	// PrintGradients - print layer's gradients
-	PrintGradients()
-
-	// GetStride - get stride of layer
+	// GetStride Returns stride of layer
 	GetStride() int
 
-	// GetKernelSize - get kernel size of layer
-	GetKernelSize() int
-
-	// GetType - get type of layer
+	// GetType Returns type of layer in string representation
 	GetType() string
 
+	// SetActivationFunc Set activation function
 	SetActivationFunc(f func(v float64) float64)
+
+	// SetActivationDerivativeFunc Set derivative of activation function (for backpropagation)
 	SetActivationDerivativeFunc(f func(v float64) float64)
-	SetCustomWeights(t []*tensor.Tensor)
+
+	// SetCustomWeights Set provided data as layer's weights
+	SetCustomWeights(weights []*mat.Dense)
 }

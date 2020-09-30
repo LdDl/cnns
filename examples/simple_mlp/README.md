@@ -8,6 +8,6 @@ This example just shows how to use [ImportFromFile(...)](../../network.go#L61), 
 ![alt text](mlp_1.png)
 
 
-**Neural network's architecture for [ExampleTwo](main.go#L50)**
+**Neural network's architecture for [ExampleTwo](main.go#L58)**
 
 ![alt text](mlp_2.png)

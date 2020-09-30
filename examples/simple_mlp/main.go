@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"github.com/LdDl/cnns"
-	"github.com/LdDl/cnns/tensor"
+	"gonum.org/v1/gonum/mat"
 )
 
 func main() {
@@ -13,7 +13,7 @@ func main() {
 	// ExampleTwo()
 }
 
-// ExampleOne - Example of MLP
+// ExampleOne - Example of MLP. Corresponding file is "step_by_step_mlp(inertia).xlsx"
 func ExampleOne() {
 	jsonName := "../datasets/mlp_example1.json"
 	var net cnns.WholeNet
@@ -21,33 +21,36 @@ func ExampleOne() {
 	if err != nil {
 		log.Panicln(err)
 	}
-	fmt.Printf("Layers:\n")
+	fmt.Printf("Layers weights:\n")
 	for i := range net.Layers {
-		fmt.Printf("%v weights:\n", net.Layers[i].GetType())
+		fmt.Printf("%s #%d weights:\n", net.Layers[i].GetType(), i)
 		net.Layers[i].PrintWeights()
 	}
 
-	inputData := tensor.NewTensor(2, 1, 1)
-	inputData.SetData(2, 1, 1, []float64{0.2, 0.5})
-
+	fmt.Println("\tDoing training....")
+	inputDense := mat.NewDense(2, 1, []float64{0.2, 0.5})
 	for e := 0; e < 3; e++ {
-		net.FeedForward(inputData)
-		desired := tensor.NewTensor(1, 1, 1)
-		desired.SetData(1, 1, 1, []float64{0.4})
-		err := net.Backpropagate(desired)
+		err := net.FeedForward(inputDense)
+		if err != nil {
+			log.Printf("Feedforward caused error: %s", err.Error())
+			return
+		}
+		desired := mat.NewDense(1, 1, []float64{0.4})
+		err = net.Backpropagate(desired)
 		if err != nil {
 			log.Printf("Backpropagate caused error: %s", err.Error())
 			return
 		}
 
-		fmt.Printf("Layers (after):\n")
+		fmt.Printf("Epoch #%d. New layers weights\n", e)
 		for i := range net.Layers {
-			fmt.Printf("%v weights:\n", net.Layers[i].GetType())
+			fmt.Printf("%s #%d weights on epoch #%d:\n", net.Layers[i].GetType(), i, e)
 			net.Layers[i].PrintWeights()
 		}
 	}
 
-	net.FeedForward(inputData)
+	fmt.Println("Feedforward one more time. Result is:")
+	net.FeedForward(inputDense)
 	net.PrintOutput()
 }
 
@@ -59,9 +62,9 @@ func ExampleTwo() {
 	if err != nil {
 		log.Panicln(err)
 	}
-	fmt.Printf("Layers:\n")
+	fmt.Printf("Layers weights:\n")
 	for i := range net.Layers {
-		fmt.Printf("%v weights:\n", net.Layers[i].GetType())
+		fmt.Printf("%s #%d weights:\n", net.Layers[i].GetType(), i)
 		net.Layers[i].PrintWeights()
 	}
 	net.Layers[0].SetActivationFunc(cnns.ActivationSygmoid)
@@ -70,25 +73,28 @@ func ExampleTwo() {
 	net.Layers[0].SetActivationDerivativeFunc(cnns.ActivationSygmoidDerivative)
 	net.Layers[1].SetActivationDerivativeFunc(cnns.ActivationSygmoidDerivative)
 
-	inputData := tensor.NewTensor(2, 1, 1)
-	inputData.SetData(2, 1, 1, []float64{0.2, 0.5})
-
+	fmt.Println("\tDoing training....")
+	inputDense := mat.NewDense(2, 1, []float64{0.2, 0.5})
 	for e := 0; e < 3; e++ {
-		net.FeedForward(inputData)
-		desired := tensor.NewTensor(1, 1, 1)
-		desired.SetData(1, 1, 1, []float64{0.4})
-		err := net.Backpropagate(desired)
+		err := net.FeedForward(inputDense)
+		if err != nil {
+			log.Printf("Feedforward caused error: %s", err.Error())
+			return
+		}
+		desired := mat.NewDense(1, 1, []float64{0.4})
+		err = net.Backpropagate(desired)
 		if err != nil {
 			log.Printf("Backpropagate caused error: %s", err.Error())
 			return
 		}
-		fmt.Printf("Layers (after):\n")
+		fmt.Printf("Epoch #%d. New layers weights\n", e)
 		for i := range net.Layers {
-			fmt.Printf("%v weights:\n", net.Layers[i].GetType())
+			fmt.Printf("%s #%d weights on epoch #%d:\n", net.Layers[i].GetType(), i, e)
 			net.Layers[i].PrintWeights()
 		}
 	}
 
-	net.FeedForward(inputData)
+	fmt.Println("Feedforward one more time. Result is:")
+	net.FeedForward(inputDense)
 	net.PrintOutput()
 }

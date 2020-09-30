@@ -7,64 +7,149 @@ import (
 	"log"
 	"math"
 	"math/rand"
+	"os"
 	"strconv"
 	"time"
 
 	"github.com/LdDl/cnns"
 	"github.com/LdDl/cnns/tensor"
 	"github.com/LdDl/cnns/utils/u"
+	"github.com/fogleman/gg"
 	"github.com/nfnt/resize"
 	"gonum.org/v1/gonum/mat"
 )
 
 var (
-	chars = map[int]string{
-		0:  "0",
-		1:  "1",
-		2:  "2",
-		3:  "3",
-		4:  "4",
-		5:  "5",
-		6:  "6",
-		7:  "7",
-		8:  "8",
-		9:  "9",
-		10: "A",
-		11: "B",
-		12: "C",
-		13: "E",
-		14: "H",
-		15: "K",
-		16: "M",
-		17: "O",
-		18: "P",
-		19: "T",
-		20: "X",
-		21: "Y",
-	}
 	trainWidth          = 28
 	trainHeight         = 28
 	trainDepth          = 1
+	trainImagesPath     = "./out/"
+	testImagesPath      = "./out/"
 	adjustAmountOfFiles = 200  // see readMatsTrain func
 	doAdjust            = true // see readMatsTrain func
-	trainImagesPath     = "../../datasets/ocr_symbols/"
-	testImagesPath      = "../../datasets/ocr_symbols_test/"
 	numEpochs           = 15
+	dict                = []byte("abcdefghijklmnopqrstwxyz0123456789")
+	fontsFile           = "../../datasets/fonts/lucidagrande.ttf"
 )
 
+// Example by David Cuadrado https://github.com/dcu
 func main() {
-	conv := cnns.NewConvLayer(&tensor.TDsize{X: trainHeight, Y: trainWidth, Z: 1}, 1, 5, 4)
+	fmt.Printf("Generating fake data...")
+	st := time.Now()
+	chars, err := generatePNGs(trainImagesPath, fontsFile)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Printf("Done in %v\n", time.Since(st))
+
+	fmt.Printf("Preparing network architecture...")
+	st = time.Now()
+	net := prepareNetwork(len(chars))
+	fmt.Printf("Done in %v\n", time.Since(st))
+
+	fmt.Printf("Preparing training data...")
+	st = time.Now()
+	trainFiles, err := readFileNames(trainImagesPath)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Printf("Done in %v\n", time.Since(st))
+
+	fmt.Printf("Preparing test data...")
+	st = time.Now()
+	testFiles, err := readFileNames(testImagesPath)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Printf("Done in %v\n", time.Since(st))
+
+	fmt.Printf("Preparing training data as tensors...")
+	st = time.Now()
+	trainMats, err := readMatsTrain(&trainFiles, adjustAmountOfFiles, doAdjust)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Printf("Done in %v\n", time.Since(st))
+
+	fmt.Printf("Preparing test data as tensors...")
+	st = time.Now()
+	testMats, err := readMatsTests(&testFiles)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	_ = testMats
+	fmt.Printf("Done in %v\n", time.Since(st))
+
+	fmt.Printf("Start training...\n")
+	st = time.Now()
+	err = train(net, trainMats, chars)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Printf("Done in %v\n", time.Since(st))
+
+	fmt.Printf("Start testing...\n")
+	st = time.Now()
+	err = testTrained(net, testMats, chars)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Printf("Done in %v\n", time.Since(st))
+}
+
+func generatePNGs(mainFolder, fontsFile string) (map[int]string, error) {
+	chars := make(map[int]string)
+
+	for i := range dict {
+		charName := string(dict[i])
+		chars[i] = charName
+		folderName := fmt.Sprintf("%s/%d", mainFolder, i)
+		err := ensureDir(folderName)
+		if err != nil {
+			return nil, err
+		}
+
+		fname := fmt.Sprintf("%s/0.png", folderName)
+		dc := gg.NewContext(trainWidth, trainHeight)
+		dc.SetRGB(1, 1, 1)
+		dc.Clear()
+		dc.SetRGB(0, 0, 0)
+		dc.Scale(1.0, 1.0)
+		err = dc.LoadFontFace(fontsFile, 38)
+		if err != nil {
+
+			return nil, err
+		}
+		dc.DrawStringAnchored(charName, float64(trainWidth/2), float64(trainHeight/2), 0.5, 0.5)
+		err = dc.SavePNG(fname)
+
+		if err != nil {
+			return nil, err
+		}
+	}
+	return chars, nil
+}
+
+func prepareNetwork(classesNum int) *cnns.WholeNet {
+	conv := cnns.NewConvLayer(&tensor.TDsize{X: trainHeight, Y: trainWidth, Z: 1}, 1, 5, 4) //
 	relu := cnns.NewReLULayer(conv.GetOutputSize())
 	maxpool := cnns.NewPoolingLayer(relu.GetOutputSize(), 2, 2, "max", "valid")
-	fullyconnected := cnns.NewFullyConnectedLayer(maxpool.GetOutputSize(), len(chars))
+	fullyconnected := cnns.NewFullyConnectedLayer(maxpool.GetOutputSize(), classesNum)
 	fullyconnected.SetActivationFunc(cnns.ActivationSygmoid)
 	fullyconnected.SetActivationDerivativeFunc(cnns.ActivationSygmoidDerivative)
 
-	fullyconnected2 := cnns.NewFullyConnectedLayer(fullyconnected.GetOutputSize(), len(chars)*2)
+	fullyconnected2 := cnns.NewFullyConnectedLayer(fullyconnected.GetOutputSize(), classesNum*2)
 	fullyconnected2.SetActivationFunc(cnns.ActivationSygmoid)
 	fullyconnected2.SetActivationDerivativeFunc(cnns.ActivationSygmoidDerivative)
 
-	fullyconnected3 := cnns.NewFullyConnectedLayer(fullyconnected2.GetOutputSize(), len(chars))
+	fullyconnected3 := cnns.NewFullyConnectedLayer(fullyconnected2.GetOutputSize(), classesNum)
 	fullyconnected3.SetActivationFunc(cnns.ActivationSygmoid)
 	fullyconnected3.SetActivationDerivativeFunc(cnns.ActivationSygmoidDerivative)
 
@@ -77,40 +162,10 @@ func main() {
 	net.Layers = append(net.Layers, fullyconnected)
 	net.Layers = append(net.Layers, fullyconnected2)
 	net.Layers = append(net.Layers, fullyconnected3)
-
-	trainFiles, err := readFileNames(trainImagesPath)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	testFiles, err := readFileNames(testImagesPath)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	fmt.Println("Preparing training dataset...")
-	st := time.Now()
-	trainMats, err := readMatsTrain(&trainFiles, adjustAmountOfFiles, doAdjust)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	fmt.Println("\tDone in", time.Since(st))
-
-	fmt.Println("Preparing test dataset...")
-	st = time.Now()
-	testMats, err := readMatsTests(&testFiles)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	fmt.Println("\tDone in", time.Since(st))
-
-	train(&net, trainMats)
-	testTrained(&net, testMats)
+	return &net
 }
 
+// readFileNames - get filenames in directory
 func readFileNames(dir string) (map[string][]string, error) {
 	var err error
 	charMap := make(map[string][]string)
@@ -130,6 +185,7 @@ func readFileNames(dir string) (map[string][]string, error) {
 			charMap[f.Name()] = append(charMap[f.Name()], charDirImage)
 		}
 	}
+
 	return charMap, err
 }
 
@@ -149,7 +205,7 @@ func readMatsTrain(data *map[string][]string, adjust int, doAdjust bool) (map[st
 			if err != nil {
 				return nil, err
 			}
-			img = resize.Resize(uint(trainHeight), uint(trainWidth), img, resize.Bicubic)
+			img = resize.Resize(uint(trainWidth), uint(trainHeight), img, resize.Bicubic)
 			tmpTensor := mat.NewDense(trainHeight, trainWidth, nil)
 			for i := 0; i < trainHeight; i++ {
 				for j := 0; j < trainWidth; j++ {
@@ -162,7 +218,6 @@ func readMatsTrain(data *map[string][]string, adjust int, doAdjust bool) (map[st
 			ret[k] = append(ret[k], tmpTensor)
 		}
 	}
-
 	if doAdjust {
 		for k, v := range ret {
 			length := len(ret[k])
@@ -173,7 +228,6 @@ func readMatsTrain(data *map[string][]string, adjust int, doAdjust bool) (map[st
 			}
 		}
 	}
-
 	return ret, err
 }
 
@@ -191,7 +245,7 @@ func readMatsTests(data *map[string][]string) (map[string][]*mat.Dense, error) {
 			if err != nil {
 				return nil, err
 			}
-			img = resize.Resize(uint(trainHeight), uint(trainWidth), img, resize.Bicubic)
+			img = resize.Resize(uint(trainWidth), uint(trainHeight), img, resize.Bicubic)
 			tmpTensor := mat.NewDense(trainHeight, trainWidth, nil)
 			for i := 0; i < trainHeight; i++ {
 				for j := 0; j < trainWidth; j++ {
@@ -207,7 +261,16 @@ func readMatsTests(data *map[string][]string) (map[string][]*mat.Dense, error) {
 	return ret, err
 }
 
-// Trainer Struct for training. Contains Image, Desired output
+// ensureDir Создание папки (и вложенных) если не имеется
+func ensureDir(dirName string) error {
+	err := os.MkdirAll(dirName, 0777)
+	if err == nil || os.IsExist(err) {
+		return nil
+	}
+	return err
+}
+
+// Trainer - struct for training. Contains Image, Desired output
 type Trainer struct {
 	Image    *mat.Dense
 	Desired  *mat.Dense
@@ -224,7 +287,8 @@ func SuffleTrainers(data []Trainer) []Trainer {
 	return data
 }
 
-func train(net *cnns.WholeNet, data map[string][]*mat.Dense) error {
+// train - train network
+func train(net *cnns.WholeNet, data map[string][]*mat.Dense, chars map[int]string) error {
 	st := time.Now()
 	var err error
 	rand.Seed(time.Now().UnixNano())
@@ -261,6 +325,7 @@ func train(net *cnns.WholeNet, data map[string][]*mat.Dense) error {
 				log.Printf("Feedforward caused error: %s", err.Error())
 				return err
 			}
+
 			// Backward
 			err = net.Backpropagate(t.Desired)
 			if err != nil {
@@ -274,7 +339,8 @@ func train(net *cnns.WholeNet, data map[string][]*mat.Dense) error {
 	return err
 }
 
-func testTrained(net *cnns.WholeNet, data map[string][]*mat.Dense) error {
+// testTrained - test network
+func testTrained(net *cnns.WholeNet, data map[string][]*mat.Dense, chars map[int]string) error {
 	var err error
 	var testers []Trainer
 	for k, v := range data {

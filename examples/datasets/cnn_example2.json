@@ -1,0 +1,112 @@
+{
+    "network": {
+        "layers": [
+            {
+                "layer_type": "conv",
+                "input_size": {
+                    "X": 5,
+                    "Y": 5,
+                    "Z": 3
+                },
+                "parameters": {
+                    "stride": 1,
+                    "kernel_size": 3
+                },
+                "weights": [
+                    {
+                        "data_size": {
+                            "X": 3,
+                            "Y": 3,
+                            "Z": 3
+                        },
+                        "data": [
+                            0, 1, 0,
+                            0, 0, 2,
+                            0, 1, 0,
+
+                            2, 1, 0,
+                            0, 0, 0,
+                            0, 3, 0,
+
+                            1, 0, 0,
+                            1, 0, 0,
+                            0, 0, 2
+                        ]
+                    },
+                    {
+                        "data_size": {
+                            "X": 3,
+                            "Y": 3,
+                            "Z": 3
+                        },
+                        "data": [
+                            0, -1, 0,
+                            0, 0, 2,
+                            0, 1, 0,
+
+                            2, 1, 0,
+                            0, 0, 0,
+                            0, -3, 0,
+
+                            1, 0, 0,
+                            1, 0, 0,
+                            0, 0, -2
+                        ]
+                    }
+                ]
+            },
+            {
+                "layer_type": "relu",
+                "input_size": {
+                    "X": 3,
+                    "Y": 3,
+                    "Z": 2
+                }
+            },
+            {
+                "layer_type": "pool",
+                "input_size": {
+                    "X": 3,
+                    "Y": 3,
+                    "Z": 2
+                },
+                "parameters": {
+                    "stride": 2,
+                    "kernel_size": 2,
+                    "pooling_type": "max",
+                    "zero_padding_type": "valid"
+                }
+            },
+            {
+                "layer_type": "fc",
+                "input_size": {
+                    "X": 2,
+                    "Y": 1,
+                    "Z": 1
+                },
+                "output_size": {
+                    "X": 2,
+                    "Y": 1,
+                    "Z": 1
+                },
+                "weights": [
+                    {
+                        "data_size": {
+                            "X": 2,
+                            "Y": 2,
+                            "Z": 1
+                        },
+                        "data": [
+                            -0.19908814, 0.01521263,
+                            0.17908468, -0.28144695
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "parameters": {
+        "learning_rate": 0.01,
+        "momentum": 0.6
+    }
+}

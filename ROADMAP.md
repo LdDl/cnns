@@ -8,7 +8,11 @@
     - [ ] Bias;
 - [ ] Add new operations
     - [x] Convolve2D
+    - [x] Flatten
+    - [x] Pool2D
+    - [x] ZeroPadding
     - [ ] Determinant
+    - [X] ContoursPadding
 - [ ] Refactor code and rethink structure of library
 - [ ] Remove some legacy and experemintal code to other branches **WIP**
 - [ ] Error types and wrapping them **WIP**
@@ -26,19 +30,31 @@
     - [x] ActivationSoftPlusDerivative
     - [x] ActivationGaussian
     - [x] ActivationGaussianDerivative
-    - [x] Add (element-wise)
-    - [x] Sub (element-wise)
-    - [x] Transpose
-    - [x] Multiply
-    - [x] HadamardProduct
-    - [ ] MSE
-    - [x] Convolve2D
+    - ~~[x] Add (element-wise)~~ Not needed cause of gonum usage
+    - ~~[x] Sub (element-wise)~~ Not needed cause of gonum usage
+    - ~~[x] Transpose~~ Not needed cause of gonum usage
+    - ~~[x] Multiply~~ Not needed cause of gonum usage
+    - ~~[x] HadamardProduct~~ Not needed cause of gonum usage
+    - ~~[ ] MSE~~ Not needed cause of gonum usage
+    - [ ] Convolve2D
+    - [ ] Flatten
+    - [ ] Pool2D
+    - [ ] ZeroPadding
+    - [ ] Im2Col
+    - [ ] ContoursPadding
 - [ ] Test cases for layers and its methods
     - [ ] Convolutional **WIP**
     - [ ] Fully connected **WIP**
     - [ ] ReLU
     - [ ] Leaky ReLU
     - [ ] Pooling  
+- [ ] [Gonum](https://github.com/gonum/gonum) integration **WIP**
+- [ ] Use of goroutines for boosting calculations
+    - ~~[x] ZeroPadding Slow down perfomance~~
+    - ~~[X] Pool2D Slow down perfomance~~
+    - ~~[x] Im2Col Slow down perfomance~~
+    - ~~[x] Flatten Slow down perfomance~~
+    - ~~[ ] ContoursPadding Slow down perfomance~~
 - [ ] Benchmarks. Do we really need it since this is just library for studying purposes?
 - [ ] Padding for convolutional layer
 - [ ] Write theoretical documents on most of functions (on every would be even better)
@@ -48,4 +64,4 @@
 - [ ] Graphviz pretty print. **WIP**
 - [x] Add CI on https://travis-ci.com
 
-Updated at: 2020-09-08
+Updated at: 2020-09-23

@@ -1,7 +1,6 @@
 package u
 
 import (
-	"errors"
 	"image"
 	"image/jpeg"
 	"image/png"
@@ -9,6 +8,7 @@ import (
 	"math/rand"
 	"os"
 
+	"github.com/pkg/errors"
 	"golang.org/x/image/bmp"
 )
 
@@ -135,7 +135,7 @@ func ReadImage(fname string) (image.Image, error) {
 			return nil, err
 		}
 	default:
-		return nil, errors.New(err.Error() + ": Please use only png/jpeg/jpg or bmp")
+		return nil, errors.Wrap(err, "Please use only png/jpeg/jpg or bmp")
 	}
 
 	reader.Close()

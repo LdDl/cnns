@@ -1,13 +1,13 @@
 package tensor
 
-// Point - dimensions
+// Point Dimensions
 type Point struct {
 	X int `json:"X"`
 	Y int `json:"Y"`
 	Z int `json:"Z"`
 }
 
-// TDsize - alias to Point
+// TDsize Alias to Point
 type TDsize = Point
 
 // Total Returns total number of elements

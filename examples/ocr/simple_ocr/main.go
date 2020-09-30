@@ -8,27 +8,31 @@ import (
 
 	"github.com/LdDl/cnns"
 	"github.com/LdDl/cnns/tensor"
-
 	"github.com/LdDl/cnns/utils/u"
+	"gonum.org/v1/gonum/mat"
+)
+
+var (
+	imgWidth    = 8
+	imgHeight   = 9
+	numExamples = 10000
+	numOfEpochs = 50
 )
 
 func main() {
-	CheckXTO()
-}
-
-// CheckXTO - recognition of "X", "T" и "O" symbols represented as matrices
-func CheckXTO() {
 	rand.Seed(time.Now().UnixNano())
-	conv := cnns.NewConvLayer(1, 3, 2, tensor.TDsize{X: 8, Y: 9, Z: 1})
-	relu := cnns.NewLeakyReLULayer(conv.GetOutputSize(), 0.01)
-	maxpool := cnns.NewMaxPoolingLayer(2, 2, relu.GetOutputSize())
+	conv := cnns.NewConvLayer(&tensor.TDsize{X: imgHeight, Y: imgWidth, Z: 1}, 1, 3, 1)
+	relu := cnns.NewReLULayer(conv.GetOutputSize())
+	maxpool := cnns.NewPoolingLayer(relu.GetOutputSize(), 2, 2, "max", "valid")
 	fullyconnected := cnns.NewFullyConnectedLayer(maxpool.GetOutputSize(), 3)
 
 	// You can play with activation function for fully connected layer
 	fullyconnected.SetActivationFunc(cnns.ActivationSygmoid)
 	fullyconnected.SetActivationDerivativeFunc(cnns.ActivationSygmoidDerivative)
 
-	var net cnns.WholeNet
+	net := cnns.WholeNet{
+		LP: cnns.NewLearningParametersDefault(),
+	}
 	net.Layers = append(net.Layers, conv)
 	net.Layers = append(net.Layers, relu)
 	net.Layers = append(net.Layers, maxpool)
@@ -39,107 +43,105 @@ func CheckXTO() {
 	inputsTests, desiredTests := formTestDataXTO()
 
 	// Start traing process
-	numOfEpochs := 50
 	trainErr, testErr, err := net.Train(inputs, desired, inputsTests, desiredTests, numOfEpochs)
 	if err != nil {
-		log.Fatalln(err)
+		log.Printf("Can't train network due the error: %s", err.Error())
+		return
+	}
+
+	for i := range inputsTests {
+		in := inputsTests[i]
+		target := desiredTests[i]
+		err := net.FeedForward(in)
+		if err != nil {
+			log.Printf("Feedforward (testing) caused error: %s", err.Error())
+			return
+		}
+		out := net.GetOutput()
+		fmt.Println("\n>>>Out:")
+		fmt.Println("\t", out.RawMatrix().Data)
+		fmt.Println(">>>Desired:")
+		fmt.Println("\t", target.RawMatrix().Data)
 	}
 
 	fmt.Printf("Error on training data: %v\nError on test data: %v\n", trainErr, testErr)
-
 }
 
-func formTrainDataXTO() ([]*tensor.Tensor, []*tensor.Tensor) {
-	numExamples := 10000
+func formTrainDataXTO() ([]*mat.Dense, []*mat.Dense) {
 
-	var xmatrix = [][][]float64{
-		[][]float64{
-			[]float64{0, 0, 0, 0, 0, 0, 0, 0},
-			[]float64{0, 1, 0, 0, 0, 1, 0, 0},
-			[]float64{0, 0, 1, 0, 1, 0, 0, 0},
-			[]float64{0, 0, 1, 0, 1, 0, 0, 0},
-			[]float64{0, 0, 0, 1, 0, 0, 0, 0},
-			[]float64{0, 0, 1, 0, 1, 0, 0, 0},
-			[]float64{0, 0, 1, 0, 1, 0, 0, 0},
-			[]float64{0, 1, 0, 0, 0, 1, 0, 0},
-			[]float64{0, 1, 0, 0, 0, 1, 0, 0},
-		},
-	}
-	var tmatrix = [][][]float64{
-		[][]float64{
-			[]float64{0, 1, 1, 1, 1, 1, 1, 0},
-			[]float64{0, 1, 1, 1, 1, 1, 1, 0},
-			[]float64{0, 0, 0, 1, 1, 0, 0, 0},
-			[]float64{0, 0, 0, 1, 1, 0, 0, 0},
-			[]float64{0, 0, 0, 1, 1, 0, 0, 0},
-			[]float64{0, 0, 0, 1, 1, 0, 0, 0},
-			[]float64{0, 0, 0, 1, 1, 0, 0, 0},
-			[]float64{0, 0, 0, 1, 1, 0, 0, 0},
-			[]float64{0, 0, 0, 1, 1, 0, 0, 0},
-		},
-	}
-	var omatrix = [][][]float64{
-		[][]float64{
-			[]float64{0, 0, 0, 0, 0, 0, 0, 0},
-			[]float64{0, 1, 1, 1, 1, 1, 1, 0},
-			[]float64{0, 1, 0, 0, 0, 0, 1, 0},
-			[]float64{0, 1, 0, 0, 0, 0, 1, 0},
-			[]float64{0, 1, 0, 0, 0, 0, 1, 0},
-			[]float64{0, 1, 0, 0, 0, 0, 1, 0},
-			[]float64{0, 1, 0, 0, 0, 0, 1, 0},
-			[]float64{0, 1, 0, 0, 0, 0, 1, 0},
-			[]float64{0, 0, 1, 1, 1, 1, 0, 0},
-		},
-	}
+	ximage := mat.NewDense(imgHeight, imgWidth, []float64{
+		0, 0, 0, 0, 0, 0, 0, 0,
+		0, 1, 0, 0, 0, 1, 0, 0,
+		0, 0, 1, 0, 1, 0, 0, 0,
+		0, 0, 1, 0, 1, 0, 0, 0,
+		0, 0, 0, 1, 0, 0, 0, 0,
+		0, 0, 1, 0, 1, 0, 0, 0,
+		0, 0, 1, 0, 1, 0, 0, 0,
+		0, 1, 0, 0, 0, 1, 0, 0,
+		0, 1, 0, 0, 0, 1, 0, 0,
+	})
+	timage := mat.NewDense(imgHeight, imgWidth, []float64{
+		0, 1, 1, 1, 1, 1, 1, 0,
+		0, 1, 1, 1, 1, 1, 1, 0,
+		0, 0, 0, 1, 1, 0, 0, 0,
+		0, 0, 0, 1, 1, 0, 0, 0,
+		0, 0, 0, 1, 1, 0, 0, 0,
+		0, 0, 0, 1, 1, 0, 0, 0,
+		0, 0, 0, 1, 1, 0, 0, 0,
+		0, 0, 0, 1, 1, 0, 0, 0,
+		0, 0, 0, 1, 1, 0, 0, 0,
+	})
+	oimage := mat.NewDense(imgHeight, imgWidth, []float64{
+		0, 0, 0, 0, 0, 0, 0, 0,
+		0, 1, 1, 1, 1, 1, 1, 0,
+		0, 1, 0, 0, 0, 0, 1, 0,
+		0, 1, 0, 0, 0, 0, 1, 0,
+		0, 1, 0, 0, 0, 0, 1, 0,
+		0, 1, 0, 0, 0, 0, 1, 0,
+		0, 1, 0, 0, 0, 0, 1, 0,
+		0, 1, 0, 0, 0, 0, 1, 0,
+		0, 0, 1, 1, 1, 1, 0, 0,
+	})
 
-	var ximage = tensor.NewTensor(8, 9, 1)
-	ximage.SetData3D(xmatrix)
-	var timage = tensor.NewTensor(8, 9, 1)
-	timage.SetData3D(tmatrix)
-	var oimage = tensor.NewTensor(8, 9, 1)
-	oimage.SetData3D(omatrix)
+	inputs := make([]*mat.Dense, numExamples)
+	desired := make([]*mat.Dense, numExamples)
 
-	inputs := make([]*tensor.Tensor, numExamples)
-	desired := make([]*tensor.Tensor, numExamples)
 	for i := 0; i < numExamples; i++ {
 		var rnd = u.RandomInt(0, 3)
 
-		input := tensor.NewTensor(8, 9, 1)
+		input := mat.NewDense(imgHeight, imgWidth, nil)
 		switch rnd {
 		case 0:
-			input = ximage
+			input.CloneFrom(ximage)
 			break
 		case 1:
-			input = timage
+			input.CloneFrom(timage)
 			break
 		case 2:
-			input = oimage
+			input.CloneFrom(oimage)
 			break
 		default:
 			break
 		}
 
-		desiredMat := [][][]float64{[][]float64{[]float64{0.0, 0.0, 0.0}}}
-		desiredMat[0][0][rnd] = 1.0
-
-		target := tensor.NewTensor(3, 1, 1)
-		target.SetData3D(desiredMat)
+		desiredMat := []float64{0.0, 0.0, 0.0}
+		desiredMat[rnd] = 1.0
+		target := mat.NewDense(3, 1, desiredMat)
 
 		inputs[i] = input
 		desired[i] = target
 	}
+
 	return inputs, desired
 }
 
-func formTestDataXTO() ([]*tensor.Tensor, []*tensor.Tensor) {
-	inputs := make([]*tensor.Tensor, 0, 3)
-	desired := make([]*tensor.Tensor, 0, 3)
+func formTestDataXTO() ([]*mat.Dense, []*mat.Dense) {
 
-	input := tensor.NewTensor(8, 9, 1)
-	target := tensor.NewTensor(3, 1, 1)
+	inputs := make([]*mat.Dense, 3)
+	desired := make([]*mat.Dense, 3)
 
 	// X = [1, 0, 0]
-	input.SetData(8, 9, 1, []float64{
+	ximage := mat.NewDense(imgHeight, imgWidth, []float64{
 		0, 0, 0, 0, 0, 0, 0, 0,
 		0, 1, 0, 0, 0, 1, 0, 0,
 		0, 0, 1, 0, 1, 0, 0, 0,
@@ -150,13 +152,11 @@ func formTestDataXTO() ([]*tensor.Tensor, []*tensor.Tensor) {
 		0, 0.4, 0, 0, 0, 1, 0, 0,
 		0, 1, 0, 0, 0, 1, 0, 0,
 	})
-	target.SetData(3, 1, 1, []float64{1, 0, 0})
-	inputs = append(inputs, input)
-	desired = append(desired, target)
+	inputs[0] = ximage
+	desired[0] = mat.NewDense(3, 1, []float64{1, 0, 0})
 
 	// T = [0, 1, 0]
-	input = tensor.NewTensor(8, 9, 1)
-	input.SetData(8, 9, 1, []float64{
+	timage := mat.NewDense(imgHeight, imgWidth, []float64{
 		0, 1, 1, 1, 1, 1, 1, 0,
 		0, 1, 1, 1, 1, 1, 1, 0,
 		0, 0, 0, 0, 1, 0, 0, 0,
@@ -167,14 +167,11 @@ func formTestDataXTO() ([]*tensor.Tensor, []*tensor.Tensor) {
 		0, 0, 0, 1, 0, 0, 0, 0,
 		0, 0, 0, 1, 1, 0, 0, 0,
 	})
-	target = tensor.NewTensor(3, 1, 1)
-	target.SetData(3, 1, 1, []float64{0, 1, 0})
-	inputs = append(inputs, input)
-	desired = append(desired, target)
+	inputs[1] = timage
+	desired[1] = mat.NewDense(3, 1, []float64{0, 1, 0})
 
 	// O = [0, 0, 1]
-	input = tensor.NewTensor(8, 9, 1)
-	input.SetData(8, 9, 1, []float64{
+	oimage := mat.NewDense(imgHeight, imgWidth, []float64{
 		0, 0, 0, 0, 0.6, 0, 0, 0,
 		0, 1, 1, 0.5, 1, 1, 1, 0,
 		0, 1, 0, 0.5, 0, 0, 1, 0,
@@ -185,10 +182,8 @@ func formTestDataXTO() ([]*tensor.Tensor, []*tensor.Tensor) {
 		0, 1, 0, 0, 0, 0, 1, 0,
 		0, 0, 1, 0.8, 1, 1, 0, 0,
 	})
-	target = tensor.NewTensor(3, 1, 1)
-	target.SetData(3, 1, 1, []float64{0, 0, 1})
-	inputs = append(inputs, input)
-	desired = append(desired, target)
+	inputs[2] = oimage
+	desired[2] = mat.NewDense(3, 1, []float64{0, 0, 1})
 
 	return inputs, desired
 }
