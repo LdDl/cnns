@@ -77,9 +77,8 @@ func (wh *WholeNet) ExportToFile(fname string, saveWeights bool) error {
 		}
 	}
 
-	save.Parameters.LearningRate = lp.LearningRate
-	save.Parameters.Momentum = lp.Momentum
-	save.Parameters.WeightDecay = lp.WeightDecay
+	save.Parameters.LearningRate = wh.LP.LearningRate
+	save.Parameters.Momentum = wh.LP.Momentum
 
 	saveJSON, err := json.Marshal(save)
 	if err != nil {

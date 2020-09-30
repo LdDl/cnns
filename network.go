@@ -8,7 +8,7 @@ import (
 // WholeNet Neural net itself (slice of layers)
 type WholeNet struct {
 	Layers []Layer
-	LP     LearningParams
+	LP     *LearningParams
 }
 
 // FeedForward Forward pass through the net
@@ -65,7 +65,7 @@ func (wh *WholeNet) Backpropagate(Tk *mat.Dense) error {
 
 	// Update weights
 	for i := range wh.Layers {
-		wh.Layers[i].UpdateWeights()
+		wh.Layers[i].UpdateWeights(wh.LP)
 	}
 	return nil
 }

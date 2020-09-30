@@ -68,7 +68,9 @@ func main() {
 	fullyconnected3.SetActivationFunc(cnns.ActivationSygmoid)
 	fullyconnected3.SetActivationDerivativeFunc(cnns.ActivationSygmoidDerivative)
 
-	var net cnns.WholeNet
+	net := cnns.WholeNet{
+		LP: cnns.NewLearningParametersDefault(),
+	}
 	net.Layers = append(net.Layers, conv)
 	net.Layers = append(net.Layers, relu)
 	net.Layers = append(net.Layers, maxpool)

@@ -51,7 +51,9 @@ func ExampleConv() {
 	})
 	fullyconnected.SetCustomWeights([]*mat.Dense{fcCustomWeights})
 
-	var net cnns.WholeNet
+	net := cnns.WholeNet{
+		LP: cnns.NewLearningParametersDefault(),
+	}
 	net.Layers = append(net.Layers, conv)
 	net.Layers = append(net.Layers, relu)
 	net.Layers = append(net.Layers, maxpool)
@@ -120,7 +122,9 @@ func ExampleConv2() {
 	maxpool := cnns.NewPoolingLayer(relu.GetOutputSize(), 2, 2, "max", "valid")
 	fullyconnected := cnns.NewFullyConnectedLayer(maxpool.GetOutputSize(), 2)
 
-	var net cnns.WholeNet
+	net := cnns.WholeNet{
+		LP: cnns.NewLearningParametersDefault(),
+	}
 	net.Layers = append(net.Layers, conv)
 	net.Layers = append(net.Layers, relu)
 	net.Layers = append(net.Layers, maxpool)

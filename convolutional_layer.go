@@ -136,7 +136,6 @@ func (conv *ConvLayer) doActivation() error {
 	resultMatrix := &mat.Dense{}
 	fmt.Println("called")
 	for i := range conv.Kernels {
-		fmt.Println("\there", len(conv.Kernels), conv.Oj, conv.Kernels[i])
 		feature, err := Convolve2D(conv.Oj, conv.Kernels[i], conv.inChannels, conv.Stride)
 		if err != nil {
 			return errors.Wrap(err, "Can't call doActivation() on Convolutional Layer")
@@ -227,7 +226,7 @@ func (conv *ConvLayer) CalculateGradients(lossGradients *mat.Dense) error {
 }
 
 // UpdateWeights Update convolutional layer's weights
-func (conv *ConvLayer) UpdateWeights() {
+func (conv *ConvLayer) UpdateWeights(lp *LearningParams) {
 	features := len(conv.Kernels)
 
 	for f := 0; f < features; f++ {

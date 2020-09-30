@@ -230,7 +230,7 @@ func (pool *PoolingLayer) CalculateGradients(errorsDense *mat.Dense) error {
 }
 
 // UpdateWeights Just to point, that pooling layer does NOT updating weights
-func (pool *PoolingLayer) UpdateWeights() {
+func (pool *PoolingLayer) UpdateWeights(lp *LearningParams) {
 	// "There are no weights to update for pooling layer"
 }
 

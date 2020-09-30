@@ -107,7 +107,7 @@ func (relu *ReLULayer) CalculateGradients(errorsDense *mat.Dense) error {
 }
 
 // UpdateWeights Just to point, that ReLU layer does NOT updating weights
-func (relu *ReLULayer) UpdateWeights() {
+func (relu *ReLULayer) UpdateWeights(lp *LearningParams) {
 	// There are no weights to update for ReLU layer
 }
 

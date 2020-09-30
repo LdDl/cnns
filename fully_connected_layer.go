@@ -149,7 +149,7 @@ func (fc *FullyConnectedLayer) CalculateGradients(errorsDense *mat.Dense) error 
 }
 
 // UpdateWeights Update fully-connected layer's weights
-func (fc *FullyConnectedLayer) UpdateWeights() {
+func (fc *FullyConnectedLayer) UpdateWeights(lp *LearningParams) {
 	// Evaluate ΔΣ(k)/Δw{j}{k}
 	Δw := &mat.Dense{}
 	Δw.Mul(fc.LocalDelta, fc.Oj.T())

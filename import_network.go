@@ -120,6 +120,6 @@ func (wh *WholeNet) ImportFromFile(fname string, randomWeights bool) error {
 
 	wh.LP.LearningRate = data.Parameters.LearningRate
 	wh.LP.Momentum = data.Parameters.Momentum
-	wh.LP.WeightDecay = data.Parameters.WeightDecay
+
 	return err
 }

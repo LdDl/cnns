@@ -34,7 +34,9 @@ func CheckXOR() {
 	fullyconnected2.SetActivationDerivativeFunc(cnns.ActivationTanhDerivative)
 
 	// Init network
-	var net cnns.WholeNet
+	net := cnns.WholeNet{
+		LP: cnns.NewLearningParametersDefault(),
+	}
 	net.Layers = append(net.Layers, fullyconnected1)
 	net.Layers = append(net.Layers, fullyconnected2)
 
@@ -47,6 +49,23 @@ func CheckXOR() {
 	trainErr, testErr, err := net.Train(inputs, desired, inputsTests, desiredTests, numOfEpochs)
 	if err != nil {
 		log.Fatalln(err)
+	}
+
+	for i := range inputsTests {
+		in := inputsTests[i]
+		target := desiredTests[i]
+		err := net.FeedForward(in)
+		if err != nil {
+			log.Printf("Feedforward (testing) caused error: %s", err.Error())
+			return
+		}
+		fmt.Println("\n>>>Input:")
+		fmt.Println("\t", in.RawMatrix().Data)
+		out := net.GetOutput()
+		fmt.Println(">>>Out:")
+		fmt.Println("\t", out.RawMatrix().Data)
+		fmt.Println(">>>Desired:")
+		fmt.Println("\t", target.RawMatrix().Data)
 	}
 
 	fmt.Printf("Error on training data: %v\nError on test data: %v\n", trainErr, testErr)

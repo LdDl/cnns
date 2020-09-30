@@ -107,7 +107,6 @@
     },
     "parameters": {
         "learning_rate": 0.01,
-        "momentum": 0.6,
-        "weight_decay": 0.001
+        "momentum": 0.6
     }
 }

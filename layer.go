@@ -29,7 +29,7 @@ type Layer interface {
 	CalculateGradients(errorsDense *mat.Dense) error
 
 	// UpdateWeights Call updating process for layer's weights
-	UpdateWeights()
+	UpdateWeights(lp *LearningParams)
 
 	// PrintOutput Pretty print layer's output
 	PrintOutput()
