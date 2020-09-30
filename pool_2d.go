@@ -126,28 +126,6 @@ func maxPoolIdx(m mat.Matrix) (int, int, float64) {
 	return maxi, maxj, max
 }
 
-func minPoolIdx(m *mat.Dense) (int, float64) {
-	min := math.Inf(1)
-	mini := -1
-	raw := m.RawMatrix().Data
-	for i := 0; i < len(raw); i++ {
-		if raw[i] < min {
-			min = raw[i]
-			mini = i
-		}
-	}
-	return mini, min
-}
-
 func maxPool(m mat.Matrix) float64 {
 	return mat.Max(m)
-}
-
-func minPool(m mat.Matrix) float64 {
-	return mat.Min(m)
-}
-
-func avgPool(m mat.Matrix) float64 {
-	r, c := m.Dims()
-	return mat.Sum(m) / float64(r*c)
 }
