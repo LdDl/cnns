@@ -10,7 +10,10 @@ import (
 
 // ExportToFile Save network structure and its weights to JSON file
 func (wh *WholeNet) ExportToFile(fname string, saveWeights bool) error {
-	save := NetJSON{}
+	save := NetJSON{
+		Network:    &NetworkJSON{},
+		Parameters: &LearningParams{},
+	}
 	for i := 0; i < len(wh.Layers); i++ {
 		switch wh.Layers[i].GetType() {
 		case "conv":
@@ -23,11 +26,11 @@ func (wh *WholeNet) ExportToFile(fname string, saveWeights bool) error {
 					Stride:     wh.Layers[i].GetStride(),
 					KernelSize: layer.KernelSize,
 				},
-				Weights: make([]*TensorJSON, len(kernels)),
+				Weights: make([]*NestedData, len(kernels)),
 			}
 			if saveWeights {
 				for k := range kernels {
-					newLayer.Weights[k].Data = kernels[k].RawMatrix().Data
+					newLayer.Weights[k] = &NestedData{Data: kernels[k].RawMatrix().Data}
 				}
 			}
 			save.Network.Layers = append(save.Network.Layers, newLayer)
@@ -58,14 +61,14 @@ func (wh *WholeNet) ExportToFile(fname string, saveWeights bool) error {
 				LayerType:  "fc",
 				InputSize:  wh.Layers[i].GetInputSize(),
 				OutputSize: wh.Layers[i].GetOutputSize(),
-				Weights:    make([]*TensorJSON, 1),
+				Weights:    make([]*NestedData, 1),
 			}
 			if saveWeights {
 				weights := wh.Layers[i].GetWeights()
 				if len(weights) != 1 {
 					return fmt.Errorf("Fully connected layer can have only 1 array for weights")
 				}
-				newLayer.Weights[0].Data = weights[0].RawMatrix().Data
+				newLayer.Weights[0] = &NestedData{Data: weights[0].RawMatrix().Data}
 			}
 			save.Network.Layers = append(save.Network.Layers, newLayer)
 			break

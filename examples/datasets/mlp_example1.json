@@ -15,11 +15,6 @@
                 },
                 "weights": [
                     {
-                        "data_size": {
-                            "X": 2,
-                            "Y": 1,
-                            "Z": 1
-                        },
                         "data": [
                             -1.0, 1.0,
                             1.0, 2.0
@@ -41,11 +36,6 @@
                 },
                 "weights": [
                     {
-                        "data_size": {
-                            "X": 3,
-                            "Y": 1,
-                            "Z": 1
-                        },
                         "data": [
                             -1.0, 2.0,
                             1.0, 1.0,
@@ -68,11 +58,6 @@
                 },
                 "weights": [
                     {
-                        "data_size": {
-                            "X": 1,
-                            "Y": 1,
-                            "Z": 1
-                        },
                         "data": [
                             1.0, 2.0, 4.0
                         ]
@@ -82,8 +67,8 @@
         ]
     },
     "parameters": {
-        "learning_rate": 0.85,
-        "momentum": 0.0,
+        "learning_rate": 0.01,
+        "momentum": 0.6,
         "weight_decay": 0.0
     }
 }

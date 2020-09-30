@@ -25,7 +25,7 @@ type NetLayerJSON struct {
 	LayerType  string           `json:"layer_type"`
 	InputSize  *tensor.TDsize   `json:"input_size"`
 	Parameters *LayerParamsJSON `json:"parameters"`
-	Weights    []*TensorJSON    `json:"weights"`
+	Weights    []*NestedData    `json:"weights"`
 	// Actually "OutputSize" parameter is useful for fully-connected layer only
 	// There are automatic calculation of output size for other layers' types
 	OutputSize *tensor.TDsize `json:"output_size"`
@@ -39,10 +39,9 @@ type LayerParamsJSON struct {
 	ZeroPaddingType string `json:"zero_padding_type"`
 }
 
-// TensorJSON JSON representation of tensor
-type TensorJSON struct {
-	TDSize *tensor.TDsize `json:"data_size"`
-	Data   []float64      `json:"data"`
+// NestedData JSON representation of stored data
+type NestedData struct {
+	Data []float64 `json:"data"`
 }
 
 // ImportFromFile Load network to file

@@ -94,6 +94,7 @@ func ExampleConv() {
 			net.Layers[i].PrintWeights()
 		}
 	}
+
 }
 
 // ExampleConv2 Check how convolutional network's layers works with RGB-based image. Corresponding file is "step_by_step_cnn(rgb dense inertia).xlsx" file.
