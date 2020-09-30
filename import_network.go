@@ -63,6 +63,7 @@ func (wh *WholeNet) ImportFromFile(fname string, randomWeights bool) error {
 	if err != nil {
 		return err
 	}
+	// @todo Need to handle case when wh.Layers is not empty slice
 	wh.Layers = []Layer{}
 	for i := range data.Network.Layers {
 		switch data.Network.Layers[i].LayerType {
@@ -121,5 +122,47 @@ func (wh *WholeNet) ImportFromFile(fname string, randomWeights bool) error {
 	wh.LP.LearningRate = data.Parameters.LearningRate
 	wh.LP.Momentum = data.Parameters.Momentum
 	wh.LP.WeightDecay = data.Parameters.WeightDecay
+	return err
+}
+
+// ExportToFile Save network structure and its weights to JSON file
+func (wh *WholeNet) ExportToFile(fname string) error {
+	var err error
+	var save NetJSON
+
+	for i := 0; i < len(wh.Layers); i++ {
+		switch wh.Layers[i].GetType() {
+		case "conv":
+
+			break
+		case "relu":
+
+			break
+		case "pool":
+
+			break
+		case "fc":
+
+			break
+		default:
+			err = fmt.Errorf("Unrecognized layer type: %v", wh.Layers[i].GetType())
+			return err
+		}
+	}
+
+	save.Parameters.LearningRate = lp.LearningRate
+	save.Parameters.Momentum = lp.Momentum
+	save.Parameters.WeightDecay = lp.WeightDecay
+
+	saveJSON, err := json.Marshal(save)
+	if err != nil {
+		return err
+	}
+
+	err = ioutil.WriteFile(fname, saveJSON, 0644)
+	if err != nil {
+		return err
+	}
+
 	return err
 }
