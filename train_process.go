@@ -1,7 +1,6 @@
 package cnns
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"math/rand"
@@ -26,11 +25,11 @@ func (n *WholeNet) Train(inputs []*mat.Dense, desired []*mat.Dense, testData []*
 	testError := 0.0
 
 	if len(inputs) != len(desired) {
-		return trainError, testError, errors.New("number of inputs not equal to number of desired")
+		return trainError, testError, fmt.Errorf("number of inputs not equal to number of desired")
 	}
 
 	if len(testData) != len(testDesired) {
-		return trainError, testError, errors.New("number of inputs for test not equal to number of desired for test")
+		return trainError, testError, fmt.Errorf("number of inputs for test not equal to number of desired for test")
 	}
 
 	// Initial shuffling of input data

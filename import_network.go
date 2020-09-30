@@ -2,7 +2,7 @@ package cnns
 
 import (
 	"encoding/json"
-	"errors"
+	"fmt"
 	"io/ioutil"
 
 	"github.com/LdDl/cnns/tensor"
@@ -81,13 +81,13 @@ func (wh *WholeNet) ImportFromFile(fname string, randomWeights bool) error {
 			outSize := data.Network.Layers[i].OutputSize.X
 			fullyconnected := NewFullyConnectedLayer(&tensor.TDsize{X: x, Y: y, Z: z}, outSize)
 			if randomWeights == false {
-				weights := mat.NewDense(outSize, x*y, data.Network.Layers[i].Weights[0].Data)
+				weights := mat.NewDense(outSize, x*y*z, data.Network.Layers[i].Weights[0].Data)
 				fullyconnected.SetCustomWeights([]*mat.Dense{weights})
 			}
 			wh.Layers = append(wh.Layers, fullyconnected)
 			break
 		default:
-			err = errors.New("Unrecognized layer type: " + data.Network.Layers[i].LayerType)
+			err = fmt.Errorf("Unrecognized layer type: %s", data.Network.Layers[i].LayerType)
 			return err
 		}
 	}

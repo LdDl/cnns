@@ -1,6 +1,8 @@
 package cnns
 
-import "errors"
+import (
+	"fmt"
+)
 
 // LearningParams - Parameters for training neural network.
 /*
@@ -25,7 +27,7 @@ var (
 // SetEta Set learning rate
 func SetEta(v float64) error {
 	if v <= 0 {
-		return errors.New("η (learning rate) can not be less or equal zero. Setting default value which is 0.01")
+		return fmt.Errorf("η (learning rate) can not be less or equal zero. Setting default value which is 0.01")
 	}
 	lp.LearningRate = v
 	return nil
@@ -34,7 +36,7 @@ func SetEta(v float64) error {
 // SetMomentum Set momentum
 func SetMomentum(v float64) error {
 	if v <= 0 {
-		return errors.New("α (momentum) can not be less or equal zero. Setting default value which is 0.6")
+		return fmt.Errorf("α (momentum) can not be less or equal zero. Setting default value which is 0.6")
 	}
 	lp.Momentum = v
 	return nil
@@ -43,7 +45,7 @@ func SetMomentum(v float64) error {
 // SetL2Decay Set weight's decay
 func SetL2Decay(v float64) error {
 	if v <= 0 {
-		return errors.New("λ (momentum) can not be less or equal zero. Setting default value which is 0.005")
+		return fmt.Errorf("λ (momentum) can not be less or equal zero. Setting default value which is 0.005")
 	}
 	lp.Momentum = v
 	return nil
