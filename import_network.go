@@ -33,8 +33,10 @@ type NetLayerJSON struct {
 
 // LayerParamsJSON JSON representation of layers attributes
 type LayerParamsJSON struct {
-	Stride     int `json:"stride"`
-	KernelSize int `json:"kernel_size"`
+	Stride      int    `json:"stride"`
+	KernelSize  int    `json:"kernel_size"`
+	PoolingType string `json:"pooling_type"`
+	PaddingType string `json:"padding_type"`
 }
 
 // TensorJSON JSON representation of tensor
@@ -61,9 +63,26 @@ func (wh *WholeNet) ImportFromFile(fname string, randomWeights bool) error {
 	if err != nil {
 		return err
 	}
+	wh.Layers = []Layer{}
 	for i := range data.Network.Layers {
 		switch data.Network.Layers[i].LayerType {
 		case "conv":
+			stride := data.Network.Layers[i].Parameters.Stride
+			kernelSize := data.Network.Layers[i].Parameters.KernelSize
+			numOfFilters := len(data.Network.Layers[i].Weights)
+			x := data.Network.Layers[i].InputSize.X
+			y := data.Network.Layers[i].InputSize.Y
+			z := data.Network.Layers[i].InputSize.Z
+			conv := NewConvLayer(tensor.TDsize{X: x, Y: y, Z: z}, stride, kernelSize, numOfFilters)
+			if randomWeights == false {
+				weights := make([]*mat.Dense, numOfFilters)
+				for w := 0; w < numOfFilters; w++ {
+					fmt.Println("ADED")
+					weights[w] = mat.NewDense(kernelSize*z, kernelSize, data.Network.Layers[i].Weights[w].Data)
+				}
+				conv.SetCustomWeights(weights)
+			}
+			wh.Layers = append(wh.Layers, conv)
 			break
 		case "relu":
 			x := data.Network.Layers[i].InputSize.X
@@ -73,6 +92,13 @@ func (wh *WholeNet) ImportFromFile(fname string, randomWeights bool) error {
 			wh.Layers = append(wh.Layers, relu)
 			break
 		case "pool":
+			stride := data.Network.Layers[i].Parameters.Stride
+			kernelSize := data.Network.Layers[i].Parameters.KernelSize
+			x := data.Network.Layers[i].InputSize.X
+			y := data.Network.Layers[i].InputSize.Y
+			z := data.Network.Layers[i].InputSize.Z
+			pool := NewPoolingLayer(&tensor.TDsize{X: x, Y: y, Z: z}, stride, kernelSize, data.Network.Layers[i].Parameters.PoolingType, data.Network.Layers[i].Parameters.PaddingType)
+			wh.Layers = append(wh.Layers, pool)
 			break
 		case "fc":
 			x := data.Network.Layers[i].InputSize.X

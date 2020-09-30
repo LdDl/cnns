@@ -126,7 +126,9 @@ func (conv *ConvLayer) FeedForward(input *mat.Dense) error {
 // doActivation Convolutional layer's output activation
 func (conv *ConvLayer) doActivation() error {
 	resultMatrix := &mat.Dense{}
+	fmt.Println("called")
 	for i := range conv.Kernels {
+		fmt.Println("\there", len(conv.Kernels), conv.Oj, conv.Kernels[i])
 		feature, err := Convolve2D(conv.Oj, conv.Kernels[i], conv.inChannels, conv.Stride)
 		if err != nil {
 			return errors.Wrap(err, "Can't call doActivation() on Convolutional Layer")

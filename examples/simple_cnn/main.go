@@ -31,6 +31,7 @@ func main() {
 	Using custom weights (for testing purposes) also.
 */
 func ExampleConv() {
+
 	conv := cnns.NewConvLayer(tensor.TDsize{X: 9, Y: 8, Z: 1}, 1, 3, 1)
 	relu := cnns.NewReLULayer(conv.GetOutputSize())
 	maxpool := cnns.NewPoolingLayer(relu.GetOutputSize(), 2, 2, "max", "valid")
@@ -112,6 +113,7 @@ func ExampleConv() {
 	Using custom weights (for testing purposes) also.
 */
 func ExampleConv2() {
+
 	conv := cnns.NewConvLayer(tensor.TDsize{X: 5, Y: 5, Z: 3}, 1, 3, 2)
 	relu := cnns.NewReLULayer(conv.GetOutputSize())
 	maxpool := cnns.NewPoolingLayer(relu.GetOutputSize(), 2, 2, "max", "valid")
@@ -204,6 +206,7 @@ func ExampleConv2() {
 		fmt.Printf("%s #%d weights:\n", net.Layers[i].GetType(), i)
 		net.Layers[i].PrintWeights()
 	}
+
 	fmt.Println("\tDoing training....")
 	for e := 0; e < 1; e++ {
 		err := net.FeedForward(image)
