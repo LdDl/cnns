@@ -84,11 +84,11 @@ func (wh *WholeNet) GetOutput() *mat.Dense {
 }
 
 // GetGraphvizText Returns Graphviz text-based output
-func (wh *WholeNet) GetGraphvizText() string {
+func (wh *WholeNet) GetGraphvizText() (string, error) {
 	graph := "digraph G {rankdir = LR;splines=false;edge[style=invis];ranksep= 1.4;"
 
 	if len(wh.Layers) == 0 {
-		return ""
+		return "", ErrNoLayers
 	}
 	inputSize := wh.Layers[0].GetInputSize()
 	inputVertices := []string{}
@@ -119,25 +119,32 @@ func (wh *WholeNet) GetGraphvizText() string {
 		layerType := ""
 
 		size := wh.Layers[l].GetOutputSize()
-		switch l {
-		case len(wh.Layers) - 1:
-			nodeProperties = "node [shape=circle, color=coral1, style=filled, fillcolor=coral1]"
-			for x := 0; x < size.X; x++ {
-				vertex := fmt.Sprintf("O%[1]d [label=<o<sub>%[1]d</sub><sup>(%[2]d)</sup>>]", x, l)
-				verticesLabels = append(verticesLabels, vertex)
-				vertices = append(vertices, fmt.Sprintf("O%[1]d", x))
+
+		switch wh.Layers[l].GetType() {
+		case "fc":
+			switch l {
+			case len(wh.Layers) - 1:
+				nodeProperties = "node [shape=circle, color=coral1, style=filled, fillcolor=coral1]"
+				for x := 0; x < size.X; x++ {
+					vertex := fmt.Sprintf("O%[1]d [label=<o<sub>%[1]d</sub><sup>(%[2]d)</sup>>]", x, l)
+					verticesLabels = append(verticesLabels, vertex)
+					vertices = append(vertices, fmt.Sprintf("O%[1]d", x))
+				}
+				layerType = "output"
+				break
+			default:
+				nodeProperties = "node [shape=circle, color=dodgerblue, style=filled, fillcolor=dodgerblue]"
+				for x := 0; x < size.X; x++ {
+					vertex := fmt.Sprintf("h%[1]d%[2]d [label=<h<sub>%[1]d</sub><sup>(%[2]d)</sup>>]", x, l)
+					verticesLabels = append(verticesLabels, vertex)
+					vertices = append(vertices, fmt.Sprintf("h%[1]d%[2]d", x, l))
+				}
+				layerType = "hidden"
+				break
 			}
-			layerType = "output"
 			break
 		default:
-			nodeProperties = "node [shape=circle, color=dodgerblue, style=filled, fillcolor=dodgerblue]"
-			for x := 0; x < size.X; x++ {
-				vertex := fmt.Sprintf("h%[1]d%[2]d [label=<h<sub>%[1]d</sub><sup>(%[2]d)</sup>>]", x, l)
-				verticesLabels = append(verticesLabels, vertex)
-				vertices = append(vertices, fmt.Sprintf("h%[1]d%[2]d", x, l))
-			}
-			layerType = "hidden"
-			break
+			return "", fmt.Errorf("Layer of type '%s' is not supported for GraphViz currently", wh.Layers[l].GetType())
 		}
 
 		nodeProperties = fmt.Sprintf("{%s;%s;}", nodeProperties, strings.Join(verticesLabels, ";"))
@@ -165,5 +172,5 @@ func (wh *WholeNet) GetGraphvizText() string {
 
 	graph += "}"
 
-	return graph
+	return graph, nil
 }

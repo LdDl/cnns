@@ -20,6 +20,10 @@ func main() {
 	net.Layers = append(net.Layers, fullyconnected3)
 	net.Layers = append(net.Layers, fullyconnected4)
 
-	graphvizText := net.GetGraphvizText()
+	graphvizText, err := net.GetGraphvizText()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 	fmt.Println(graphvizText)
 }
