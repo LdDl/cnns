@@ -1,5 +1,6 @@
 package tensor
 
+// ConvLayer @DEPRECATED Struct of convolutional layer
 type ConvLayer struct {
 	In         *Tensor
 	Out        *Tensor
@@ -8,11 +9,13 @@ type ConvLayer struct {
 	Stride     int
 }
 
+// Tensor @DEPRECATED Struct of 3-d tensor
 type Tensor struct {
 	Data []float64
 	Size *Point
 }
 
+// NewTensor @DEPRECATED Constructor for 3-d tensor
 func NewTensor(x, y, z int) *Tensor {
 	return &Tensor{
 		Data: make([]float64, x*y*z),
@@ -23,13 +26,18 @@ func NewTensor(x, y, z int) *Tensor {
 		},
 	}
 }
+
+// Get @DEPRECATED Returns value of for x-y-z-th element
 func (t *Tensor) Get(x, y, z int) float64 {
 	return t.Data[z*t.Size.X*t.Size.Y+y*t.Size.X+x]
 }
+
+// Set @DEPRECATED Sets value for x-y-z-th element
 func (t *Tensor) Set(x, y, z int, val float64) {
 	t.Data[z*t.Size.X*t.Size.Y+y*t.Size.X+x] = val
 }
 
+// NewConvolveLayer @DEPRECATED Constructor for convolutional layer
 func NewConvolveLayer(insizeX, insizeY, insizeZ, numberFilters, kernelSize, stride int) *ConvLayer {
 	tmp := &ConvLayer{
 		In:         NewTensor(insizeX, insizeY, insizeZ),
@@ -43,6 +51,7 @@ func NewConvolveLayer(insizeX, insizeY, insizeZ, numberFilters, kernelSize, stri
 	return tmp
 }
 
+// NaiveConv @DEPRECATED Forward pass for convolutional layer
 func (conv *ConvLayer) NaiveConv() {
 	for filter := 0; filter < len(conv.Kernels); filter++ {
 		filterData := conv.Kernels[filter]
