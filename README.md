@@ -33,7 +33,7 @@ go get github.com/LdDl/cnns
 
 Just look into [examples folder](examples)
 
-For some peoples it is realy hard to understand algorithms without step-by-step examples. So we provide some in xlsx-based files
+For some people it is really hard to understand algorithms without step-by-step examples. So we provide some in xlsx-based files
 
 ## Support
 
