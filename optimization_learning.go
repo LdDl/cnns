@@ -9,9 +9,9 @@ import "errors"
 	WeightDecay - λ (L2 regularization)
 */
 type LearningParams struct {
-	LearningRate float64 `json:"LearningRate"`
-	Momentum     float64 `json:"Momentum"`
-	WeightDecay  float64 `json:"WeightDecay"`
+	LearningRate float64 `json:"learning_rate"`
+	Momentum     float64 `json:"momentum"`
+	WeightDecay  float64 `json:"weight_decay"`
 }
 
 var (

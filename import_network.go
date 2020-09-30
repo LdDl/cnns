@@ -11,36 +11,36 @@ import (
 
 // NetJSON JSON representation of network structure (for import and export)
 type NetJSON struct {
-	Network    *NetworkJSON    `json:"Network"`
-	Parameters *LearningParams `json:"Parameters"`
+	Network    *NetworkJSON    `json:"network"`
+	Parameters *LearningParams `json:"parameters"`
 }
 
 // NetworkJSON JSON representation of networks' layers
 type NetworkJSON struct {
-	Layers []*NetLayerJSON `json:"Layers"`
+	Layers []*NetLayerJSON `json:"layers"`
 }
 
 // NetLayerJSON JSON representation of layer
 type NetLayerJSON struct {
-	LayerType  string           `json:"LayerType"`
-	InputSize  *tensor.TDsize   `json:"InputSize"`
-	Parameters *LayerParamsJSON `json:"Parameters"`
-	Weights    []*TensorJSON    `json:"Weights"`
+	LayerType  string           `json:"layer_type"`
+	InputSize  *tensor.TDsize   `json:"input_size"`
+	Parameters *LayerParamsJSON `json:"parameters"`
+	Weights    []*TensorJSON    `json:"weights"`
 	// Actually "OutputSize" parameter is useful for fully-connected layer only
 	// There are automatic calculation of output size for other layers' types
-	OutputSize *tensor.TDsize `json:"OutputSize"`
+	OutputSize *tensor.TDsize `json:"output_size"`
 }
 
 // LayerParamsJSON JSON representation of layers attributes
 type LayerParamsJSON struct {
-	Stride     int `json:"Stride"`
-	KernelSize int `json:"KernelSize"`
+	Stride     int `json:"stride"`
+	KernelSize int `json:"kernel_size"`
 }
 
 // TensorJSON JSON representation of tensor
 type TensorJSON struct {
-	TDSize *tensor.TDsize `json:"TDSize"`
-	Data   []float64      `json:"Data"`
+	TDSize *tensor.TDsize `json:"data_size"`
+	Data   []float64      `json:"data"`
 }
 
 // ImportFromFile Load network to file
@@ -66,6 +66,11 @@ func (wh *WholeNet) ImportFromFile(fname string, randomWeights bool) error {
 		case "conv":
 			break
 		case "relu":
+			x := data.Network.Layers[i].InputSize.X
+			y := data.Network.Layers[i].InputSize.Y
+			z := data.Network.Layers[i].InputSize.Z
+			relu := NewReLULayer(&tensor.TDsize{X: x, Y: y, Z: z})
+			wh.Layers = append(wh.Layers, relu)
 			break
 		case "pool":
 			break

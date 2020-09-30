@@ -1,26 +1,26 @@
 {
-    "Network": {
-        "Layers": [
+    "network": {
+        "layers": [
             {
-                "LayerType": "fc",
-                "InputSize": {
+                "layer_type": "fc",
+                "input_size": {
                     "X": 2,
                     "Y": 1,
                     "Z": 1
                 },
-                "OutputSize": {
+                "output_size": {
                     "X": 3,
                     "Y": 1,
                     "Z": 1
                 },
-                "Weights": [
+                "weights": [
                     {
-                        "TDSize": {
+                        "data_size": {
                             "X": 3,
                             "Y": 1,
                             "Z": 1
                         },
-                        "Data": [
+                        "data": [
                             [
                                 [
                                     -1.0,
@@ -40,25 +40,25 @@
                 ]
             },
             {
-                "LayerType": "fc",
-                "InputSize": {
+                "layer_type": "fc",
+                "input_size": {
                     "X": 3,
                     "Y": 1,
                     "Z": 1
                 },
-                "OutputSize": {
+                "output_size": {
                     "X": 1,
                     "Y": 1,
                     "Z": 1
                 },
-                "Weights": [
+                "weights": [
                     {
-                        "TDSize": {
+                        "data_size": {
                             "X": 1,
                             "Y": 1,
                             "Z": 1
                         },
-                        "Data": [
+                        "data": [
                             [
                                 [
                                     1.0,
@@ -72,9 +72,9 @@
             }
         ]
     },
-    "Parameters": {
-        "LearningRate": 0.85,
-        "Momentum": 0.0,
-        "WeightDecay": 0.0
+    "parameters": {
+        "learning_rate": 0.85,
+        "momentum": 0.0,
+        "weight_decay": 0.0
     }
 }
