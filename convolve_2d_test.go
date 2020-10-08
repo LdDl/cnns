@@ -65,7 +65,7 @@ func BenchmarkConvolve2DSingleBig(b *testing.B) {
 	kernelData := make([]float64, kernelSize*kernelSize)
 	for i := 0; i < kernelSize; i++ {
 		for j := 0; j < kernelSize; j++ {
-			data[i*kernelSize+j] = rand.Float64() - 0.5
+			kernelData[i*kernelSize+j] = rand.Float64() - 0.5
 		}
 	}
 	bigKernel := mat.NewDense(kernelSize, kernelSize, kernelData)
@@ -93,7 +93,7 @@ func BenchmarkNaiveConvolveBig(b *testing.B) {
 	kernelData := make([]float64, kernelSize*kernelSize)
 	for i := 0; i < kernelSize; i++ {
 		for j := 0; j < kernelSize; j++ {
-			data[i*kernelSize+j] = rand.Float64() - 0.5
+			kernelData[i*kernelSize+j] = rand.Float64() - 0.5
 		}
 	}
 
@@ -138,7 +138,7 @@ func TestConvAndNaiveBig(t *testing.T) {
 	kernelData := make([]float64, kernelSize*kernelSize)
 	for i := 0; i < kernelSize; i++ {
 		for j := 0; j < kernelSize; j++ {
-			data[i*kernelSize+j] = rand.Float64() - 0.5
+			kernelData[i*kernelSize+j] = rand.Float64() - 0.5
 		}
 	}
 
