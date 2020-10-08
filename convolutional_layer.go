@@ -10,11 +10,9 @@ import (
 )
 
 // ConvLayer Convolutional layer structure
-/*
-	Oj - O{j}, activated output from previous layer for j-th neuron (in other words: previous summation input)
-	Ok - O{k}, activated output from current layer for k-th node (in other words: activated summation input)
-	SumInput - non-activated output for current layer for k-th node (in other words: summation input)
-*/
+// Oj - O{j}, activated output from previous layer for j-th neuron (in other words: previous summation input)
+// Ok - O{k}, activated output from current layer for k-th node (in other words: activated summation input)
+// SumInput - non-activated output for current layer for k-th node (in other words: summation input)
 type ConvLayer struct {
 	Oj                        *mat.Dense
 	Ok                        *mat.Dense
@@ -134,7 +132,6 @@ func (conv *ConvLayer) FeedForward(input *mat.Dense) error {
 // doActivation Convolutional layer's output activation
 func (conv *ConvLayer) doActivation() error {
 	resultMatrix := &mat.Dense{}
-	fmt.Println("called")
 	for i := range conv.Kernels {
 		feature, err := Convolve2D(conv.Oj, conv.Kernels[i], conv.inChannels, conv.Stride)
 		if err != nil {

@@ -48,7 +48,6 @@ func (wh *WholeNet) Backpropagate(Tk *mat.Dense) error {
 
 	// Evaluate ΔE{k}/ΔO{k}
 	Ediff := &mat.Dense{}
-	// fmt.Println(Ok, Tk)
 	Ediff.Sub(Ok, Tk)
 
 	// Evaluate ΔE{k}/ΔO{k} * ΔO{k}/ΔΣ(k) * ΔΣ(k)/Δw{j}{k}

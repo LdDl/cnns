@@ -77,7 +77,6 @@ func (wh *WholeNet) ImportFromFile(fname string, randomWeights bool) error {
 			if randomWeights == false {
 				weights := make([]*mat.Dense, numOfFilters)
 				for w := 0; w < numOfFilters; w++ {
-					fmt.Println("ADED")
 					weights[w] = mat.NewDense(kernelSize*z, kernelSize, data.Network.Layers[i].Weights[w].Data)
 				}
 				conv.SetCustomWeights(weights)

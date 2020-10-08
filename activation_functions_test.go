@@ -1,7 +1,6 @@
 package cnns
 
 import (
-	"fmt"
 	"testing"
 )
 
@@ -84,7 +83,6 @@ func TestActivationSoftPlusDerivative(t *testing.T) {
 func TestActivationGaussian(t *testing.T) {
 	correct := 0.9061087020033959
 	got := ActivationGaussian(testFloat64)
-	fmt.Println(got)
 	if correct != got {
 		t.Errorf("Should be %f, but got %f", correct, got)
 	}

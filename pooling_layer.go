@@ -221,7 +221,6 @@ func (pool *PoolingLayer) CalculateGradients(errorsDense *mat.Dense) error {
 			for x := 0; x < partialErrCols; x++ {
 				startX := x * stride
 				part := partialMask.Slice(startYi, startYj, startX, startX+windowSize).(*mat.Dense)
-				// fmt.Println(len(partialMaskIndices), y, x)
 				part.Set(partialMaskIndices[y][x][0], partialMaskIndices[y][x][1], partialErrors.At(y, x))
 			}
 		}
