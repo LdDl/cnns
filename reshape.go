@@ -27,6 +27,23 @@ func Reshape(matrix *mat.Dense, r, c int) (*mat.Dense, error) {
 	return mat.NewDense(r, c, newMat), nil
 }
 
+// ReshapeUnsafe Reshape matrix to given r - rows(height) and c - cols(width)
+/*
+	Product of target dimensions should be equal to product of source dimensions
+	Notice that this is unsafe version of Reshape(), so it changes reciever parameters (capRows, capCals, blas.Rows, blas.Cols, blas.Stride)
+*/
+func ReshapeUnsafe(matrix *mat.Dense, r, c int) error {
+	raw := matrix.RawMatrix()
+	if raw.Rows*raw.Cols != r*c {
+		return ErrDimensionsAreNotEqual
+	}
+	raw.Rows = r
+	raw.Cols = c
+	raw.Stride = c
+	matrix.SetRawMatrix(raw)
+	return nil
+}
+
 // ExtractChannel Returns selected channel from N-channeled matrix (usefully in terms of image processing)
 /*
 	matrix - Source matrix

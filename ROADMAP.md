@@ -13,10 +13,11 @@
     - [x] ZeroPadding
     - [ ] Determinant
     - [X] ContoursPadding
+    - [X] Reshape
 - [ ] Refactor code and rethink structure of library
 - [ ] Remove some legacy and experemintal code to other branches **WIP**
 - [ ] Error types and wrapping them **WIP**
-- [ ] Test cases for most of math functions
+- [ ] Test cases for most of math functions **WIP**
     - [x] ActivationTanh
     - [x] ActivationTanhDerivative
     - [x] ActivationSygmoid
@@ -42,6 +43,7 @@
     - [ ] ZeroPadding
     - [ ] Im2Col
     - [ ] ContoursPadding
+    - [x] Reshape and its Unsafe version
 - [ ] Test cases for layers and its methods
     - [ ] Convolutional **WIP**
     - [ ] Fully connected **WIP**
@@ -65,4 +67,4 @@
 - [x] Add CI on https://travis-ci.com
 - [ ] Import/Export activation functions and its derivatives for JSON files.
 
-Updated at: 2020-09-30
+Updated at: 2020-10-10
