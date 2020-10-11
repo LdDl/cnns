@@ -6,12 +6,12 @@ import (
 )
 
 // Convolve2D Convolution between a kernel and a matrix. See ref. https://en.wikipedia.org/wiki/Kernel_(image_processing)#Convolution
-/*
-	matrix - source matrix
-	kernel - kernel itself
-	channels - number of input channels
-	stride - step
-*/
+// /*
+// 	matrix - source matrix
+// 	kernel - kernel itself
+// 	channels - number of input channels
+// 	stride - step
+// */
 func Convolve2D(matrix, kernel *mat.Dense, channels, stride int) (*mat.Dense, error) {
 	kernelR, kernelC := kernel.Dims()
 	matrixR, matrixC := matrix.Dims()

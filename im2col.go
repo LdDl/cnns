@@ -5,12 +5,12 @@ import (
 )
 
 // Im2Col Convert image to column-based vector. See ref. http://cs231n.stanford.edu/slides/2016/winter1516_lecture11.pdf -> Slide "Implementing Convolutions: im2col"
-/*
-	matrix - source matrix
-	kernelRows - kernel's height
-	kernelCols - kernel's width
-	stride - step
-*/
+// /*
+// 	matrix - source matrix
+// 	kernelRows - kernel's height
+// 	kernelCols - kernel's width
+// 	stride - step
+// */
 func Im2Col(matrix *mat.Dense, kernelRows, kernelCols, stride int) *mat.Dense {
 	colSize := kernelRows * kernelCols
 	r, c := matrix.Dims()

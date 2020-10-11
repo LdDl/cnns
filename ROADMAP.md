@@ -37,11 +37,11 @@
     - ~~[x] Multiply~~ Not needed cause of gonum usage
     - ~~[x] HadamardProduct~~ Not needed cause of gonum usage
     - ~~[ ] MSE~~ Not needed cause of gonum usage
-    - [ ] Convolve2D
+    - [x] Convolve2D
     - [ ] Flatten
     - [ ] Pool2D
     - [ ] ZeroPadding
-    - [ ] Im2Col
+    - [x] Im2Col
     - [ ] ContoursPadding
     - [x] Reshape and its Unsafe version
 - [ ] Test cases for layers and its methods
@@ -67,4 +67,4 @@
 - [x] Add CI on https://travis-ci.com
 - [ ] Import/Export activation functions and its derivatives for JSON files.
 
-Updated at: 2020-10-10
+Updated at: 2020-10-11
