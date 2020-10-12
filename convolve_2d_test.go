@@ -10,7 +10,14 @@ import (
 )
 
 var (
-	benchSingleChannelImage = mat.NewDense(9, 8, []float64{
+	// For single channel image
+	heightSingleChannel          = 9
+	widthSingleChannel           = 8
+	benchNumFiltersSingleChannel = 1
+	kernelSizeSingleChannel      = 3
+	benchStrideSingleChannel     = 1
+	channelsSingleChannel        = 1
+	benchSingleChannelImage      = mat.NewDense(heightSingleChannel, widthSingleChannel, []float64{
 		-0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8,
 		-0.9, -0.10, 0.11, 0.12, 0.13, 0.14, 0.15, 0.16,
 		-0.17, 0.18, -0.19, 0.20, 0.21, 0.22, 0.23, 0.24,
@@ -21,21 +28,65 @@ var (
 		-0.57, 0.58, 0.59, 0.60, 0.61, 0.62, 0.63, -0.64,
 		-0.65, 0.66, 0.67, 0.68, 0.69, 0.70, 0.71, 0.72,
 	})
-
-	benchKernelSingle = mat.NewDense(3, 3, []float64{
+	benchKernelSingleChannel = mat.NewDense(kernelSizeSingleChannel, kernelSizeSingleChannel, []float64{
 		0.10466029, -0.06228581, -0.43436298,
 		0.44050909, -0.07536250, -0.34348075,
 		0.16456005, 0.18682307, -0.40303048,
 	})
+	oldTensorSingleChannel = tensor.NewConvolveLayer(widthSingleChannel, heightSingleChannel, channelsSingleChannel, benchNumFiltersSingleChannel, kernelSizeSingleChannel, benchStrideSingleChannel)
 
-	oldTensorSingle       = tensor.NewConvolveLayer(8, 9, 1, 1, 3, 1)
-	benchNumFiltersSingle = 1
-	benchStrideSingle     = 1
+	// For big image
+	bigHeight     = 512
+	bigWidth      = 512
+	bigKernelSize = 7
+
+	// For RGB based image
+	heightRGB     = 5
+	widthRGB      = 5
+	kernelSizeRGB = 3
+	strideRGB     = 1
+	channelsRGB   = 3
+	redChannel    = mat.NewDense(heightRGB, widthRGB, []float64{
+		1, 0, 1, 0, 2,
+		1, 1, 3, 2, 1,
+		1, 1, 0, 1, 1,
+		2, 3, 2, 1, 3,
+		0, 2, 0, 1, 0,
+	})
+	greenChannel = mat.NewDense(heightRGB, widthRGB, []float64{
+		1, 0, 0, 1, 0,
+		2, 0, 1, 2, 0,
+		3, 1, 1, 3, 0,
+		0, 3, 0, 3, 2,
+		1, 0, 3, 2, 1,
+	})
+	blueChannel = mat.NewDense(heightRGB, widthRGB, []float64{
+		2, 0, 1, 2, 1,
+		3, 3, 1, 3, 2,
+		2, 1, 1, 1, 0,
+		3, 1, 3, 2, 0,
+		1, 1, 2, 1, 1,
+	})
+	kernel1R = mat.NewDense(kernelSizeRGB, kernelSizeRGB, []float64{
+		0, 1, 0,
+		0, 0, 2,
+		0, 1, 0,
+	})
+	kernel1G = mat.NewDense(kernelSizeRGB, kernelSizeRGB, []float64{
+		2, 1, 0,
+		0, 0, 0,
+		0, 3, 0,
+	})
+	kernel1B = mat.NewDense(kernelSizeRGB, kernelSizeRGB, []float64{
+		1, 0, 0,
+		1, 0, 0,
+		0, 0, 2,
+	})
 )
 
 func BenchmarkConvolve2DSingleSmall(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		_, err := Convolve2D(benchSingleChannelImage, benchKernelSingle, benchNumFiltersSingle, benchStrideSingle)
+		_, err := Convolve2D(benchSingleChannelImage, benchKernelSingleChannel, benchNumFiltersSingleChannel, benchStrideSingleChannel)
 		if err != nil {
 			panic(err)
 		}
@@ -43,17 +94,16 @@ func BenchmarkConvolve2DSingleSmall(b *testing.B) {
 }
 
 func BenchmarkNaiveConvolveSmall(b *testing.B) {
-	oldTensorSingle.In.Data = benchSingleChannelImage.RawMatrix().Data
-	oldTensorSingle.Kernels[0].Data = benchKernelSingle.RawMatrix().Data
+	oldTensorSingleChannel.In.Data = benchSingleChannelImage.RawMatrix().Data
+	oldTensorSingleChannel.Kernels[0].Data = benchKernelSingleChannel.RawMatrix().Data
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		oldTensorSingle.NaiveConv()
+		oldTensorSingleChannel.NaiveConv()
 	}
 }
 
 func BenchmarkConvolve2DSingleBig(b *testing.B) {
-	width, height := 512, 512
-	kernelSize := 7
+	width, height := bigWidth, bigHeight
 	data := make([]float64, width*height)
 	for i := 0; i < height; i++ {
 		for j := 0; j < width; j++ {
@@ -62,17 +112,17 @@ func BenchmarkConvolve2DSingleBig(b *testing.B) {
 	}
 	bigMat := mat.NewDense(height, width, data)
 
-	kernelData := make([]float64, kernelSize*kernelSize)
-	for i := 0; i < kernelSize; i++ {
-		for j := 0; j < kernelSize; j++ {
-			kernelData[i*kernelSize+j] = rand.Float64() - 0.5
+	kernelData := make([]float64, bigKernelSize*bigKernelSize)
+	for i := 0; i < bigKernelSize; i++ {
+		for j := 0; j < bigKernelSize; j++ {
+			kernelData[i*bigKernelSize+j] = rand.Float64() - 0.5
 		}
 	}
-	bigKernel := mat.NewDense(kernelSize, kernelSize, kernelData)
+	bigKernel := mat.NewDense(bigKernelSize, bigKernelSize, kernelData)
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, err := Convolve2D(bigMat, bigKernel, benchNumFiltersSingle, benchStrideSingle)
+		_, err := Convolve2D(bigMat, bigKernel, benchNumFiltersSingleChannel, benchStrideSingleChannel)
 		if err != nil {
 			panic(err)
 		}
@@ -80,20 +130,19 @@ func BenchmarkConvolve2DSingleBig(b *testing.B) {
 }
 
 func BenchmarkNaiveConvolveBig(b *testing.B) {
-	width, height := 512, 512
-	kernelSize := 7
+	width, height := bigWidth, bigHeight
 	data := make([]float64, width*height)
 	for i := 0; i < height; i++ {
 		for j := 0; j < width; j++ {
 			data[i*width+j] = rand.Float64() - 0.5
 		}
 	}
-	bigMat := tensor.NewConvolveLayer(width, height, 1, 1, kernelSize, 1)
+	bigMat := tensor.NewConvolveLayer(width, height, channelsSingleChannel, benchNumFiltersSingleChannel, bigKernelSize, benchStrideSingleChannel)
 
-	kernelData := make([]float64, kernelSize*kernelSize)
-	for i := 0; i < kernelSize; i++ {
-		for j := 0; j < kernelSize; j++ {
-			kernelData[i*kernelSize+j] = rand.Float64() - 0.5
+	kernelData := make([]float64, bigKernelSize*bigKernelSize)
+	for i := 0; i < bigKernelSize; i++ {
+		for j := 0; j < bigKernelSize; j++ {
+			kernelData[i*bigKernelSize+j] = rand.Float64() - 0.5
 		}
 	}
 
@@ -106,12 +155,12 @@ func BenchmarkNaiveConvolveBig(b *testing.B) {
 }
 
 func TestConvAndNaiveSmall(t *testing.T) {
-	data := tensor.NewConvolveLayer(8, 9, 1, 1, 3, 1)
+	data := tensor.NewConvolveLayer(widthSingleChannel, heightSingleChannel, channelsSingleChannel, benchNumFiltersSingleChannel, kernelSizeSingleChannel, benchStrideSingleChannel)
 	data.In.Data = benchSingleChannelImage.RawMatrix().Data
-	data.Kernels[0].Data = benchKernelSingle.RawMatrix().Data
+	data.Kernels[0].Data = benchKernelSingleChannel.RawMatrix().Data
 	data.NaiveConv()
 
-	outConv2d, err := Convolve2D(benchSingleChannelImage, benchKernelSingle, benchNumFiltersSingle, benchStrideSingle)
+	outConv2d, err := Convolve2D(benchSingleChannelImage, benchKernelSingleChannel, benchNumFiltersSingleChannel, benchStrideSingleChannel)
 	if err != nil {
 		t.Error(err)
 	}
@@ -126,8 +175,7 @@ func TestConvAndNaiveSmall(t *testing.T) {
 }
 
 func TestConvAndNaiveBig(t *testing.T) {
-	width, height := 512, 512
-	kernelSize := 7
+	width, height := bigWidth, bigHeight
 
 	data := make([]float64, width*height)
 	for i := 0; i < height; i++ {
@@ -135,19 +183,19 @@ func TestConvAndNaiveBig(t *testing.T) {
 			data[i*width+j] = rand.Float64() - 0.5
 		}
 	}
-	kernelData := make([]float64, kernelSize*kernelSize)
-	for i := 0; i < kernelSize; i++ {
-		for j := 0; j < kernelSize; j++ {
-			kernelData[i*kernelSize+j] = rand.Float64() - 0.5
+	kernelData := make([]float64, bigKernelSize*bigKernelSize)
+	for i := 0; i < bigKernelSize; i++ {
+		for j := 0; j < bigKernelSize; j++ {
+			kernelData[i*bigKernelSize+j] = rand.Float64() - 0.5
 		}
 	}
 
-	oldWay := tensor.NewConvolveLayer(width, height, 1, 1, kernelSize, 1)
+	oldWay := tensor.NewConvolveLayer(width, height, channelsSingleChannel, benchNumFiltersSingleChannel, bigKernelSize, benchStrideSingleChannel)
 	oldWay.In.Data = data
 	oldWay.Kernels[0].Data = kernelData
 	oldWay.NaiveConv()
 
-	newWay, err := Convolve2D(mat.NewDense(height, width, data), mat.NewDense(kernelSize, kernelSize, kernelData), benchNumFiltersSingle, benchStrideSingle)
+	newWay, err := Convolve2D(mat.NewDense(height, width, data), mat.NewDense(bigKernelSize, bigKernelSize, kernelData), benchNumFiltersSingleChannel, benchStrideSingleChannel)
 	if err != nil {
 		t.Error(err)
 	}
@@ -162,50 +210,6 @@ func TestConvAndNaiveBig(t *testing.T) {
 }
 
 func TestConvolve2DRGB(t *testing.T) {
-	imgRows := 5
-	imgCols := 5
-	kernelSize := 3
-
-	redChannel := mat.NewDense(imgRows, imgCols, []float64{
-		1, 0, 1, 0, 2,
-		1, 1, 3, 2, 1,
-		1, 1, 0, 1, 1,
-		2, 3, 2, 1, 3,
-		0, 2, 0, 1, 0,
-	})
-	greenChannel := mat.NewDense(imgRows, imgCols, []float64{
-		1, 0, 0, 1, 0,
-		2, 0, 1, 2, 0,
-		3, 1, 1, 3, 0,
-		0, 3, 0, 3, 2,
-		1, 0, 3, 2, 1,
-	})
-	blueChannel := mat.NewDense(imgRows, imgCols, []float64{
-		2, 0, 1, 2, 1,
-		3, 3, 1, 3, 2,
-		2, 1, 1, 1, 0,
-		3, 1, 3, 2, 0,
-		1, 1, 2, 1, 1,
-	})
-
-	kernel1R := mat.NewDense(kernelSize, kernelSize, []float64{
-		0, 1, 0,
-		0, 0, 2,
-		0, 1, 0,
-	})
-	kernel1G := mat.NewDense(kernelSize, kernelSize, []float64{
-		2, 1, 0,
-		0, 0, 0,
-		0, 3, 0,
-	})
-	kernel1B := mat.NewDense(kernelSize, kernelSize, []float64{
-		1, 0, 0,
-		1, 0, 0,
-		0, 0, 2,
-	})
-
-	stride := 1
-	channels := 3
 
 	correct := [][]float64{
 		[]float64{19, 13, 15},
@@ -223,7 +227,7 @@ func TestConvolve2DRGB(t *testing.T) {
 	kernelRGB := &mat.Dense{}
 	kernelRGB.Stack(kernel1, kernel1B)
 
-	outMatrix, err := Convolve2D(imageRGB, kernelRGB, channels, stride)
+	outMatrix, err := Convolve2D(imageRGB, kernelRGB, channelsRGB, strideRGB)
 	if err != nil {
 		t.Error(err)
 		return
